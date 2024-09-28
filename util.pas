@@ -1,18 +1,57 @@
 unit Util;
 
+{$mode objfpc}{$H+}
+
 interface
+uses LMMTypes;
 
-type
-    TArray<T> = array of T;
 
-procedure AddToArray<T>(var Arr: TArray<T>; const Element: T);
+procedure AddIntToArray(var Arr: IntArray; const Element: Integer);
+function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
+function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
 
 implementation
 
-procedure AddToArray<T>(var Arr: TArray<T>; const Element: T);
+procedure AddIntToArray(var Arr: IntArray; const Element: Integer);
 begin
     SetLength(Arr, Length(Arr) + 1);
     Arr[High(Arr)] := Element;
+end;
+
+procedure AddChunkToArray(var Arr: array of TChunk; const Element: Integer);
+begin
+    SetLength(Arr, Length(Arr) + 1);
+    Arr[High(Arr)] := Element;
+end;
+
+function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
+var
+    i: Integer;
+begin
+    Result := False;
+    for i := 0 to Length(Arr) - 1 do
+    begin
+        if Arr[i] = Element then
+        begin
+            Result := True;
+            Exit;
+        end;
+    end;
+end;
+
+function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
+var
+    i: Integer;
+begin
+    Result := Default(TChunk);
+    for i := 0 to Length(world.chunks) - 1 do
+    begin
+        if world.chunks[i].chunkIndex = chunkIndex then
+        begin
+            Result := world.chunks[i];
+            Exit;
+        end;
+    end;
 end;
 
 end.
