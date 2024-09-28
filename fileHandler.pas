@@ -11,7 +11,7 @@ uses
 
 procedure worldSave(const world: TWorld);
 function worldInit(worldName: string): TWorld;
-procedure loadPlayerChunks(world: TWorld);
+procedure loadPlayerChunks(var world: TWorld);
 
 implementation
 
@@ -103,16 +103,19 @@ end;
 
 procedure loadPlayerChunks(var world: TWorld);
 var
-    i: Integer;
     worldStringList: TStringList;
+    line: TStringArray;
+    i, j, k: Integer;
     chunk: TChunk;
+    rootChunkIndex: Integer;
+    chunkString: String;
 begin
     // On charge le fichier texte du monde
     worldStringList := TStringList.Create();
-    worldStringList.LoadFromFile('worlds/' + worldName + '.txt');
+    worldStringList.LoadFromFile('worlds/' + world.name + '.txt');
 
     // On charge le monde a partir du chunk dans lequel le joueur se trouve
-    rootChunkIndex := world.player.pos.x div 100;
+    rootChunkIndex := Round(world.player.pos.x/100);
 
     for i := 2 to worldStringList.Count-1 do
     begin
@@ -121,7 +124,7 @@ begin
         chunk.chunkIndex := StrToInt(line[0]);
 
         // On charge seulement les chunks qui sont a une distance de 1 chunk du chunk dans lequel le joueur se trouve
-        if rootChunkIndex -1 < chunk.chunkIndex < rootChunkIndex + 1 then
+        if ((rootChunkIndex -1) < chunk.chunkIndex) and (chunk.chunkIndex < (rootChunkIndex + 1)) then
         begin
             chunkString := line[1];
             // On enleve les crochets (mise en propre)
@@ -156,10 +159,6 @@ var
     world: TWorld;
     worldStringList: TStringList;
     line: TStringArray;
-    i, j, k: Integer;
-    chunk: TChunk;
-    rootChunkIndex: Integer;
-    chunkString: String;
 begin
     world.name := worldName;
 
@@ -185,7 +184,7 @@ begin
     // On charge les chunks autour du jouer
     loadPlayerChunks(world);
 
-    worldLoader := world;
+    worldInit := world;
 end;
 end.
 

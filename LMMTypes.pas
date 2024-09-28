@@ -2,10 +2,15 @@ unit LMMTypes;
 
 interface
 type
+    IntArray = array of Integer; // Dynamic array of integers
+    
+
     TChunk = record
-        layout: array[0..99] of array[0.99] of Integer;
+        layout: array[0..99,0..99] of Integer;
         chunkIndex: Integer;
     end;
+
+    ChunkArray = array of TChunk; // Dynamic array of chunks
 
     TPosition = record
         x: Real;
@@ -30,7 +35,7 @@ type
     end;
     
     TWorld = record 
-        chunks: array of TChunk;
+        chunks: ChunkArray;
         unsavedChunks: array of Integer;
         name: String;
         player: TPlayer;
@@ -39,8 +44,7 @@ type
         time: Integer;
     end;
 
-    IntArray = array of Integer; // Dynamic array of integers
-    ChunkArray = array of TChunk; // Dynamic array of chunks
+    
 
 implementation
 end.

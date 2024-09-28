@@ -7,6 +7,7 @@ procedure test_worldSave();
 var
     world: TWorld;
     chunk, chunk2, chunk3: TChunk;
+    chunklist: ChunkArray;
     i, j: Integer;
 begin
     world.name := 'TestWorld';

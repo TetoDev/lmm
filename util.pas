@@ -9,6 +9,8 @@ uses LMMTypes;
 procedure AddIntToArray(var Arr: IntArray; const Element: Integer);
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
+procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
+
 
 implementation
 
@@ -18,7 +20,7 @@ begin
     Arr[High(Arr)] := Element;
 end;
 
-procedure AddChunkToArray(var Arr: array of TChunk; const Element: Integer);
+procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
 begin
     SetLength(Arr, Length(Arr) + 1);
     Arr[High(Arr)] := Element;
