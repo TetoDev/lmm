@@ -1,21 +1,7 @@
 unit worldGeneration;
 
 Interface 
-
-Type TChunk = record
-                chunkId: Integer;
-                layout: Array [0..99] of Array [0..99] of Integer;
-            end;
-
-Type TWorld = record
-                chunks: array of TChunk;
-                unsavedChunks: array of integer;
-                //worldName: String;
-                //player: Player;
-                //mobs: array of Mob;
-                //worldFile: File;
-                //time: Integer;
-            end;
+uses LMMTypes
 
 
 function seed():Integer;
@@ -33,16 +19,16 @@ end;
 procedure chunkShapeGeneration(chunk: TChunk; seed: Integer);
 var i,j,height:integer; coef:real; variations: Array [0..8] of Integer;
 begin
-    if chunk.chunkId >=0 then 
+    if chunk.chunkIndex >=0 then 
         begin
             Randseed := round(seed mod 100000) //Si la generation est vers la droite: 5 dernier nombre
-            for (i:=0) to chunk.chunkId*10 do //On replace la fonction random a la deniere generation a droite
+            for (i:=0) to chunk.chunkIndex*10 do //On replace la fonction random a la deniere generation a droite
                 random(9);
         end;
     else
         begin
             Randseed := trunc(seed/100000); //Si la generation est vers la gauche: 5 premier nombre
-            for (i:=1) to abs(chunk.chunkId*10) do //On replace la fonction random a la deniere generation a gauche
+            for (i:=1) to abs(chunk.chunkIndex*10) do //On replace la fonction random a la deniere generation a gauche
                 random(9);
         end;
 
