@@ -12,6 +12,7 @@ uses
 procedure worldSave(const world: TWorld);
 function worldInit(worldName: string): TWorld;
 procedure loadPlayerChunks(var world: TWorld);
+procedure getWorlds(var x:TStringList);
 
 implementation
 
@@ -185,6 +186,21 @@ begin
     loadPlayerChunks(world);
 
     worldInit := world;
+end;
+
+procedure getWorlds(var x: TStringList); // TO FIX
+var result: TUnicodeSearchRec;
+begin
+    
+    if FindFirst('*', 
+               faAnyFile, result) = 0 then
+    repeat
+    begin
+        writeln(result.name);
+        x.Add(result.Name);
+    end;
+    until FindNext(result) <> 0;
+    FindClose(result);
 end;
 end.
 

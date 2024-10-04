@@ -1,5 +1,5 @@
 program test_main;
-uses fileHandler, LMMTypes;
+uses fileHandler, LMMTypes, Classes;
 
 
 
@@ -21,9 +21,6 @@ begin
     chunk.chunkIndex := 4;
     chunk2.chunkIndex := 2;
     chunk3.chunkIndex := 3;
-    SetLength(chunk.layout, 100, 100);
-    SetLength(chunk2.layout, 100, 100);
-    SetLength(chunk3.layout, 100, 100);
 
     for i := 0 to 99 do
     begin
@@ -41,8 +38,18 @@ begin
     worldSave(world);
 end;
 
+procedure test_getWorlds();
+var i: Integer; worldNames: TStringList;
+begin
+    worldNames := TStringList.Create();
+    getWorlds(worldNames);
+    for i:=0 to worldNames.Count-1 do
+        writeln(worldNames[i]);
+end;
+
 
 begin
     writeln('Hello, world!');
     test_worldSave();
+    test_getWorlds();
 end.

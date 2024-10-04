@@ -1,6 +1,5 @@
 *.o
 *.ppu
-worlds/*
 output
 output/*
 *.exe
