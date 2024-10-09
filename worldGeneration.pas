@@ -13,7 +13,7 @@ Implementation
 function NewSeed():Integer;
 begin
     Randomize; // Initialise la generation de nombre aleatoire
-    NewSeed := Random(10000000000); // Seed Choisit au hazard entre 0 et 10^10
+    NewSeed := Random(100000000); // Seed Choisit au hazard entre 0 et 10^8
 end;
 
 procedure chunkShapeGeneration(var chunk: TChunk; seed: Integer);
@@ -22,13 +22,13 @@ begin
 
     if chunk.chunkIndex >=0 then 
         begin
-            Randseed := round(seed mod 100000); //Si la generation est vers la droite: 5 dernier nombre
+            Randseed := round(seed mod 10000); //Si la generation est vers la droite: 5 dernier nombre
             for i := 0 to chunk.chunkIndex*10 do //On replace la fonction random a la deniere generation a droite
                 random(9);
         end
     else
         begin
-            Randseed := trunc(seed/100000); //Si la generation est vers la gauche: 5 premier nombre
+            Randseed := trunc(seed/10000); //Si la generation est vers la gauche: 5 premier nombre
             for i := 1 to abs(chunk.chunkIndex*10) do //On replace la fonction random a la deniere generation a gauche
                 random(9);
         end;
