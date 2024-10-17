@@ -2,11 +2,11 @@ unit display;
 
 Interface
 
-uses LMMTypes;
+uses LMMTypes, util;
 
 procedure printChunk(chunk:TChunk);
 
-procedure printPerspectiveChunk(chunk: TChunk; position: TPosition; viewHeight,viewWidth: Integer);
+procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
 
 Implementation
 
@@ -21,9 +21,12 @@ begin
     end;
 end;
 
-procedure printPerspectiveChunk(chunk: TChunk; position: TPosition; viewHeight,viewWidth: Integer);
-var i, j, relativeX, heightBot,heightTop, widthLeft,widthRight : Integer;
+procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
+var i, j, relativeX, heightBot,heightTop, widthLeft,widthRight,restLeft,restRight : Integer; chunkLeft,chunkRight,chunk:TChunk;
 begin
+    chunk := getChunkByIndex(world,Round(position.x) div 100 );
+    chunkLeft := getChunkByIndex(world,Round(position.x) div 100 - 1);
+    chunkRight := getChunkByIndex(world,Round(position.x) div 100 + 1);
     //On défini la position du joueur relativement au chunk
     relativeX := abs(Round(position.x) mod 100);
 
@@ -49,25 +52,40 @@ begin
     begin
         widthLeft := relativeX - viewWidth;
         widthRight := relativeX + viewWidth;
+        restLeft := 99;
+        restRight := 0;
     end
     else if relativeX - viewWidth < 0 then
     begin
         widthLeft := 0;
         widthRight := relativeX + viewWidth;
+        restLeft := 99 + relativeX - viewWidth ;
+        restRight := 0;
     end 
     else if relativeX + viewWidth > 99 then
     begin
         widthLeft := relativeX - viewWidth;
-        widthRight := 0;
+        widthRight := 99;
+        restLeft := 99;
+        restRight := relativeX + viewWidth - 99;
     end;
 
-    WriteLn(widthLeft,' ',widthRight,' ',heightBot,' ',heightTop);
+    WriteLn(widthLeft,' ',widthRight);
 
     //Affichage du chunk relatif a la position du joueur et de ses coordonnées
     for i := heightBot to heightTop do
     begin
+        //Affichage du chunk de droite si il y a besoin
+        if restLeft < 99 then
+            for j := restLeft to 99 do
+                write(chunkLeft.layout[j][99-i]);
+        //Affichage du chunk du joueur 
         for j := widthLeft to widthRight do
             write(chunk.layout[j][99-i]);
+        //Affichage du chunk de droite si il y a besoin
+        if restRight > 0 then
+            for j := 0 to restRight do
+                write(chunkRight.layout[j][99-i]);
         writeln();
     end;
 end;
