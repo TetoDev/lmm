@@ -44,7 +44,14 @@ type
         time: Integer;
     end;
 
-    
+    TActs = (JUMP, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
+
+    actsArray = array of TActs;
+
+    TPlayerAction = record 
+        acts : actsArray;
+        selectedBlock: TPosition;
+    end;
 
 implementation
 end.

@@ -40,5 +40,5 @@ begin
     chunkShapeGeneration(world.chunks[0],seed);
     chunkShapeGeneration(world.chunks[1],seed);
     chunkShapeGeneration(world.chunks[2],seed);
-
+    test_move_camera(world,pos);
 end.
