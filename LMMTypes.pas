@@ -12,6 +12,8 @@ type
 
     ChunkArray = array of TChunk; // Dynamic array of chunks
 
+    StringArray = array of String;
+
     TPosition = record
         x: Real;
         y: Real;

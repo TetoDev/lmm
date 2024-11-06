@@ -10,11 +10,23 @@ uses
 
 
 procedure worldSave(const world: TWorld);
+procedure deleteWorld(const worldName: String);
 function worldInit(worldName: string): TWorld;
 procedure loadPlayerChunks(var world: TWorld);
-procedure getWorlds(var x:TStringList);
+function getWorlds():StringArray;
 
 implementation
+
+procedure saveToIndex(worldName: String);
+var index: Text;
+begin
+    assign(index, 'world_index.txt');
+    append(index);
+
+    writeln(index, worldName);
+
+    close(index)
+end;
 
 // Convertir un chunk en string pour le sauvegarder dans un fichier texte dans une ligne
 function stringifyChunk(chunk: TChunk): String;
@@ -188,19 +200,39 @@ begin
     worldInit := world;
 end;
 
-procedure getWorlds(var x: TStringList); // TO FIX
-var result: TUnicodeSearchRec;
+function getWorlds(): StringArray; // TO TEST
+var worlds: TStringList; worldArray: StringArray; i:Integer;
 begin
-    
-    if FindFirst('*', 
-               faAnyFile, result) = 0 then
-    repeat
+    worlds := TStringList.Create();
+    worlds.LoadFromFile('world_index.txt');
+    setLength(worldArray, worlds.Count());
+
+    for i := 0 to worlds.count()-1 do
     begin
-        writeln(result.name);
-        x.Add(result.Name);
+        worldArray[i] = worlds.strings[i];
     end;
-    until FindNext(result) <> 0;
-    FindClose(result);
+
+    getWorlds := worldArray;
+end;
+
+procedure deleteWorldFromindex(const worldName: String); // TO TEST
+var index: TStringList;
+begin
+    index := TStringList.Create();
+    index.LoadFromFile('world_index.txt');
+
+    for i := 0 to index.count -1 do
+        if index.strings[i] = 'worldName' then
+            index.strings[i] := '';
+    
+    index.SaveToFile('world_index.text');
+end;
+
+procedure deleteWorld(const worldName: String);
+var 
+begin
+    DeleteFile('worlds/' + worldName + '.txt');
+    deleteWorldFromindex(worldName);
 end;
 end.
 
