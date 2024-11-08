@@ -1,4 +1,4 @@
-unit Tick;
+unit Game;
 
 interface
 
@@ -7,11 +7,12 @@ uses LMMTypes, fileHandler, act;
 uses
     SysUtils;
 
-procedure tick(world: TWorld, acts: TActs);
+procedure tick(world: TWorld; playerAction: TPlayerAction);
+procedure game(world: TWorld);
 
 implementation
 
-procedure tick(world: TWorld, acts: TActs);
+procedure tick(world: TWorld; playerAction: TPlayerAction);
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
@@ -27,7 +28,8 @@ begin
     blockBelow := world.chunks[1].layout[Round(playerPos.x)][Trunc(playerPos.y)] > 0;
 
     // Enacting layer input
-    act(playerVel, blockBelow, acts);
+    act(playerVel, blockBelow, playerAction);
+    blockAct(playerAction, world);
 
     // Collision detection
     if blockBelow then
@@ -66,7 +68,7 @@ begin
     playerVel.y := playerVel.y - 9.81/60;
     
     
-    playerHealth := playerHealth + 1;
+    playerHealth := playerHealth + 1; // REMOVE THIS LINE eventually
 
 
     world.player.pos := playerPos;
@@ -79,6 +81,14 @@ begin
         worldSave(world);
     else
         time := time + 1;
+end;
+
+procedure game(world: TWorld);
+var acts: TActs;
+begin
+    acts := handleInput();
+    tick(world, acts);
+    // Display
 end;
 
 end.
