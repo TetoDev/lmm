@@ -30,7 +30,7 @@ begin
     //On défini la position du joueur relativement au chunk
     relativeX := abs(Round(position.x) mod 100);
 
-    //On défini les extrémités minimal et maximal en y a afficher 
+    //On défini les extrémités minimal et maximal en Y a afficher 
     if (Round(position.y) - viewHeight >= 0) and (Round(position.y) + viewHeight <= 99) then
     begin
         heightBot := Round(position.y) - viewHeight;
@@ -47,7 +47,7 @@ begin
         heightTop := Round(position.y) + viewHeight;
     end;
 
-    //On défini les extrémités minimal et maximal en x a afficher 
+    //On défini les extrémités minimal et maximal en X a afficher 
     if (relativeX - viewWidth >= 0) and (relativeX + viewWidth <= 99) then 
     begin
         widthLeft := relativeX - viewWidth;
@@ -70,22 +70,20 @@ begin
         restRight := relativeX + viewWidth - 99;
     end;
 
-    WriteLn(widthLeft,' ',widthRight);
-
     //Affichage du chunk relatif a la position du joueur et de ses coordonnées
-    for i := heightBot to heightTop do
+    for i := heightTop downto heightBot do
     begin
         //Affichage du chunk de droite si il y a besoin
         if restLeft < 99 then
             for j := restLeft to 99 do
-                write(chunkLeft.layout[j][99-i]);
+                write(chunkLeft.layout[j][i]);
         //Affichage du chunk du joueur 
         for j := widthLeft to widthRight do
-            write(chunk.layout[j][99-i]);
+            write(chunk.layout[j][i]);
         //Affichage du chunk de droite si il y a besoin
         if restRight > 0 then
             for j := 0 to restRight do
-                write(chunkRight.layout[j][99-i]);
+                write(chunkRight.layout[j][i]);
         writeln();
     end;
 end;

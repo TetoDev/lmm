@@ -1,35 +1,33 @@
 unit act;
 
 Interface
-uses LMMTypes, sdl2; 
+uses LMMTypes; 
 
-function handleInput(keyPressed:TSDL_KeyboardEvent):TActs;
+function handleInput(keyPressed:String):TActs;
 
 Implementation
 
-function handleInput(keyPressed:TSDL_KeyboardEvent):TActs;
+function handleInput(keyPressed:String):TActs;
 begin
     //Suivant la touche appuyée on effectue différente action
     case keyPressed of
-        SDLK_LEFT: 
+        'q': 
         begin 
             handleInput := WALK_LEFT; 
         end;
-        SDLK_RIGHT: 
+        'd': 
         begin 
             handleInput := WALK_RIGHT; 
         end;
-        SDLK_UP: 
+        'z': 
         begin 
             handleInput := JUMP; 
         end;
-        SDLK_DOWN: 
+        's': 
         begin 
-            handleInput := PLACE_BLOCK; 
+            handleInput := CROUCH; 
         end;
     end;
-
-    writeln(SDL_getKeyName(keyPressed.keysym.sym));
 end;
 
 end.

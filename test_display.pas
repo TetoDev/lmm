@@ -1,6 +1,6 @@
 program test_display;
 
-uses  display,LMMTypes, worldGeneration, util;
+uses  display,LMMTypes, worldGeneration, util, crt;
 
 procedure test_move_camera(world:TWorld; pos:TPosition);
 var input: String;
@@ -12,6 +12,7 @@ begin
         Writeln('z for Up | s for Down');
         Write('Which direction : ');
         ReadLn(input);
+        ClrScr;
         if input = 'd' then
             pos.x := pos.x + 5
         else if input = 'q' then
@@ -20,25 +21,18 @@ begin
             pos.y := pos.y - 2
         else if input = 's' then
             pos.y := pos.y + 2;
-        cameraDisplacement(world,pos,4,20);
+        cameraDisplacement(world,pos,6,20);
     end;
 end;
 
-var chunkLeft,chunkMid,chunkRight:TChunk; world:TWorld; seed:Integer;pos:TPosition;
+var world:TWorld; seed:LongInt;pos:TPosition;
 begin
 
     pos.x := 10;
     pos.y := 40;
-
-    chunkLeft.chunkIndex := -1;
-    chunkMid.chunkIndex:= 0;
-    chunkRight.chunkIndex := 1;
-    AddChunkToArray(world.chunks, chunkLeft);
-    AddChunkToArray(world.chunks, chunkMid);
-    AddChunkToArray(world.chunks, chunkRight);
+    
     seed := (NewSeed);
-    chunkShapeGeneration(world.chunks[0],seed);
-    chunkShapeGeneration(world.chunks[1],seed);
-    chunkShapeGeneration(world.chunks[2],seed);
+    InitialiseWorld(world, seed);
+    printChunk(world.chunks[0]);
     test_move_camera(world,pos);
 end.

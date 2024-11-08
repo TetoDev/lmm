@@ -44,7 +44,7 @@ type
         time: Integer;
     end;
 
-    TActs = (JUMP, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
+    TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
 
     actsArray = array of TActs;
 
