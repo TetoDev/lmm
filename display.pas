@@ -2,7 +2,7 @@ unit display;
 
 Interface
 
-uses LMMTypes, util;
+uses LMMTypes, util, SDL2;
 
 procedure printChunk(chunk:TChunk);
 

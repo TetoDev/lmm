@@ -1,33 +1,53 @@
 unit act;
 
 Interface
-uses LMMTypes; 
+uses LMMTypes, SDL2, util; 
 
-function handleInput(keyPressed:String):TActs;
-procedure playerMove(velocity: TVelocity, blockBelow: Boolean, playerAction: TPlayerAction);
+function handleInput(keyPressed: SDL_Keycode; var playerAction: TPlayerAction; french: Boolean = False);
+procedure playerMove(velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 procedure blockAct (playerAction: TPlayerAction; world: TWorld);
 
 Implementation
 
-function handleInput(keyPressed:String):TActs; // SHOULD RETURN TYPE TPlayerAction WITH A SELECTED BLOCK ATTRIBUTE
+procedure handleInput(keyPressed: SDL_Keycode; var playerAction: TPlayerAction; french: Boolean = False);
 begin
     //Suivant la touche appuyée on effectue différente action
-    case keyPressed of // VERY FRENCH LAYOUT
-        'q': 
-        begin 
-            handleInput := WALK_LEFT;
-        end;
-        'd': 
-        begin 
-            handleInput := WALK_RIGHT; 
-        end;
-        'z': 
-        begin 
-            handleInput := JUMP; 
-        end;
-        's': 
-        begin 
-            handleInput := CROUCH; 
+    if french then
+        case keyPressed of // FRENCH LAYOUT
+            SDLK_q: 
+            begin 
+                AddActToArray(playerAction.acts, WALK_LEFT);
+            end;
+            SDLK_d: 
+            begin 
+                AddActToArray(playerAction.acts, WALK_RIGHT);
+            end;
+            SDLK_z: 
+            begin 
+                AddActToArray(playerAction.acts, JUMP);
+            end;
+            SDLK_s: 
+            begin 
+                AddActToArray(playerAction.acts, CROUCH);
+            end;
+    else
+        case keyPressed of // ENGLISH LAYOUT
+            SDLK_a: 
+            begin 
+                AddActToArray(playerAction.acts, WALK_LEFT);
+            end;
+            SDLK_d: 
+            begin 
+                AddActToArray(playerAction.acts, WALK_RIGHT);
+            end;
+            SDLK_w: 
+            begin 
+                AddActToArray(playerAction.acts, JUMP);
+            end;
+            SDLK_s: 
+            begin 
+                AddActToArray(playerAction.acts, CROUCH);
+            end;
         end;
     end;
 end;

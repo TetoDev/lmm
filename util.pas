@@ -20,6 +20,12 @@ begin
     Arr[High(Arr)] := Element;
 end;
 
+procedure AddActToArray(var Arr: ActArray; const Element: TActs);
+begin
+    SetLength(Arr, Length(Arr) + 1);
+    Arr[High(Arr)] := Element;
+end;
+
 procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
 begin
     SetLength(Arr, Length(Arr) + 1);

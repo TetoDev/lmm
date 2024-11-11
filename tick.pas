@@ -8,7 +8,6 @@ uses
     SysUtils;
 
 procedure tick(world: TWorld; playerAction: TPlayerAction);
-procedure game(world: TWorld);
 
 implementation
 
@@ -76,19 +75,10 @@ begin
     world.player.health := playerHealth;
 
 
+    if (time mod 3500) = 0 then
+        worldSave(world);
     if time = 24000 then
         time := 0
-        worldSave(world);
     else
         time := time + 1;
 end;
-
-procedure game(world: TWorld);
-var acts: TActs;
-begin
-    acts := handleInput();
-    tick(world, acts);
-    // Display
-end;
-
-end.
