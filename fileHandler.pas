@@ -205,18 +205,18 @@ var worlds: TStringList; worldArray: StringArray; i:Integer;
 begin
     worlds := TStringList.Create();
     worlds.LoadFromFile('world_index.txt');
-    setLength(worldArray, worlds.Count());
-
-    for i := 0 to worlds.count()-1 do
+    setLength(worldArray, worlds.Count);
+    i := 0;
+    for i := 0 to (worlds.count-1) do
     begin
-        worldArray[i] = worlds.strings[i];
+        worldArray[i] := worlds.strings[i];
     end;
 
     getWorlds := worldArray;
 end;
 
 procedure deleteWorldFromindex(const worldName: String); // TO TEST
-var index: TStringList;
+var index: TStringList;i:Integer;
 begin
     index := TStringList.Create();
     index.LoadFromFile('world_index.txt');
@@ -229,7 +229,7 @@ begin
 end;
 
 procedure deleteWorld(const worldName: String);
-var 
+
 begin
     DeleteFile('worlds/' + worldName + '.txt');
     deleteWorldFromindex(worldName);

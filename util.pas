@@ -28,7 +28,12 @@ begin
     Arr[High(Arr)] := Element;
 end;
 
-procedure AddChunkToArrcrouch
+procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
+begin
+    SetLength(Arr, Length(Arr) + 1);
+    Arr[High(Arr)] := Element;
+end;
+
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 var
     i: Integer;

@@ -54,7 +54,7 @@ begin
                     case event.key.keysym.sym of
                         SDLK_ESCAPE: running := false;
                     else
-                        playerAction := handleInput(event.key.keysym.sym, world.playerAction);
+                        playerAction := handleInput(event.key.keysym.sym, world.playerAction, true);
                     end;
                 end;
             end;

@@ -55,5 +55,10 @@ type
         selectedBlock: TPosition;
     end;
 
+const 
+SURFACEWIDTH = 1000; { largeur en pixels de la surface de jeu }
+SURFACEHEIGHT = 1000; { hauteur en pixels de la surface de jeu }
+DIMENSIONBLOCK = 20; {Taille de l'intérieur des blocks}
+
 implementation
 end.

@@ -3,13 +3,13 @@ unit act;
 Interface
 uses LMMTypes, SDL2, util; 
 
-function handleInput(keyPressed: SDL_Keycode; var playerAction: TPlayerAction; french: Boolean = False);
-procedure playerMove(velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
-procedure blockAct (playerAction: TPlayerAction; world: TWorld);
+procedure handleInput(keyPressed: PPSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
+procedure playerMove(var velocity: TVelocity; const blockBelow: Boolean; const playerAction: TPlayerAction);
+procedure blockAct (playerAction: TPlayerAction; var world: TWorld);
 
 Implementation
 
-procedure handleInput(keyPressed: SDL_Keycode; var playerAction: TPlayerAction; french: Boolean = False);
+procedure handleInput(keyPressed: PPSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
 begin
     //Suivant la touche appuyée on effectue différente action
     if french then
@@ -82,17 +82,18 @@ begin
 end;
 
 procedure blockAct (playerAction: TPlayerAction; var world: TWorld);
+var i:Integer;
 begin
-    for i := 0 to length(playerActionacts) - 1 do
+    for i := 0 to length(playerAction.acts) - 1 do
     begin
-        case playerAction.player[i] of
+        case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                world.chunks[1].layout[playerAction.selectedBlock.x, playerAction.selectedBlock.y] := 1;
+                world.chunks[1].layout[round(playerAction.selectedBlock.x),round(playerAction.selectedBlock.y)] := 1;
             end;
             REMOVE_BLOCK: 
             begin
-                world.chunks[1].layout[playerAction.selectedBlock.x, playerAction.selectedBlock.y] := 0;
+                world.chunks[1].layout[round(playerAction.selectedBlock.x), round(playerAction.selectedBlock.y)] := 0;
             end;
         end;
     end;

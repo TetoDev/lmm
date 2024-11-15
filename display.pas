@@ -2,11 +2,18 @@ unit display;
 
 Interface
 
-uses LMMTypes, util, SDL2;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf,sdl2_mixer;
 
 procedure printChunk(chunk:TChunk);
 
 procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
+
+procedure initialisationSDL(var sdlwindow: PSDL_Window; var sdlRenderer: PSDL_Renderer; var lesTextures : Textures);
+
+procedure fermetureSDL(var sdlwindow: PSDL_Window; var sdlRenderer: PSDL_Renderer; var lesTextures : Textures);
+
+procedure afficheRendu(var sdlRenderer:PSDL_Renderer);
+
 
 Implementation
 
