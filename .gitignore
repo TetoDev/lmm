@@ -3,3 +3,4 @@
 output
 output/*
 *.exe
+SDL2
