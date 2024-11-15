@@ -11,6 +11,7 @@ procedure AddActToArray(var Arr: ActsArray; const Element: TActs);
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
 procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
+function findTop(chunk:TChunk; x:Integer):Integer;
 
 
 implementation
@@ -27,12 +28,7 @@ begin
     Arr[High(Arr)] := Element;
 end;
 
-procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
-begin
-    SetLength(Arr, Length(Arr) + 1);
-    Arr[High(Arr)] := Element;
-end;
-
+procedure AddChunkToArrcrouch
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 var
     i: Integer;
@@ -60,6 +56,19 @@ begin
             Result := world.chunks[i];
             Exit;
         end;
+    end;
+end;
+
+function findTop(chunk:TChunk; x:Integer):Integer;
+var i:Integer;
+begin
+    findTop := 0;
+    i := 0;
+    while (i < 99) and (findTop = 0) do 
+    begin
+        if chunk.layout[x][i] = 0 then 
+            findTop := i;
+        i := i + 1;
     end;
 end;
 

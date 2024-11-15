@@ -6,7 +6,7 @@ procedure action(world:TWorld;var pos:TPosition;var gravity: Boolean ;var fin:Bo
 var keyInput: String;input: TActs; savedPos: TPosition;
 begin
     Writeln('q for Left | d for Right');
-    Writeln('z to Jump | s to crouch');
+    Writeln('z to Jump | s to leave');
     Write('Which direction : ');
     ReadLn(keyInput);
     input := handleInput(keyInput);
@@ -45,18 +45,6 @@ begin
     world.chunks[1].layout[Round(pos.x)][Round(pos.y)] := 9;
 end;
 
-function findTop(chunk:TChunk; x:Integer):Integer;
-var i:Integer;
-begin
-    findTop := 0;
-    i := 0;
-    while (i < 99) and (findTop = 0) do 
-    begin
-        if chunk.layout[x][i] = 0 then 
-            findTop := i;
-        i := i + 1;
-    end;
-end;
 
 var world:TWorld; seed:LongInt; pos:TPosition; fin,gravity:Boolean; 
 begin
