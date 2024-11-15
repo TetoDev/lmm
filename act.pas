@@ -3,13 +3,13 @@ unit act;
 Interface
 uses LMMTypes, SDL2, util; 
 
-procedure handleInput(keyPressed: PPSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
+procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
 procedure playerMove(var velocity: TVelocity; const blockBelow: Boolean; const playerAction: TPlayerAction);
 procedure blockAct (playerAction: TPlayerAction; var world: TWorld);
 
 Implementation
 
-procedure handleInput(keyPressed: PPSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
+procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
 begin
     //Suivant la touche appuyée on effectue différente action
     if french then

@@ -2,11 +2,15 @@ program lmm;
 
 
 
-uses SDL2, LMMTypes, util, tick, act, display;
+uses fileHandler,SDL2, LMMTypes, util, tick, act, display;
 
 var
     world: TWorld;
     playerAction: TPlayerAction;
+    window: PSDL_Window;
+    renderer: PSDL_Renderer;
+    running:Boolean;
+    event: PSDL_Event;
 begin
     //Initialisation de la SDL
     if SDL_Init(SDL_INIT_VIDEO) <> 0 then
@@ -16,7 +20,7 @@ begin
     end;
 
     //Création de la fenêtre
-    var window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if window = nil then
     begin
         writeln('Erreur création fenêtre : ', SDL_GetError());
@@ -24,7 +28,7 @@ begin
     end;
 
     //Création du rendu
-    var renderer := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if renderer = nil then
     begin
         writeln('Erreur création rendu : ', SDL_GetError());
@@ -32,7 +36,7 @@ begin
     end;
 
     //Initialisation de la structure du monde
-    var world := initWorld('TestWorld'); // TO CHANGE
+    world := worldInit('TestWorld'); // TO CHANGE
     playerAction.acts := [];
     playerAction.selectedBlock.x := 0;
 
@@ -40,21 +44,20 @@ begin
     world.player.health := 100;
 
     //Boucle principale
-    var running := true;
-    var event: SDL_Event;
+    running := true;
     while running do
     begin
         //Gestion des événements
         while SDL_PollEvent(@event) <> 0 do
         begin
-            case event.type_ of
+            case event^.type_ of
                 SDL_QUIT: running := false;
                 SDL_KEYDOWN:
                 begin
-                    case event.key.keysym.sym of
+                    case event^.key.keysym.sym of
                         SDLK_ESCAPE: running := false;
                     else
-                        playerAction := handleInput(event.key.keysym.sym, world.playerAction, true);
+                        handleInput(event^.key.keysym.sym, playerAction, true);
                     end;
                 end;
             end;

@@ -8,13 +8,6 @@ procedure printChunk(chunk:TChunk);
 
 procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
 
-procedure initialisationSDL(var sdlwindow: PSDL_Window; var sdlRenderer: PSDL_Renderer; var lesTextures : Textures);
-
-procedure fermetureSDL(var sdlwindow: PSDL_Window; var sdlRenderer: PSDL_Renderer; var lesTextures : Textures);
-
-procedure afficheRendu(var sdlRenderer:PSDL_Renderer);
-
-
 Implementation
 
 procedure printChunk(chunk:TChunk);

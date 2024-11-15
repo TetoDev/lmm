@@ -2,10 +2,7 @@ unit tick;
 
 interface
 
-uses LMMTypes, fileHandler, act;
-
-uses
-    SysUtils;
+uses LMMTypes, fileHandler, act, SysUtils;
 
 procedure tick(world: TWorld; playerAction: TPlayerAction);
 
@@ -27,7 +24,7 @@ begin
     blockBelow := world.chunks[1].layout[Round(playerPos.x)][Trunc(playerPos.y)] > 0;
 
     // Enacting layer input
-    act(playerVel, blockBelow, playerAction);
+    playerMove(playerVel, blockBelow, playerAction);
     blockAct(playerAction, world);
 
     // Collision detection
@@ -82,3 +79,4 @@ begin
     else
         time := time + 1;
 end;
+end.
