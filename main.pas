@@ -1,8 +1,7 @@
-program lmm;
+program main;
 
 
-
-uses fileHandler,SDL2, LMMTypes, util, tick, act, display;
+uses fileHandler,sdl2, LMMTypes, util, tick, act, display;
 
 var
     world: TWorld;
@@ -10,15 +9,14 @@ var
     window: PSDL_Window;
     renderer: PSDL_Renderer;
     running:Boolean;
-    event: PSDL_Event;
+    event: TSDL_Event;
 begin
     //Initialisation de la SDL
-    if SDL_Init(SDL_INIT_VIDEO) <> 0 then
+    if SDL_Init(SDL_INIT_VIDEO) < 0 then
     begin
         writeln('Erreur initialisation SDL : ', SDL_GetError());
         exit;
     end;
-
     //Création de la fenêtre
     window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if window = nil then
@@ -29,6 +27,7 @@ begin
 
     //Création du rendu
     renderer := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
     if renderer = nil then
     begin
         writeln('Erreur création rendu : ', SDL_GetError());
@@ -49,26 +48,31 @@ begin
     begin
         //Gestion des événements
         while SDL_PollEvent(@event) <> 0 do
-        begin
-            case event^.type_ of
-                SDL_QUIT: running := false;
+        begin 
+            case event.type_ of
+                SDL_QUITEV: 
+                begin
+                    running := false;
+                end;
                 SDL_KEYDOWN:
                 begin
-                    case event^.key.keysym.sym of
+                    case event.key.keysym.sym of
                         SDLK_ESCAPE: running := false;
                     else
-                        handleInput(event^.key.keysym.sym, playerAction, true);
+                        handleInput(event.key.keysym.sym, playerAction, true);
                     end;
                 end;
             end;
         end;
+        
 
         //Mise à jour du monde et action du joueur
-        tick(world, playerAction);  // NOT TRUE IMPLEMENTATION
-        playerAction.acts := [];
+        tick.tick(world, playerAction);  // NOT TRUE IMPLEMENTATION
 
+        playerAction.acts := [];
         //Affichage du monde
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         //cameraDisplacement(world, world.player.pos, 300, 400); // NOT IMPLEMENTED
+    end;
 end.

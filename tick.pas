@@ -2,7 +2,7 @@ unit tick;
 
 interface
 
-uses LMMTypes, fileHandler, act, SysUtils;
+uses LMMTypes, fileHandler, act, SysUtils, display;
 
 procedure tick(world: TWorld; playerAction: TPlayerAction);
 
@@ -18,9 +18,19 @@ begin
     playerVel := world.player.vel;
     playerHealth := world.player.health;
     time := world.time;
+   
+    
+    if (Round(playerPos.x) - 1) >= 0 then
+        blockLeft := world.chunks[1].layout[Round(playerPos.x) - 1][Trunc(playerPos.y)] > 0 // BUG: playerPos.x or playerPos.y will round wierldly and stop the player from moving in any direction TRUNCATE MIGHT ALSO BE WRONG BUT I'M NOT SURE
+    else
+        blockLeft := False; // BUG: playerPos.x or playerPos.y will round wierldly and stop the player from moving in any direction TRUNCATE MIGHT ALSO BE WRONG BUT I'M NOT SURE
 
-    blockLeft := world.chunks[1].layout[Round(playerPos.x) - 1][Trunc(playerPos.y)] > 0; // BUG: playerPos.x or playerPos.y will round wierldly and stop the player from moving in any direction TRUNCATE MIGHT ALSO BE WRONG BUT I'M NOT SURE
-    blockRight := world.chunks[1].layout[Round(playerPos.x) + 1][Trunc(playerPos.y)] > 0;
+    if (Round(playerPos.x) + 1) <= 99 then
+        blockRight := world.chunks[1].layout[Round(playerPos.x) + 1][Trunc(playerPos.y)] > 0
+    else
+        blockRight := False;
+
+
     blockBelow := world.chunks[1].layout[Round(playerPos.x)][Trunc(playerPos.y)] > 0;
 
     // Enacting layer input
