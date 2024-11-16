@@ -4,3 +4,11 @@ output
 output/*
 *.exe
 SDL2
+*.inc
+sdl2_gfx.pas
+sdl2_image.pas
+sdl2_ttf.pas
+sdl2.pas
+sdl2_mixer.pas
+sdl2_net.pas
+sdl2
