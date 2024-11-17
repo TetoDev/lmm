@@ -12,3 +12,4 @@ sdl2.pas
 sdl2_mixer.pas
 sdl2_net.pas
 sdl2
+*.dll
