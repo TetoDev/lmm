@@ -35,9 +35,11 @@ begin
     end;
 
     //Initialisation de la structure du monde
+
     world := worldInit('TestWorld'); // TO CHANGE
     playerAction.acts := [];
     playerAction.selectedBlock.x := 0;
+
 
     //Initialisation de la santé du joueur
     world.player.health := 100;
@@ -59,13 +61,14 @@ begin
                     case event.key.keysym.sym of
                         SDLK_ESCAPE: running := false;
                     else
+                    begin
                         handleInput(event.key.keysym.sym, playerAction, true);
+                    end;
                     end;
                 end;
             end;
         end;
         
-
         //Mise à jour du monde et action du joueur
         tick.tick(world, playerAction);  // NOT TRUE IMPLEMENTATION
 

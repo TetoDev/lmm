@@ -6,7 +6,7 @@ unit fileHandler;
 interface
 
 uses
-    SysUtils, Classes, LMMTypes, Util;
+    SysUtils, Classes, LMMTypes, Util, worldGeneration;
 
 
 procedure worldSave(const world: TWorld);
@@ -195,8 +195,8 @@ begin
     freeandnil(worldStringList);
     
     // On charge les chunks autour du jouer
-    loadPlayerChunks(world);
-    
+    // loadPlayerChunks(world);  A MODIFIER !!
+    InitialiseWorld(world, NewSeed());
     worldInit := world;
 end;
 
