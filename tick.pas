@@ -4,11 +4,11 @@ interface
 
 uses LMMTypes, fileHandler, act, SysUtils, display;
 
-procedure tick(world: TWorld; playerAction: TPlayerAction);
+procedure tick(var world: TWorld; playerAction: TPlayerAction);
 
 implementation
 
-procedure tick(world: TWorld; playerAction: TPlayerAction);
+procedure tick(var world: TWorld; playerAction: TPlayerAction);
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
@@ -30,7 +30,7 @@ begin
         blockRight := False;
 
 
-    blockBelow := world.chunks[1].layout[Round(playerPos.x)][Trunc(playerPos.y)] > 0;
+    blockBelow := world.chunks[1].layout[Round(playerPos.x)][Trunc(playerPos.y-1)] > 0;
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
@@ -48,16 +48,16 @@ begin
             playerVel.x := 0;
 
     // Max running speed
-    if playerVel.x > 5 then
-        playerVel.x := 5;
-    if playerVel.x < -5 then
-        playerVel.x := -5;
+    if playerVel.x > 0.5 then
+        playerVel.x := 0.5;
+    if playerVel.x < -0.5 then
+        playerVel.x := -0.5;
     
-    // Terminal Velocity
-    if playerVel.y > 100 then
-        playerVel.y := 100;
-    if playerVel.y < -100 then
-        playerVel.y := -100;
+    // Terminal Velocity limit
+    if playerVel.y > 1 then
+        playerVel.y := 1;
+    if playerVel.y < -2 then
+        playerVel.y := -2;
     
     // Updating player position
     playerPos.x := playerPos.x + playerVel.x;
@@ -69,11 +69,13 @@ begin
     if playerVel.x < 0 then
         playerVel.x := playerVel.x + 0.1;
 
+    if (playerVel.x > 0) and (playerVel.x < 0.1) then
+        playerVel.x := 0;
+    if (playerVel.x < 0) and (playerVel.x > -0.1)then
+        playerVel.x := 0;
+
     // Gravity
-    playerVel.y := playerVel.y - 9.81/60;
-    
-    
-    playerHealth := playerHealth + 1; // REMOVE THIS LINE eventually
+    playerVel.y := playerVel.y - 0.1;
 
 
     world.player.pos := playerPos;

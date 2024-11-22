@@ -4,7 +4,7 @@ Interface
 uses LMMTypes, SDL2, util; 
 
 procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
-procedure playerMove(var velocity: TVelocity; const blockBelow: Boolean; const playerAction: TPlayerAction);
+procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 procedure blockAct (playerAction: TPlayerAction; var world: TWorld);
 
 Implementation
@@ -52,26 +52,26 @@ begin
     end;
 end;
 
-procedure playerMove(var velocity: TVelocity; const blockBelow: Boolean; const playerAction: TPlayerAction);
+procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 var i: Integer;
     action: TActs;
 begin
-    for i:= 0 to length(playerAction.acts) - 1 do
+    for i:= 0 to length(playerAction.acts) -1 do
     begin
         action := playerAction.acts[i];
         case action of
             WALK_LEFT: 
             begin
-                velocity.x := velocity.x - 1;
+                velocity.x := velocity.x - 0.5;
             end;
             WALK_RIGHT: 
             begin
-                velocity.x := velocity.x + 1;
+                velocity.x := velocity.x + 0.5;
             end;
             JUMP: 
             begin
                 if blockBelow then
-                    velocity.y := velocity.y + 10;
+                    velocity.y := velocity.y + 1;
             end;
             CROUCH: 
             begin

@@ -18,7 +18,7 @@ begin
         exit;
     end;
     //Création de la fenêtre
-    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SURFACEWIDTH, SURFACEHEIGHT, SDL_WINDOW_SHOWN);
     if window = nil then
     begin
         writeln('Erreur création fenêtre : ', SDL_GetError());
@@ -76,6 +76,14 @@ begin
         //Affichage du monde
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        displayChunk(world,renderer);
+        displayPlayer(world, renderer);
+        SDL_RenderPresent(Renderer);
+
+	    SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
         //cameraDisplacement(world, world.player.pos, 300, 400); // NOT IMPLEMENTED
-    end;
+    end;  
+    SDL_DestroyRenderer(Renderer);
+    SDL_DestroyWindow(Window);
+    SDL_Quit;
 end.

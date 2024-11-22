@@ -8,6 +8,11 @@ procedure printChunk(chunk:TChunk);
 
 procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
 
+procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer);
+
+
+procedure displayChunk(world:TWorld; var renderer: PSDL_Renderer);
+
 Implementation
 
 procedure printChunk(chunk:TChunk);
@@ -86,6 +91,37 @@ begin
                 write(chunkRight.layout[j][i]);
         writeln();
     end;
+end;
+
+procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer);
+var Rect: TSDL_Rect;
+begin
+    SDL_SetRenderDrawColor(Renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    Rect.x := Round(world.player.pos.x*5);
+    Rect.y := Trunc(500 - (world.player.pos.y)*5);
+    Rect.w := DIMENSIONBLOCK;
+    Rect.h := DIMENSIONBLOCK;
+    SDL_RenderFillRect(Renderer, @Rect);
+end;
+
+procedure displayChunk(world:TWorld; var renderer: PSDL_Renderer);
+var i,j:Integer; Rect: TSDL_Rect;
+begin
+    SDL_SetRenderDrawColor(Renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+    Rect.w := DIMENSIONBLOCK ;
+    Rect.h := DIMENSIONBLOCK ;
+    for i := 0 to 99 do
+        begin
+            for j := 0 to 99 do
+            begin
+                if world.chunks[1].layout[j][99-i] > 0 then 
+                begin
+                    Rect.x := j*5;
+                    Rect.y := i*5;
+                    SDL_RenderFillRect(Renderer, @Rect);
+                end;
+            end;
+        end;
 end;
 
 end.

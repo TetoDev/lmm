@@ -56,9 +56,9 @@ type
     end;
 
 const 
-SURFACEWIDTH = 1000; { largeur en pixels de la surface de jeu }
-SURFACEHEIGHT = 1000; { hauteur en pixels de la surface de jeu }
-DIMENSIONBLOCK = 20; {Taille de l'intérieur des blocks}
+SURFACEWIDTH = 500; { largeur en pixels de la surface de jeu }
+SURFACEHEIGHT = 500; { hauteur en pixels de la surface de jeu }
+DIMENSIONBLOCK = 5; {Taille de l'intérieur des blocks}
 
 implementation
 end.
