@@ -70,7 +70,7 @@ begin
 
     // Sauvegarde des informations du monde et de la position du joueur
     writeln(temp, world.name, ';', world.time); // line 0
-    writeln(temp, world.player.pos.x, ';', world.player.pos.y, ';', world.player.vel.x, ';', world.player.vel.y, ';', world.player.health);
+    writeln(temp, Trunc(world.player.pos.x), ';', Trunc(world.player.pos.y), ';', Trunc(world.player.vel.x), ';', Trunc(world.player.vel.y), ';', world.player.health);
 
     // Sauvegarde des chunks non sauvegardés (tous les chunks qui ont été charges par le joueur depuis la dernière sauvegarde)
     for i := 0 to length(world.unsavedChunks)-1 do

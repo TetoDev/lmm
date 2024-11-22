@@ -1,7 +1,7 @@
 unit act;
 
 Interface
-uses LMMTypes, SDL2, util; 
+uses LMMTypes, SDL2, util, display; 
 
 procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);

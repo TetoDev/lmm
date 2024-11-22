@@ -11,7 +11,7 @@ procedure AddActToArray(var Arr: ActsArray; Element: TActs);
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
 procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
-function getChunkIndex(x : Real);
+function getChunkIndex(x : Real):Integer;
 function findTop(chunk:TChunk; x:Integer):Integer;
 procedure reinsertChunk(var world: TWorld; chunk: TChunk);
 
@@ -35,7 +35,7 @@ function getChunkIndex(x : Real):Integer;
 begin
     if (x < 100) and (0 <= 100) then
         getChunkIndex := 0
-    else :
+    else 
         getChunkIndex := Trunc(x / 100)-1;
 end;
 

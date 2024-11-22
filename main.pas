@@ -36,7 +36,7 @@ begin
 
     //Initialisation de la structure du monde
 
-    world := worldInit('TestWorld'); // TO CHANGE
+    world := worldInit('Save 1'); 
     playerAction.acts := [];
     playerAction.selectedBlock.x := 0;
 
@@ -70,17 +70,11 @@ begin
         end;
         
         //Mise à jour du monde et action du joueur
-        tick.tick(world, playerAction);  // NOT TRUE IMPLEMENTATION
+        tick.tick(world, playerAction, renderer);  // NOT TRUE IMPLEMENTATION
 
         playerAction.acts := [];
         //Affichage du monde
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        displayChunk(world, renderer);
-        displayPlayer(world, renderer);
         SDL_RenderPresent(Renderer);
-
-	    SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
     end;  
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindow(Window);

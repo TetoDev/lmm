@@ -10,8 +10,7 @@ procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,view
 
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer);
 
-
-procedure displayChunk(world:TWorld; var renderer: PSDL_Renderer);
+procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer);
 
 Implementation
 
@@ -104,18 +103,17 @@ begin
     SDL_RenderFillRect(Renderer, @Rect);
 end;
 
-procedure displayChunk(world:TWorld; var renderer: PSDL_Renderer);
-var i,j,chunk:Integer; Rect: TSDL_Rect;
+procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer);
+var i,j:Integer; Rect: TSDL_Rect;
 begin
-    chunk := Round(world.player.pos.x) div 100 + 1;
-    SDL_SetRenderDrawColor(Renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     Rect.w := DIMENSIONBLOCK;
     Rect.h := DIMENSIONBLOCK;
     for i := 0 to 99 do
         begin
             for j := 0 to 99 do
             begin
-                if world.chunks[chunk].layout[j][99-i] > 0 then 
+                if chunk.layout[j][99-i] > 0 then 
                 begin
                     Rect.x := j*DIMENSIONBLOCK;
                     Rect.y := i*DIMENSIONBLOCK;

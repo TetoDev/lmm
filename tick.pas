@@ -2,13 +2,13 @@ unit tick;
 
 interface
 
-uses LMMTypes, fileHandler, act, SysUtils, display;
+uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, util;
 
-procedure tick(var world: TWorld; playerAction: TPlayerAction);
+procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer);
 
 implementation
 
-procedure tick(var world: TWorld; playerAction: TPlayerAction);
+procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer);
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
@@ -26,10 +26,10 @@ begin
     y := Trunc(playerPos.y);
 
     // Current chunk
-    currentChunk := getChunkByIndex(world.chunks, getChunkIndex(playerPos.x));
+    currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
 
-    leftChunk := getChunkByIndex(world.chunks, currentChunk.chunkIndex - 1);
-    rightChunk := getChunkByIndex(world.chunks, currentChunk.chunkIndex + 1);
+    leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
+    rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
 
 
     // Checking block adjacency for collision checking
@@ -48,7 +48,7 @@ begin
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
-    blockAct(playerAction, currentChunk>);
+    blockAct(playerAction, world);
 
     // Collision detection
     if blockBelow then
@@ -111,13 +111,13 @@ begin
     world.player.health := playerHealth;
 
     // Save world on chunk change
-    if not (lastChunkIndex = currentChunk.chunkIndex) then
-    begin
-        AddIntToArray(world.unsavedChunks, lastChunkIndex);
-        worldSave(world);
-    end;
+    //if not (lastChunkIndex = currentChunk.chunkIndex) then
+    //begin
+    //    AddIntToArray(world.unsavedChunks, lastChunkIndex);
+    //    worldSave(world);
+    //end;
 
-    if (time mod 3500) = 0 then
+    if (time mod 35000) = 0 then
         worldSave(world);
     if time = 24000 then
         time := 0
@@ -125,5 +125,14 @@ begin
         time := time + 1;
     
     lastChunkIndex := currentChunk.chunkIndex;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    displayChunk(currentChunk, renderer);
+    displayPlayer(world, renderer);
+
+    
+	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
+
 end;
 end.
