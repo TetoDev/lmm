@@ -99,6 +99,8 @@ begin
     chunkShapeGeneration(world.chunks[0],seed);
     chunkShapeGeneration(world.chunks[1],seed);
     chunkShapeGeneration(world.chunks[2],seed);
+
+    world.seed := seed;
 end;
 
 end.
