@@ -10,7 +10,7 @@ uses
 
 
 procedure worldSave(world: TWorld);
-procedure deleteWorld(const worldName: String);
+procedure deleteWorld(worldName: String);
 function worldInit(worldName: string): TWorld;
 procedure loadPlayerChunks(var world: TWorld);
 function getWorlds():StringArray;
@@ -43,7 +43,7 @@ begin
             chunkString += IntToStr(chunk.layout[i][j]);
             if j <> length(chunk.layout[i]) - 1 then
             begin
-                chunkString += '-'; // I CHANGED THIS LAST TIME WTF I DONT KNOW WHAT IS GOING ON
+                chunkString += '-';
             end;
         end;
         chunkString += ']';
@@ -118,7 +118,7 @@ end;
 procedure loadPlayerChunks(var world: TWorld);
 var
     worldStringList: TStringList;
-    line: TStringArray;
+    line, row: TStringArray;
     i, j, k: Integer;
     chunk: TChunk;
     rootChunkIndex: Integer;
@@ -129,7 +129,21 @@ begin
     worldStringList.LoadFromFile('worlds/' + world.name + '.txt');
 
     // On charge le monde a partir du chunk dans lequel le joueur se trouve
-    rootChunkIndex := Round(world.player.pos.x/100);
+    rootChunkIndex := getChunkIndex(world.player.pos.x);
+
+
+    // Removing previous chunks and saving them
+    for i := 0 to length(world.chunks)-1 do
+    begin
+        if not ((rootChunkIndex -1) >= world.chunks[i].chunkIndex) and (world.chunks[i].chunkIndex <= (rootChunkIndex + 1)) then
+        begin
+            AddIntToArray(world.unsavedChunks, world.chunks[i].chunkIndex);
+            worldSave(world);
+            delete(world.chunks, i, 1);
+        end;
+    end;
+
+    // On charge les chunks du fichier texte
     for i := 2 to worldStringList.Count-1 do
     begin
         // Recuperation des informations du chunk
@@ -137,34 +151,48 @@ begin
         chunk.chunkIndex := StrToInt(line[0]);
 
         // On charge seulement les chunks qui sont a une distance de 1 chunk du chunk dans lequel le joueur se trouve
-        if ((rootChunkIndex -1) < chunk.chunkIndex) and (chunk.chunkIndex < (rootChunkIndex + 1)) then
+        if ((rootChunkIndex -1) >= chunk.chunkIndex) and (chunk.chunkIndex <= (rootChunkIndex + 1)) then
         begin
             chunkString := line[1];
             // On enleve les crochets (mise en propre)
             chunkString := chunkString.Remove(0, 1);
             chunkString := chunkString.Remove(chunkString.Length-1, 1);
-            line := chunkString.Split(',');
+            row := chunkString.Split(',');
             for j := 0 to 99 do
             begin
-                // On enleve les seconds crochets (mise en propre)
-                if j = 0 then
-                    line[j] := line[j].Remove(0, 1);
-                
-                if j = 99 then
-                    line[j] := line[j].Remove(line[j].Length-1, 1);
-                line := line[j].Split('-');
+                row[j] := row[j].Remove(0, 1);
+                row[j] := row[j].Remove(row[j].Length-1, 1); // THIS IS WRONG
+
+                row := row[j].Split('-');
+              
                 for k := 0 to 99 do
                 begin
                     // Conversion de la string en entier et ajout dans le chunk
-                    chunk.layout[j][k] := StrToInt(line[k]);
+                    chunk.layout[j][k] := StrToInt(row[k]);
                 end;
             end;
-            // Ajout du chunk dans le monde et dans les chunks non sauvegardés
-
-            AddIntToArray(world.unsavedChunks, chunk.chunkIndex);
+            
+            // Ajout du chunk dans le monde
             AddChunkToArray(world.chunks, chunk);
 
             freeandnil(worldStringList);
+        end;
+    end;
+
+    // Generating chunks if they don't exist
+    while length(world.chunks) < 3 do
+    begin
+        for i := 0 to length(world.chunks)-1 do
+        begin
+            if world.chunks[i].chunkIndex = (rootChunkIndex + 1) then
+                chunk.chunkIndex := rootChunkIndex + -1
+            else
+                chunk.chunkIndex := rootChunkIndex + 1;
+        
+            chunkShapeGeneration(chunk, world.seed);
+
+            AddChunkToArray(world.chunks, chunk);
+            AddIntToArray(world.unsavedChunks, chunk.chunkIndex);
         end;
     end;
 end;
@@ -199,6 +227,7 @@ begin
     // loadPlayerChunks(world);  A MODIFIER !!
     world.seed := NewSeed();
     InitialiseWorld(world);
+    loadPlayerChunks(world);
     
     world.player.pos.y := 1 + findTop(world.chunks[1], round(world.player.pos.x)); // Temporary y init pos 
 
@@ -233,7 +262,7 @@ begin
     index.SaveToFile('world_index.text');
 end;
 
-procedure deleteWorld(const worldName: String);
+procedure deleteWorld(worldName: String);
 
 begin
     DeleteFile('worlds/' + worldName + '.txt');

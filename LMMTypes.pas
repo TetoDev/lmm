@@ -47,6 +47,7 @@ type
         mobs: array of TMob;
         worldFile: Text;
         time: Integer;
+        seed: Integer;
     end;
 
     TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
