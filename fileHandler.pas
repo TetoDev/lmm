@@ -43,7 +43,7 @@ begin
             chunkString += IntToStr(chunk.layout[i][j]);
             if j <> length(chunk.layout[i]) - 1 then
             begin
-                chunkString += ',';
+                chunkString += '-'; // I CHANGED THIS LAST TIME WTF I DONT KNOW WHAT IS GOING ON
             end;
         end;
         chunkString += ']';
@@ -143,15 +143,16 @@ begin
             chunkString := chunkString.Remove(0, 1);
             chunkString := chunkString.Remove(chunkString.Length-1, 1);
             line := chunkString.Split(',');
+            // WriteLn(chunkString);
             for j := 0 to 99 do
             begin
                 // On enleve les seconds crochets (mise en propre)
                 if j = 0 then
                     line[j] := line[j].Remove(0, 1);
-                WriteLn(line[j]);
+                
                 if j = 99 then
                     line[j] := line[j].Remove(line[j].Length-1, 1);
-                line := line[j].Split(',');
+                line := line[j].Split('-'); // CHECK THIS I CHANGED IT LAST TIME WTF I DONT KNOW WHAT IS GOING ON AAAA
                 for k := 0 to 99 do
                 begin
                     // Conversion de la string en entier et ajout dans le chunk
