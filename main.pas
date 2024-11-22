@@ -76,12 +76,11 @@ begin
         //Affichage du monde
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        displayChunk(world,renderer);
+        displayChunk(world, renderer);
         displayPlayer(world, renderer);
         SDL_RenderPresent(Renderer);
 
 	    SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
-        //cameraDisplacement(world, world.player.pos, 300, 400); // NOT IMPLEMENTED
     end;  
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindow(Window);

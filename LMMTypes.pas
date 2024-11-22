@@ -41,6 +41,7 @@ type
         unsavedChunks: array of Integer;
         name: String;
         player: TPlayer;
+        cameraPos: TPosition;
         mobs: array of TMob;
         worldFile: Text;
         time: Integer;

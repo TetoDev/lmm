@@ -64,16 +64,30 @@ begin
     playerPos.y := playerPos.y + playerVel.y;
 
     // Friction
-    if playerVel.x > 0 then
-        playerVel.x := playerVel.x - 0.1;
-    if playerVel.x < 0 then
-        playerVel.x := playerVel.x + 0.1;
+    if blockBelow then
+    begin
+        if playerVel.x > 0 then
+            playerVel.x := playerVel.x - 0.1;
+        if playerVel.x < 0 then
+            playerVel.x := playerVel.x + 0.1;
 
-    if (playerVel.x > 0) and (playerVel.x < 0.1) then
-        playerVel.x := 0;
-    if (playerVel.x < 0) and (playerVel.x > -0.1)then
-        playerVel.x := 0;
+        if (playerVel.x > 0) and (playerVel.x < 0.1) then
+            playerVel.x := 0;
+        if (playerVel.x < 0) and (playerVel.x > -0.1)then
+            playerVel.x := 0;
+    end
+    else
+    begin
+        if playerVel.x > 0 then
+            playerVel.x := playerVel.x - 0.05;
+        if playerVel.x < 0 then
+            playerVel.x := playerVel.x + 0.05;
 
+        if (playerVel.x > 0) and (playerVel.x < 0.1) then
+            playerVel.x := 0;
+        if (playerVel.x < 0) and (playerVel.x > -0.1)then
+            playerVel.x := 0;
+    end;
     // Gravity
     playerVel.y := playerVel.y - 0.1;
 
