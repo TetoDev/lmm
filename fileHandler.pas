@@ -79,6 +79,7 @@ begin
         writeln(temp, stringifyChunk(unsavedChunk));
         AddIntToArray(alreadySavedChunkIndexes, unsavedChunk.chunkIndex);
     end;
+    delete(world.unsavedChunks, 0, length(world.unsavedChunks) - 1); // FLUSHING ALREADY SAVED CHUNKS
 
     // Verifier si le monde a déjà été sauvegardé avant, si oui, on ajoute les chunks déjà sauvegardés précédemment
     if FileExists('worlds/' + world.name + '.txt') then
@@ -143,7 +144,6 @@ begin
             chunkString := chunkString.Remove(0, 1);
             chunkString := chunkString.Remove(chunkString.Length-1, 1);
             line := chunkString.Split(',');
-            // WriteLn(chunkString);
             for j := 0 to 99 do
             begin
                 // On enleve les seconds crochets (mise en propre)
@@ -152,7 +152,7 @@ begin
                 
                 if j = 99 then
                     line[j] := line[j].Remove(line[j].Length-1, 1);
-                line := line[j].Split('-'); // CHECK THIS I CHANGED IT LAST TIME WTF I DONT KNOW WHAT IS GOING ON AAAA
+                line := line[j].Split('-');
                 for k := 0 to 99 do
                 begin
                     // Conversion de la string en entier et ajout dans le chunk
@@ -189,7 +189,7 @@ begin
     line := worldStringList.strings[1].Split(';');
 
     world.player.pos.x := StrToFloat(line[0]);
-    // world.player.pos.y := StrToFloat(line[1]);
+    world.player.pos.y := StrToFloat(line[1]);
     world.player.vel.x := StrToFloat(line[2]);
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
