@@ -81,21 +81,29 @@ begin
     end;
 end;
 
-procedure blockAct (playerAction: TPlayerAction; var world: TWorld);
-var i:Integer;
+procedure blockAct (playerAction: TPlayerAction; var world: TWorld); 
+var i,x,y:Integer;
+    chunk: TChunk;
 begin
+    // Calculate current chunk
+    chunk := getChunkByIndex(world, getChunkIndex(playerAction.selectedBlock.x));
+
+    x := Trunc(playerAction.selectedBlock.x) mod 100;
+    y := Trunc(playerAction.selectedBlock.y);
+
     for i := 0 to length(playerAction.acts) - 1 do
     begin
         case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                world.chunks[1].layout[round(playerAction.selectedBlock.x),round(playerAction.selectedBlock.y)] := 1;
+                 chunk.layout[x][y]:= 1; 
             end;
             REMOVE_BLOCK: 
             begin
-                world.chunks[1].layout[round(playerAction.selectedBlock.x), round(playerAction.selectedBlock.y)] := 0;
+                chunk.layout[x][y] := 0;
             end;
         end;
     end;
+    reinsertChunk(world, chunk);
 end;
 end.
