@@ -9,7 +9,7 @@ uses
     SysUtils, Classes, LMMTypes, Util, worldGeneration;
 
 
-procedure worldSave(const world: TWorld);
+procedure worldSave(world: TWorld);
 procedure deleteWorld(const worldName: String);
 function worldInit(worldName: string): TWorld;
 procedure loadPlayerChunks(var world: TWorld);
@@ -56,7 +56,7 @@ begin
     stringifyChunk := chunkString;
 end;
 
-procedure worldSave(const world: TWorld);
+procedure worldSave(world: TWorld);
 var
     temp: Text;
     worldStringList: TStringList;
@@ -197,7 +197,8 @@ begin
     
     // On charge les chunks autour du jouer
     // loadPlayerChunks(world);  A MODIFIER !!
-    InitialiseWorld(world, NewSeed());
+    world.seed := NewSeed();
+    InitialiseWorld(world);
     
     world.player.pos.y := 1 + findTop(world.chunks[1], round(world.player.pos.x)); // Temporary y init pos 
 

@@ -8,7 +8,7 @@ function NewSeed():LongInt;
 
 procedure chunkShapeGeneration(var chunk: TChunk; seed: LongInt);
 
-procedure InitialiseWorld(var world:TWorld; seed:LongInt);
+procedure InitialiseWorld(var world:TWorld);
 
 Implementation
 
@@ -85,20 +85,23 @@ begin
 
 end;
 
-procedure InitialiseWorld(var world:TWorld; seed:LongInt);
+procedure InitialiseWorld(var world:TWorld);
 var chunkLeft, chunkMid, chunkRight:TChunk;
 begin
     chunkLeft.chunkIndex := -1;
     chunkMid.chunkIndex:= 0;
     chunkRight.chunkIndex := 1;
 
+    world.lastLeftChunk := -1;
+    world.LastRightChunk := 1;
+
     AddChunkToArray(world.chunks, chunkLeft);
     AddChunkToArray(world.chunks, chunkMid);
     AddChunkToArray(world.chunks, chunkRight);
 
-    chunkShapeGeneration(world.chunks[0],seed);
-    chunkShapeGeneration(world.chunks[1],seed);
-    chunkShapeGeneration(world.chunks[2],seed);
+    chunkShapeGeneration(world.chunks[0],world.seed);
+    chunkShapeGeneration(world.chunks[1],world.seed);
+    chunkShapeGeneration(world.chunks[2],world.seed);
 end;
 
 end.

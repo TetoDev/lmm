@@ -2,7 +2,7 @@ unit tick;
 
 interface
 
-uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, util;
+uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, util, worldGeneration;
 
 procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer);
 
@@ -27,6 +27,20 @@ begin
 
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
+    
+    if currentChunk.chunkIndex = world.lastLeftChunk then
+    begin
+        leftChunk.chunkIndex := world.lastLeftChunk - 1;
+        world.lastLeftChunk := world.lastLeftChunk - 1;
+        AddChunkToArray(world.chunks, leftChunk);
+        chunkShapeGeneration(world.chunks[Length(world.chunks) - 1],world.seed);
+    end;
+    if currentChunk.chunkIndex = world.LastRightChunk then
+    begin
+        rightChunk.chunkIndex := world.lastLeftChunk + 1;
+        AddChunkToArray(world.chunks, rightChunk);
+        chunkShapeGeneration(world.chunks[Length(world.chunks) - 1],world.seed);
+    end;
 
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
@@ -36,15 +50,14 @@ begin
     if x = 0 then
         blockLeft := leftChunk.layout[99][y] > 0
     else
-        blockLeft := currentChunk.layout[x - 1][y] > 0;
+        blockLeft := currentChunk.layout[abs(x - 1)][y] > 0;
     
     if x = 99 then
         blockRight := rightChunk.layout[0][y] > 0
     else
-        blockRight := currentChunk.layout[x + 1][y] > 0;
+        blockRight := currentChunk.layout[abs(x + 1)][y] > 0;
 
-
-    blockBelow := currentChunk.layout[x][y-1] > 0;
+    blockBelow := currentChunk.layout[abs(x)][y-1] > 0;
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
@@ -123,12 +136,10 @@ begin
         time := 0
     else
         time := time + 1;
-    
-    lastChunkIndex := currentChunk.chunkIndex;
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    displayChunk(currentChunk, renderer);
+    displayChunk(currentChunk, renderer, world.player.pos.x > 0);
     displayPlayer(world, renderer);
 
     

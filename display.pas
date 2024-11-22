@@ -10,7 +10,7 @@ procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,view
 
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer);
 
-procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer);
+procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer; positiveDir:Boolean);
 
 Implementation
 
@@ -96,14 +96,17 @@ procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer);
 var Rect: TSDL_Rect;
 begin
     SDL_SetRenderDrawColor(Renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    Rect.x := Round(world.player.pos.x) mod 100 *5;
-    Rect.y := Trunc(500 - (world.player.pos.y)) mod 100 *5;
+    if world.player.pos.x >= 0 then
+        Rect.x := Trunc(world.player.pos.x) mod 100*DIMENSIONBLOCK
+    else
+        Rect.x := (99 + Trunc(world.player.pos.x) mod 100)*DIMENSIONBLOCK;
+    Rect.y := Trunc(SURFACEHEIGHT - (world.player.pos.y)) mod 100 *DIMENSIONBLOCK;
     Rect.w := DIMENSIONBLOCK;
     Rect.h := DIMENSIONBLOCK;
     SDL_RenderFillRect(Renderer, @Rect);
 end;
 
-procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer);
+procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer;positiveDir:Boolean);
 var i,j:Integer; Rect: TSDL_Rect;
 begin
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
@@ -111,15 +114,26 @@ begin
     Rect.h := DIMENSIONBLOCK;
     for i := 0 to 99 do
         begin
-            for j := 0 to 99 do
-            begin
-                if chunk.layout[j][99-i] > 0 then 
+            if positiveDir then 
+                for j := 0 to 99 do
                 begin
-                    Rect.x := j*DIMENSIONBLOCK;
-                    Rect.y := i*DIMENSIONBLOCK;
-                    SDL_RenderFillRect(Renderer, @Rect);
-                end;
-            end;
+                    if chunk.layout[j][99-i] > 0 then 
+                    begin
+                        Rect.x := j*DIMENSIONBLOCK;
+                        Rect.y := i*DIMENSIONBLOCK;
+                        SDL_RenderFillRect(Renderer, @Rect);
+                    end;
+                end
+            else
+                for j := 0 to 99 do
+                begin
+                    if chunk.layout[99-j][99-i] > 0 then 
+                    begin
+                        Rect.x := j*DIMENSIONBLOCK;
+                        Rect.y := i*DIMENSIONBLOCK;
+                        SDL_RenderFillRect(Renderer, @Rect);
+                    end;
+                end
         end;
 end;
 

@@ -38,8 +38,10 @@ type
     
     TWorld = record 
         chunks: ChunkArray;
+        lastLeftChunk,LastRightChunk: Integer;
         unsavedChunks: array of Integer;
         name: String;
+        seed:Integer;
         player: TPlayer;
         cameraPos: TPosition;
         mobs: array of TMob;

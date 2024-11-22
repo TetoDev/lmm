@@ -33,8 +33,8 @@ end;
 
 function getChunkIndex(x : Real):Integer;
 begin
-    if (x < 100) and (0 <= 100) then
-        getChunkIndex := 0
+    if 0 <= x then
+        getChunkIndex := Trunc(x / 100)
     else 
         getChunkIndex := Trunc(x / 100)-1;
 end;
