@@ -13,28 +13,42 @@ var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockLeft, blockRight, blockBelow: Boolean;
+    lastChunkIndex, x, y: Integer;
+    currentChunk, leftChunk, rightChunk: TChunk;
 begin
     playerPos := world.player.pos;
     playerVel := world.player.vel;
     playerHealth := world.player.health;
     time := world.time;
-   
-    if (Round(playerPos.x) - 1) >= 0 then
-        blockLeft := world.chunks[1].layout[Round(playerPos.x) - 1][Trunc(playerPos.y)] > 0 // BUG: playerPos.x or playerPos.y will round wierldly and stop the player from moving in any direction TRUNCATE MIGHT ALSO BE WRONG BUT I'M NOT SURE
+
+    // Player's BLOCK chunk coordinates
+    x := Trunc(playerPos.x) mod 100;
+    y := Trunc(playerPos.y);
+
+    // Current chunk
+    currentChunk := getChunkByIndex(world.chunks, getChunkIndex(playerPos.x));
+
+    leftChunk := getChunkByIndex(world.chunks, currentChunk.chunkIndex - 1);
+    rightChunk := getChunkByIndex(world.chunks, currentChunk.chunkIndex + 1);
+
+
+    // Checking block adjacency for collision checking
+    if x = 0 then
+        blockLeft := leftChunk.layout[99][y] > 0
     else
-        blockLeft := False; // BUG: playerPos.x or playerPos.y will round wierldly and stop the player from moving in any direction TRUNCATE MIGHT ALSO BE WRONG BUT I'M NOT SURE
-
-    if (Round(playerPos.x) + 1) <= 99 then
-        blockRight := world.chunks[1].layout[Round(playerPos.x) + 1][Trunc(playerPos.y)] > 0
+        blockLeft := currentChunk.layout[x - 1][y] > 0;
+    
+    if x = 99 then
+        blockRight := rightChunk.layout[0][y] > 0
     else
-        blockRight := False;
+        blockRight := currentChunk.layout[x + 1][y] > 0;
 
 
-    blockBelow := world.chunks[1].layout[Round(playerPos.x)][Trunc(playerPos.y-1)] > 0;
+    blockBelow := currentChunk.layout[x][y-1] > 0;
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
-    blockAct(playerAction, world);
+    blockAct(playerAction, currentChunk>);
 
     // Collision detection
     if blockBelow then
@@ -96,6 +110,12 @@ begin
     world.player.vel := playerVel;
     world.player.health := playerHealth;
 
+    // Save world on chunk change
+    if not (lastChunkIndex = currentChunk.chunkIndex) then
+    begin
+        AddIntToArray(world.unsavedChunks, lastChunkIndex);
+        worldSave(world);
+    end;
 
     if (time mod 3500) = 0 then
         worldSave(world);
@@ -103,5 +123,7 @@ begin
         time := 0
     else
         time := time + 1;
+    
+    lastChunkIndex := currentChunk.chunkIndex;
 end;
 end.
