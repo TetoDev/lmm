@@ -30,21 +30,21 @@ begin
     
     if currentChunk.chunkIndex = world.lastLeftChunk then
     begin
-        leftChunk.chunkIndex := world.lastLeftChunk - 1;
         world.lastLeftChunk := world.lastLeftChunk - 1;
+        leftChunk.chunkIndex := world.lastLeftChunk;
+        chunkShapeGeneration(leftChunk,world.seed);
         AddChunkToArray(world.chunks, leftChunk);
-        chunkShapeGeneration(world.chunks[Length(world.chunks) - 1],world.seed);
     end;
     if currentChunk.chunkIndex = world.LastRightChunk then
     begin
-        rightChunk.chunkIndex := world.lastLeftChunk + 1;
+        world.lastRightChunk := world.lastRightChunk + 1;
+        rightChunk.chunkIndex := world.LastRightChunk;
+        chunkShapeGeneration(rightChunk,world.seed);
         AddChunkToArray(world.chunks, rightChunk);
-        chunkShapeGeneration(world.chunks[Length(world.chunks) - 1],world.seed);
     end;
 
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
-
 
     // Checking block adjacency for collision checking
     if x = 0 then
@@ -139,8 +139,11 @@ begin
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    displayChunk(currentChunk, renderer, world.player.pos.x > 0);
-    displayPlayer(world, renderer);
+    
+    world.cameraPos:= world.player.pos;
+
+    displayBlocks(currentChunk, world.cameraPos, renderer, world.player.pos.x > 0);
+    displayPlayer(world, renderer, False);
 
     
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 

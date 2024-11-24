@@ -38,7 +38,8 @@ type
     
     TWorld = record 
         chunks: ChunkArray;
-        lastLeftChunk,LastRightChunk: Integer;
+        lastLeftChunk:Integer;
+        LastRightChunk: Integer;
         unsavedChunks: array of Integer;
         name: String;
         seed:Integer;
@@ -47,7 +48,6 @@ type
         mobs: array of TMob;
         worldFile: Text;
         time: Integer;
-        seed: Integer;
     end;
 
     TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
@@ -60,8 +60,8 @@ type
     end;
 
 const 
-SURFACEWIDTH = 500; { largeur en pixels de la surface de jeu }
-SURFACEHEIGHT = 500; { hauteur en pixels de la surface de jeu }
+SURFACEWIDTH = 800; { largeur en pixels de la surface de jeu }
+SURFACEHEIGHT = 800; { hauteur en pixels de la surface de jeu }
 DIMENSIONBLOCK = 5; {Taille de l'intérieur des blocks}
 
 implementation

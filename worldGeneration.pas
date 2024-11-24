@@ -103,7 +103,6 @@ begin
     chunkShapeGeneration(world.chunks[1],world.seed);
     chunkShapeGeneration(world.chunks[2],world.seed);
 
-    world.seed := seed;
 end;
 
 end.
