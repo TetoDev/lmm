@@ -18,8 +18,19 @@ begin
     NewSeed := Random(100000000); // Seed Choisit au hazard entre 0 et 10^8
 end;
 
+procedure createTree(var chunk: TChunk; x:Integer);
+var y : Integer;
+begin
+    y := findTop(chunk,x);
+                                chunk.layout[x-1][y+4] := 4;   chunk.layout[x][y+4] := 4; chunk.layout[x+1][y+4] := 4;
+    chunk.layout[x-2][y+3] := 4;chunk.layout[x-1][y+3] := 4;  chunk.layout[x][y+3] := 3; chunk.layout[x+1][y+3] := 4;chunk.layout[x+2][y+3] := 4;
+    chunk.layout[x-2][y+2] := 4;                            chunk.layout[x][y+2] := 3;                              chunk.layout[x+2][y+2] := 4;
+                                                            chunk.layout[x][y+1] := 3;
+                                                            chunk.layout[x][y] := 3;
+end;
+
 procedure chunkShapeGeneration(var chunk: TChunk; seed: LongInt);
-var i,j,height:integer; coef:real; variations: Array [0..8] of Integer;
+var i,j,height,variation:integer; coef:real; variations: Array [0..8] of Integer;
 begin
 
     if chunk.chunkIndex >= 0 then 
@@ -77,14 +88,25 @@ begin
     //Remplissage du chunk hauteur par hauteur, ici les 1 sont la terre et les 0 sont l´aire
     begin
         height := chunk.layout[i][0];
-        for j := 0 to height-1 do
+        variation := random(5);
+        for j := 0 to 4 + variation do
+            chunk.layout[i][j] := 6;
+        for j:= 4 + variation to height-5 do
+            chunk.layout[i][j] := 5;
+
+        for j := height-4 to height-1 do
             chunk.layout[i][j] := 2;
+
         chunk.layout[i][height] := 1;
+
         for j := height+1 to 99 do
             chunk.layout[i][j] := 0;
     end;
-
+    for i := 0 to random(8) do 
+        createTree(chunk, random(95)+3)
 end;
+
+
 
 procedure InitialiseWorld(var world:TWorld);
 var chunkLeft, chunkMid, chunkRight:TChunk;

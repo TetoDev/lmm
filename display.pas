@@ -157,6 +157,14 @@ begin
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                         if chunk.layout[j][99-i] = 2 then 
                             SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                        if chunk.layout[j][99-i] = 3 then 
+                            SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                        if chunk.layout[j][99-i] = 4 then 
+                            SDL_SetRenderDrawColor(renderer, 28, 66, 32, 255); 
+                        if chunk.layout[j][99-i] = 5 then 
+                            SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255);
+                        if chunk.layout[j][99-i] = 6 then 
+                            SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);      
                         Rect.x := j*width;
                         Rect.y := i*height;
                         SDL_RenderFillRect(Renderer, @Rect);
@@ -168,8 +176,16 @@ begin
                     if chunk.layout[99-j][99-i] > 0 then 
                     begin
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                        if chunk.layout[j][99-i] = 2 then 
+                        if chunk.layout[99-j][99-i] = 2 then 
                             SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                        if chunk.layout[99-j][99-i] = 3 then 
+                            SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                        if chunk.layout[99-j][99-i] = 4 then 
+                            SDL_SetRenderDrawColor(renderer, 28, 66, 32, 255);
+                        if chunk.layout[99-j][99-i] = 5 then 
+                            SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255);
+                        if chunk.layout[99-j][99-i] = 6 then 
+                            SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);       
                         Rect.x := j*width;
                         Rect.y :=  i*height;
                         SDL_RenderFillRect(Renderer, @Rect);
@@ -196,7 +212,15 @@ begin
                     begin
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                         if chunk.layout[j][99-i] = 2 then 
-                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                        if chunk.layout[j][99-i] = 3 then 
+                            SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                        if chunk.layout[j][99-i] = 4 then 
+                            SDL_SetRenderDrawColor(renderer, 28, 66, 32, 255); 
+                        if chunk.layout[j][99-i] = 5 then 
+                            SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255);
+                        if chunk.layout[j][99-i] = 6 then 
+                            SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);         
                         Rect.x := Trunc((j - x + 6)*width);
                         Rect.y := Trunc((i - y + 6)*height);
                         SDL_RenderFillRect(Renderer, @Rect);
@@ -210,6 +234,14 @@ begin
                         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                         if chunk.layout[99-j][99-i] = 2 then 
                             SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                        if chunk.layout[99-j][99-i] = 3 then 
+                            SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                        if chunk.layout[99-j][99-i] = 4 then 
+                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                        if chunk.layout[99-j][99-i] = 5 then 
+                            SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255); 
+                        if chunk.layout[99-j][99-i] = 6 then 
+                            SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);      
                         Rect.x := Trunc((j - (99+x) + 6)*width);
                         Rect.y := Trunc((i - y  + 6)*height);
                         SDL_RenderFillRect(Renderer, @Rect);

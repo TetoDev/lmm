@@ -140,10 +140,10 @@ begin
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
     SDL_RenderClear(renderer);
     
-    CameraCheck(world);
-    displayBlocks(currentChunk, world.player.pos, renderer, world.player.pos.x > 0);
-    //displayChunk(currentChunk,renderer, world.player.pos.x > 0);
-    displayPlayer(world, renderer, False);
+    //CameraCheck(world);
+    //displayBlocks(currentChunk, world.player.pos, renderer, world.player.pos.x > 0);
+    displayChunk(currentChunk,renderer, world.player.pos.x > 0);
+    displayPlayer(world, renderer, True);
 
     
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
