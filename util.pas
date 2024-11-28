@@ -88,13 +88,17 @@ begin
 end;
 
 function findTop(chunk:TChunk; x:Integer):Integer;
-var i:Integer;
+var i:Integer;xRelatif:Integer;
 begin
     findTop := 0;
     i := 0;
+    if x > 0 then
+        xRelatif:= x  - 100 * Trunc(x / 100)
+    else 
+        xRelatif:= 99 - (abs(x)  - 100 * Trunc(abs(x) / 100));
     while (i < 99) and (findTop = 0) do 
     begin
-        if chunk.layout[x][i] = 0 then 
+        if chunk.layout[xRelatif][i] = 0 then 
             findTop := i;
         i := i + 1;
     end;

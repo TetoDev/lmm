@@ -137,12 +137,12 @@ begin
     else
         time := time + 1;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
     SDL_RenderClear(renderer);
     
-    world.cameraPos:= world.player.pos;
-
-    displayBlocks(currentChunk, world.cameraPos, renderer, world.player.pos.x > 0);
+    CameraCheck(world);
+    displayBlocks(currentChunk, world.player.pos, renderer, world.player.pos.x > 0);
+    //displayChunk(currentChunk,renderer, world.player.pos.x > 0);
     displayPlayer(world, renderer, False);
 
     

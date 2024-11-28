@@ -62,7 +62,7 @@ type
 const 
 SURFACEWIDTH = 800; { largeur en pixels de la surface de jeu }
 SURFACEHEIGHT = 800; { hauteur en pixels de la surface de jeu }
-DIMENSIONBLOCK = 5; {Taille de l'intérieur des blocks}
+BLOCKDISPLAYED = 13; {Taille de l'intérieur des blocks}
 
 implementation
 end.

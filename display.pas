@@ -8,6 +8,8 @@ procedure printChunk(chunk:TChunk);
 
 procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
 
+procedure CameraCheck(var world:TWorld);
+
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
 
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer; positiveDir:Boolean);
@@ -94,6 +96,20 @@ begin
     end;
 end;
 
+procedure CameraCheck(var world:TWorld);
+begin
+    // check for the x axis
+    if world.cameraPos.x + 5 <= world.player.pos.x then 
+        world.cameraPos.x := world.player.pos.x - 5;
+    if world.cameraPos.x - 5 >= world.player.pos.x then
+        world.cameraPos.x := world.player.pos.x + 5;
+    // check for the y axis
+    if world.cameraPos.y + 3 <= world.player.pos.y then 
+        world.cameraPos.y := world.player.pos.y - 3;
+    if world.cameraPos.y - 3 >= world.player.pos.y then
+        world.cameraPos.y := world.player.pos.y + 3;
+end;
+
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
 var Rect: TSDL_Rect;height,width:Integer;
 begin
@@ -114,21 +130,19 @@ begin
     else
     begin
         SDL_SetRenderDrawColor(Renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-        width := Trunc(SURFACEWIDTH/13);
-        height := Trunc(SURFACEHEIGHT/13);
-        Rect.x := (366);
-        Rect.y := (366);
+        width := Trunc(SURFACEWIDTH/BLOCKDISPLAYED);
+        height := Trunc(SURFACEHEIGHT/BLOCKDISPLAYED);
+        Rect.x := 366;
+        Rect.y := 366;
         Rect.w := width;
         Rect.h := height;
         SDL_RenderFillRect(Renderer, @Rect);
-      
     end;
 end;
 
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer;positiveDir:Boolean);
 var i,j,height,width:Integer; Rect: TSDL_Rect;
 begin
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     width := Trunc(SURFACEWIDTH/100);
     height := Trunc(SURFACEHEIGHT/100);
     Rect.w := width;
@@ -140,6 +154,9 @@ begin
                 begin
                     if chunk.layout[j][99-i] > 0 then 
                     begin
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        if chunk.layout[j][99-i] = 2 then 
+                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
                         Rect.x := j*width;
                         Rect.y := i*height;
                         SDL_RenderFillRect(Renderer, @Rect);
@@ -150,6 +167,9 @@ begin
                 begin
                     if chunk.layout[99-j][99-i] > 0 then 
                     begin
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        if chunk.layout[j][99-i] = 2 then 
+                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
                         Rect.x := j*width;
                         Rect.y :=  i*height;
                         SDL_RenderFillRect(Renderer, @Rect);
@@ -161,11 +181,10 @@ end;
 procedure displayBlocks(chunk:TChunk; pos:TPosition; var renderer: PSDL_Renderer;positiveDir:Boolean);
 var i,j,height,width,x,y:Integer; Rect: TSDL_Rect;
 begin
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    width := Trunc(SURFACEWIDTH/13);
-    height := Trunc(SURFACEHEIGHT/13);
+    width := Trunc(SURFACEWIDTH/BLOCKDISPLAYED);
+    height := Trunc(SURFACEHEIGHT/BLOCKDISPLAYED);
     x:= Trunc(pos.x) mod 100; 
-    y:= Trunc(pos.y);
+    y:= 99 - Trunc(pos.y);
     Rect.w := width;
     Rect.h := width;
     for i := 0 to 99 do
@@ -175,8 +194,11 @@ begin
                 begin
                     if chunk.layout[j][99-i] > 0 then 
                     begin
-                        Rect.x := (j - x + 6)*width;
-                        Rect.y := (i - (99-y)  + 6)*height;
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        if chunk.layout[j][99-i] = 2 then 
+                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                        Rect.x := Trunc((j - x + 6)*width);
+                        Rect.y := Trunc((i - y + 6)*height);
                         SDL_RenderFillRect(Renderer, @Rect);
                     end;
                 end
@@ -185,10 +207,14 @@ begin
                 begin
                     if chunk.layout[99-j][99-i] > 0 then 
                     begin
-                        Rect.x := (j-x)*width;
-                        Rect.y := (i-y)*height;
+                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                        if chunk.layout[99-j][99-i] = 2 then 
+                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                        Rect.x := Trunc((j - (99+x) + 6)*width);
+                        Rect.y := Trunc((i - y  + 6)*height);
                         SDL_RenderFillRect(Renderer, @Rect);
                     end;
+                    
                 end
         end;
 end;

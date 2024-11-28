@@ -230,7 +230,7 @@ begin
     InitialiseWorld(world);
     //loadPlayerChunks(world);
     
-    world.player.pos.y := 1 + findTop(world.chunks[1], round(world.player.pos.x)); // Temporary y init pos 
+    world.player.pos.y := 1 + findTop(world.chunks[1], Trunc(world.player.pos.x)); // Temporary y init pos 
 
     worldInit := world;
 end;

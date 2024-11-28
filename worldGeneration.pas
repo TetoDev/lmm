@@ -77,8 +77,9 @@ begin
     //Remplissage du chunk hauteur par hauteur, ici les 1 sont la terre et les 0 sont l´aire
     begin
         height := chunk.layout[i][0];
-        for j := 0 to height do
-            chunk.layout[i][j] := 1;
+        for j := 0 to height-1 do
+            chunk.layout[i][j] := 2;
+        chunk.layout[i][height] := 1;
         for j := height+1 to 99 do
             chunk.layout[i][j] := 0;
     end;
