@@ -2,7 +2,7 @@ unit display;
 
 Interface
 
-uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf,sdl2_mixer;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf,sdl2_mixer, SysUtils;
 
 procedure printChunk(chunk:TChunk);
 
@@ -10,11 +10,15 @@ procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,view
 
 procedure CameraCheck(var world:TWorld);
 
+procedure LoadTextures(var renderer: PSDL_Renderer; var Textures: TTextures);
+
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
 
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer; positiveDir:Boolean);
 
-procedure displayBlocks(chunk:TChunk; pos:TPosition; var renderer: PSDL_Renderer;positiveDir:Boolean);
+procedure displayBlocks(chunk,nextChunk:TChunk; pos:TPosition; var renderer: PSDL_Renderer);
+
+procedure displayBlocksTextured(chunk,nextChunk:TChunk; pos:TPosition; textures:TTextures; var renderer: PSDL_Renderer);
 
 Implementation
 
@@ -110,6 +114,20 @@ begin
         world.cameraPos.y := world.player.pos.y + 3;
 end;
 
+procedure LoadTextures(var renderer: PSDL_Renderer; var textures: TTextures);
+var chemin:string; pchemin:PChar; i:Integer;
+begin
+	for i := 1 to 6 do
+    begin
+        writeln('assets/textures/'+IntToStr(i)+'.png');
+        chemin := 'assets/textures/'+IntToStr(i)+'.png';
+        pchemin:=StrAlloc(length(chemin)+1);
+        strPCopy(pchemin, chemin);
+        textures[i]:=IMG_LoadTexture(renderer, pchemin);
+        StrDispose(pchemin);
+    end
+end;
+
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
 var Rect: TSDL_Rect;height,width:Integer;
 begin
@@ -194,8 +212,8 @@ begin
         end;
 end;
 
-procedure displayBlocks(chunk:TChunk; pos:TPosition; var renderer: PSDL_Renderer;positiveDir:Boolean);
-var i,j,height,width,x,y:Integer; Rect: TSDL_Rect;
+procedure displayBlocks(chunk,nextChunk:TChunk; pos:TPosition; var renderer: PSDL_Renderer);
+var i,j,height,width,x,y,delta:Integer; Rect: TSDL_Rect;
 begin
     width := Trunc(SURFACEWIDTH/BLOCKDISPLAYED);
     height := Trunc(SURFACEHEIGHT/BLOCKDISPLAYED);
@@ -203,52 +221,163 @@ begin
     y:= 99 - Trunc(pos.y);
     Rect.w := width;
     Rect.h := width;
+
+    // We render the current chunk
+    if chunk.chunkIndex >=0 then 
     for i := 0 to 99 do
+        for j := 0 to 99 do
         begin
-            if positiveDir then 
-                for j := 0 to 99 do
-                begin
-                    if chunk.layout[j][99-i] > 0 then 
-                    begin
-                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                        if chunk.layout[j][99-i] = 2 then 
-                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
-                        if chunk.layout[j][99-i] = 3 then 
-                            SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
-                        if chunk.layout[j][99-i] = 4 then 
-                            SDL_SetRenderDrawColor(renderer, 28, 66, 32, 255); 
-                        if chunk.layout[j][99-i] = 5 then 
-                            SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255);
-                        if chunk.layout[j][99-i] = 6 then 
-                            SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);         
-                        Rect.x := Trunc((j - x + 6)*width);
-                        Rect.y := Trunc((i - y + 6)*height);
-                        SDL_RenderFillRect(Renderer, @Rect);
-                    end;
-                end
-            else
-                for j := 0 to 99 do
-                begin
-                    if chunk.layout[99-j][99-i] > 0 then 
-                    begin
-                        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                        if chunk.layout[99-j][99-i] = 2 then 
-                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
-                        if chunk.layout[99-j][99-i] = 3 then 
-                            SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
-                        if chunk.layout[99-j][99-i] = 4 then 
-                            SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
-                        if chunk.layout[99-j][99-i] = 5 then 
-                            SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255); 
-                        if chunk.layout[99-j][99-i] = 6 then 
-                            SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);      
-                        Rect.x := Trunc((j - (99+x) + 6)*width);
-                        Rect.y := Trunc((i - y  + 6)*height);
-                        SDL_RenderFillRect(Renderer, @Rect);
-                    end;
-                    
-                end
+            if chunk.layout[j][99-i] > 0 then 
+            begin
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                if chunk.layout[j][99-i] = 2 then 
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                if chunk.layout[j][99-i] = 3 then 
+                    SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                if chunk.layout[j][99-i] = 4 then 
+                    SDL_SetRenderDrawColor(renderer, 28, 66, 32, 255); 
+                if chunk.layout[j][99-i] = 5 then 
+                    SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255);
+                if chunk.layout[j][99-i] = 6 then 
+                    SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);         
+                Rect.x := Trunc((j - x + 6)*width);
+                Rect.y := Trunc((i - y + 6)*height);
+                SDL_RenderFillRect(Renderer, @Rect);
+            end;
+        end
+    // But if the chunk is negative we render it in the opposite direction
+    else
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if chunk.layout[99-j][99-i] > 0 then 
+            begin
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                if chunk.layout[99-j][99-i] = 2 then 
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                if chunk.layout[99-j][99-i] = 3 then 
+                    SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                if chunk.layout[99-j][99-i] = 4 then 
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                if chunk.layout[99-j][99-i] = 5 then 
+                    SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255); 
+                if chunk.layout[99-j][99-i] = 6 then 
+                    SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);      
+                Rect.x := Trunc((j - (99+x) + 6)*width);
+                Rect.y := Trunc((i - y  + 6)*height);
+                SDL_RenderFillRect(Renderer, @Rect);
+            end;  
+        end;
+    delta:= nextChunk.chunkIndex - chunk.chunkIndex;
+    //We render the next chunk
+    if nextChunk.chunkIndex >=0 then 
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if nextChunk.layout[j][99-i] > 0 then 
+            begin
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                if nextChunk.layout[j][99-i] = 2 then 
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                if nextChunk.layout[j][99-i] = 3 then 
+                    SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                if nextChunk.layout[j][99-i] = 4 then 
+                    SDL_SetRenderDrawColor(renderer, 28, 66, 32, 255); 
+                if nextChunk.layout[j][99-i] = 5 then 
+                    SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255);
+                if nextChunk.layout[j][99-i] = 6 then 
+                    SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);         
+                Rect.x := Trunc((j - x + 6)*width) + 100*width*delta;
+                Rect.y := Trunc((i - y + 6)*height);
+                SDL_RenderFillRect(Renderer, @Rect);
+            end;
+        end
+    // But if the chunk is negative we render it in the opposite direction
+    else
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if nextChunk.layout[99-j][99-i] > 0 then 
+            begin
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                if nextChunk.layout[99-j][99-i] = 2 then 
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);
+                if nextChunk.layout[99-j][99-i] = 3 then 
+                    SDL_SetRenderDrawColor(renderer, 63, 33, 7, 255); 
+                if nextChunk.layout[99-j][99-i] = 4 then 
+                    SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255); 
+                if nextChunk.layout[99-j][99-i] = 5 then 
+                    SDL_SetRenderDrawColor(renderer, 134, 134, 134, 255); 
+                if nextChunk.layout[99-j][99-i] = 6 then 
+                    SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);      
+                Rect.x := Trunc((j - (99+x) + 6)*width) + 100*width * delta;
+                Rect.y := Trunc((i - y  + 6)*height);
+                SDL_RenderFillRect(Renderer, @Rect);
+            end;  
         end;
 end;
+
+
+procedure displayBlocksTextured(chunk,nextChunk:TChunk; pos:TPosition; textures:TTextures; var renderer: PSDL_Renderer);
+var i,j,height,width,x,y,delta:Integer; Rect: TSDL_Rect;
+begin
+    width := Trunc(SURFACEWIDTH/BLOCKDISPLAYED);
+    height := Trunc(SURFACEHEIGHT/BLOCKDISPLAYED);
+    x:= Trunc(pos.x) mod 100; 
+    y:= 99 - Trunc(pos.y);
+    Rect.w := width;
+    Rect.h := width;
+    // We render the current chunk
+    if chunk.chunkIndex >=0 then 
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if chunk.layout[j][99-i] > 0 then 
+            begin  
+                Rect.x := Trunc((j - x + 6)*width);
+                Rect.y := Trunc((i - y + 6)*height);
+	            SDL_RenderCopy(renderer, textures[chunk.layout[j][99-i]], nil, @Rect);
+            end;
+        end
+    // But if the chunk is negative we render it in the opposite direction
+    else
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if chunk.layout[99-j][99-i] > 0 then 
+            begin 
+                Rect.x := Trunc((j - (99+x) + 6)*width);
+                Rect.y := Trunc((i - y  + 6)*height);
+	            SDL_RenderCopy(renderer, textures[chunk.layout[99-j][99-i]], nil, @Rect)
+            end;  
+        end;
+    delta:= nextChunk.chunkIndex - chunk.chunkIndex; // We determine if the next chunk is on the right or on the left
+
+    //We render the next chunk
+    if nextChunk.chunkIndex >=0 then 
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if nextChunk.layout[j][99-i] > 0 then 
+            begin      
+                Rect.x := Trunc((j - x + 6)*width) + 100*width*delta;
+                Rect.y := Trunc((i - y + 6)*height);
+	            SDL_RenderCopy(renderer, textures[nextChunk.layout[j][99-i]], nil, @Rect)
+            end;
+        end
+    // But if the chunk is negative we render it in the opposite direction
+    else
+    for i := 0 to 99 do
+        for j := 0 to 99 do
+        begin
+            if nextChunk.layout[99-j][99-i] > 0 then 
+            begin   
+                Rect.x := Trunc((j - (99+x) + 6)*width) + 100*width * delta;
+                Rect.y := Trunc((i - y  + 6)*height);
+	            SDL_RenderCopy(renderer, textures[nextChunk.layout[99-j][99-i]], nil, @Rect)
+            end;  
+        end;
+end;
+
 
 end.

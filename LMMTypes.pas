@@ -1,6 +1,9 @@
 unit LMMTypes;
 
 interface
+
+uses sdl2;
+
 type
     IntArray = array of Integer; // Dynamic array of integers
     
@@ -35,6 +38,8 @@ type
         vel: TVelocity;
         health: Integer;
     end;
+
+    TTextures = Array[1..6] of PSDL_TEXTURE;
     
     TWorld = record 
         chunks: ChunkArray;
@@ -45,6 +50,7 @@ type
         seed:Integer;
         player: TPlayer;
         cameraPos: TPosition;
+        textures: TTextures;
         mobs: array of TMob;
         worldFile: Text;
         time: Integer;

@@ -13,7 +13,7 @@ var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockLeft, blockRight, blockBelow: Boolean;
-    lastChunkIndex, x, y: Integer;
+    x, y: Integer;
     currentChunk, leftChunk, rightChunk: TChunk;
 begin
     playerPos := world.player.pos;
@@ -34,6 +34,10 @@ begin
         leftChunk.chunkIndex := world.lastLeftChunk;
         chunkShapeGeneration(leftChunk,world.seed);
         AddChunkToArray(world.chunks, leftChunk);
+
+        // Save world on chunk change
+        AddIntToArray(world.unsavedChunks, world.lastLeftChunk);
+        worldSave(world);
     end;
     if currentChunk.chunkIndex = world.LastRightChunk then
     begin
@@ -41,6 +45,10 @@ begin
         rightChunk.chunkIndex := world.LastRightChunk;
         chunkShapeGeneration(rightChunk,world.seed);
         AddChunkToArray(world.chunks, rightChunk);
+
+        // Save world on chunk change
+        AddIntToArray(world.unsavedChunks, world.lastRightChunk);
+        worldSave(world);
     end;
 
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
@@ -123,12 +131,6 @@ begin
     world.player.vel := playerVel;
     world.player.health := playerHealth;
 
-    // Save world on chunk change
-    //if not (lastChunkIndex = currentChunk.chunkIndex) then
-    //begin
-    //    AddIntToArray(world.unsavedChunks, lastChunkIndex);
-    //    worldSave(world);
-    //end;
 
     if (time mod 35000) = 0 then
         worldSave(world);
@@ -140,10 +142,23 @@ begin
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
     SDL_RenderClear(renderer);
     
-    //CameraCheck(world);
-    //displayBlocks(currentChunk, world.player.pos, renderer, world.player.pos.x > 0);
-    displayChunk(currentChunk,renderer, world.player.pos.x > 0);
-    displayPlayer(world, renderer, True);
+    //CameraCheck(world); // Ne marche pas pour l'instant
+
+    if x > 50 then
+    begin
+        displayBlocks(currentChunk, rightChunk, world.player.pos, renderer);
+        //displayBlocksTextured(currentChunk, rightChunk, world.player.pos, world.textures, renderer);
+    end
+    else
+    begin
+        displayBlocks(currentChunk, leftChunk, world.player.pos, renderer);
+        //displayBlocksTextured(currentChunk, leftChunk, world.player.pos, world.textures, renderer);
+    end;
+
+
+    //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement
+
+    displayPlayer(world, renderer, False);
 
     
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 

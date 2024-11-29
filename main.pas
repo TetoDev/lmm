@@ -10,6 +10,7 @@ var
     renderer: PSDL_Renderer;
     running:Boolean;
     event: TSDL_Event;
+    i: Integer;
 begin
     //Initialisation de la SDL
     if SDL_Init(SDL_INIT_VIDEO) < 0 then
@@ -33,6 +34,9 @@ begin
         writeln('Erreur création rendu : ', SDL_GetError());
         exit;
     end;
+
+    // Initialisation des textures
+    LoadTextures(renderer, world.textures);
 
     //Initialisation de la structure du monde
 
@@ -70,12 +74,15 @@ begin
         end;
         
         //Mise à jour du monde et action du joueur
-        tick.tick(world, playerAction, renderer);  // NOT TRUE IMPLEMENTATION
+        tick.tick(world, playerAction, renderer);  
 
         playerAction.acts := [];
         //Affichage du monde
         SDL_RenderPresent(Renderer);
     end;  
+
+	for i:=1 to 6 do
+			SDL_DestroyTexture(world.textures[i]);
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindow(Window);
     SDL_Quit;
