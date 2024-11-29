@@ -43,8 +43,7 @@ type
     
     TWorld = record 
         chunks: ChunkArray;
-        lastLeftChunk:Integer;
-        LastRightChunk: Integer;
+        lastChunk: Integer;
         unsavedChunks: array of Integer;
         name: String;
         seed:Integer;

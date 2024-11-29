@@ -13,8 +13,14 @@ var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockLeft, blockRight, blockBelow: Boolean;
+<<<<<<< HEAD
     x, y: Integer;
     currentChunk, leftChunk, rightChunk: TChunk;
+=======
+    lastChunkIndex, x, y: Integer;
+    currentChunk: TChunk;
+    leftChunk, rightChunk: TChunk;
+>>>>>>> 5a3d3ce (NOT WORKING, added loadplayerchunks to tick.pas)
 begin
     playerPos := world.player.pos;
     playerVel := world.player.vel;
@@ -28,6 +34,7 @@ begin
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
     
+<<<<<<< HEAD
     if currentChunk.chunkIndex = world.lastLeftChunk then
     begin
         world.lastLeftChunk := world.lastLeftChunk - 1;
@@ -50,6 +57,11 @@ begin
         AddIntToArray(world.unsavedChunks, world.lastRightChunk);
         worldSave(world);
     end;
+=======
+    if not (world.lastChunk = currentChunk.chunkIndex) then
+        loadPlayerChunks(world);
+
+>>>>>>> 5a3d3ce (NOT WORKING, added loadplayerchunks to tick.pas)
 
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
@@ -162,6 +174,8 @@ begin
 
     
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
+
+    world.lastChunk := currentChunk.chunkIndex;
 
 end;
 end.

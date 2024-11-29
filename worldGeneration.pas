@@ -115,9 +115,6 @@ begin
     chunkMid.chunkIndex:= 0;
     chunkRight.chunkIndex := 1;
 
-    world.lastLeftChunk := -1;
-    world.LastRightChunk := 1;
-
     AddChunkToArray(world.chunks, chunkLeft);
     AddChunkToArray(world.chunks, chunkMid);
     AddChunkToArray(world.chunks, chunkRight);
