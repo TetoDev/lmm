@@ -39,17 +39,32 @@ begin
 end;
 
 procedure test_getWorlds();
-var i: Integer; worldNames: TStringList;
+var i: Integer; worldNames: StringArray;
 begin
-    worldNames := TStringList.Create();
-    getWorlds(worldNames);
-    for i:=0 to worldNames.Count-1 do
+    worldNames := getWorlds();
+    for i:=0 to length(worldNames)-1 do
         writeln(worldNames[i]);
+end;
+
+procedure test_loadPlayerChunks();
+var world: TWorld;
+begin
+    world.player.pos.x := 1;
+    world.player.pos.y := 2;
+    world.name := 'Save 1';
+    writeln('Test 1');
+    loadPlayerChunks(world);
+    worldSave(world);
+    world.player.pos.x := 500;
+    writeln('Test 2');
+    loadPlayerChunks(world);
+    writeln('Test 3');
+    loadPlayerChunks(world);
 end;
 
 
 begin
-    writeln('Hello, world!');
     test_worldSave();
     test_getWorlds();
+    test_loadPlayerChunks();
 end.

@@ -8,6 +8,7 @@ uses LMMTypes;
 
 procedure AddIntToArray(var Arr: IntArray; const Element: Integer);
 procedure AddActToArray(var Arr: ActsArray; Element: TActs);
+procedure AddIntIfNotOnArray(var Arr: IntArray; const Element: Integer);
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
 procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
@@ -57,6 +58,7 @@ begin
     Arr[High(Arr)] := Element;
 end;
 
+
 function IsIntOnArray(Arr: IntArray; const Element: Integer): Boolean;
 var
     i: Integer;
@@ -69,6 +71,14 @@ begin
             Result := True;
             Exit;
         end;
+    end;
+end;
+
+procedure AddIntIfNotOnArray(var Arr: IntArray; const Element: Integer);
+begin
+    if not IsIntOnArray(Arr, Element) then
+    begin
+        AddIntToArray(Arr, Element);
     end;
 end;
 

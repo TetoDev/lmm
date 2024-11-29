@@ -9,7 +9,7 @@ uses
     SysUtils, Classes, LMMTypes, Util, worldGeneration;
 
 
-procedure worldSave(world: TWorld);
+procedure worldSave(var world: TWorld);
 procedure deleteWorld(worldName: String);
 function worldInit(worldName: string): TWorld;
 procedure loadPlayerChunks(var world: TWorld);
@@ -56,7 +56,7 @@ begin
     stringifyChunk := chunkString;
 end;
 
-procedure worldSave(world: TWorld);
+procedure worldSave(var world: TWorld);
 var
     temp: Text;
     worldStringList: TStringList;
@@ -79,7 +79,7 @@ begin
         writeln(temp, stringifyChunk(unsavedChunk));
         AddIntToArray(alreadySavedChunkIndexes, unsavedChunk.chunkIndex);
     end;
-    delete(world.unsavedChunks, 0, length(world.unsavedChunks) - 1); // FLUSHING ALREADY SAVED CHUNKS
+    setLength(world.unsavedChunks, 0); // FLUSHING ALREADY SAVED CHUNKS
 
     // Verifier si le monde a déjà été sauvegardé avant, si oui, on ajoute les chunks déjà sauvegardés précédemment
     if FileExists('worlds/' + world.name + '.txt') then
@@ -118,11 +118,12 @@ end;
 procedure loadPlayerChunks(var world: TWorld);
 var
     worldStringList: TStringList;
-    line, row: TStringArray;
+    line, row, column: TStringArray;
     i, j, k: Integer;
     chunk: TChunk;
     rootChunkIndex: Integer;
     chunkString: String;
+    existingChunkIndexes: IntArray;
 begin
     // On charge le fichier texte du monde
     worldStringList := TStringList.Create();
@@ -130,17 +131,25 @@ begin
 
     // On charge le monde a partir du chunk dans lequel le joueur se trouve
     rootChunkIndex := getChunkIndex(world.player.pos.x);
+    
+    writeln('rootChunkIndex: ', rootChunkIndex);
+    
 
 
     // Removing previous chunks and saving them
     for i := 0 to length(world.chunks)-1 do
     begin
-        if not ((rootChunkIndex -1) >= world.chunks[i].chunkIndex) and (world.chunks[i].chunkIndex <= (rootChunkIndex + 1)) then
+        if ((rootChunkIndex -1) > world.chunks[i].chunkIndex) or ((rootChunkIndex + 1) < world.chunks[i].chunkIndex) then // TO TEST
         begin
-            AddIntToArray(world.unsavedChunks, world.chunks[i].chunkIndex);
+            AddIntIfNotOnArray(world.unsavedChunks, world.chunks[i].chunkIndex);
             worldSave(world);
             delete(world.chunks, i, 1);
         end;
+    end;
+
+    for j := 0 to length(world.unsavedChunks)-1 do
+    begin
+        writeln('unsavedChunks: ', world.unsavedChunks[j]);
     end;
 
     // On charge les chunks du fichier texte
@@ -150,8 +159,9 @@ begin
         line := worldStringList.strings[i].Split(';');
         chunk.chunkIndex := StrToInt(line[0]);
 
+
         // On charge seulement les chunks qui sont a une distance de 1 chunk du chunk dans lequel le joueur se trouve
-        if ((rootChunkIndex -1) >= chunk.chunkIndex) and (chunk.chunkIndex <= (rootChunkIndex + 1)) then
+        if ((rootChunkIndex -1) <= chunk.chunkIndex) and (chunk.chunkIndex <= (rootChunkIndex + 1)) then
         begin
             chunkString := line[1];
             // On enleve les crochets (mise en propre)
@@ -162,38 +172,49 @@ begin
             begin
                 row[j] := row[j].Remove(0, 1);
                 row[j] := row[j].Remove(row[j].Length-1, 1); // THIS IS WRONG
+                // writeln('row[j]: ', row[j]);
 
-                row := row[j].Split('-');
+                column := row[j].Split('-');
+                
+
+
+
               
                 for k := 0 to 99 do
                 begin
                     // Conversion de la string en entier et ajout dans le chunk
-                    chunk.layout[j][k] := StrToInt(row[k]);
+                    // writeln('column[k]: ', column[k], ' k: ', k, ' j: ',j , ' | ',  length(column));
+                    chunk.layout[j][k] := StrToInt(column[k]);
                 end;
             end;
             
             // Ajout du chunk dans le monde
             AddChunkToArray(world.chunks, chunk);
 
-            freeandnil(worldStringList);
+            // freeandnil(worldStringList);
         end;
     end;
 
     // Generating chunks if they don't exist
     while length(world.chunks) < 3 do
     begin
-        for i := 0 to length(world.chunks)-1 do
-        begin
-            if world.chunks[i].chunkIndex = (rootChunkIndex + 1) then
-                chunk.chunkIndex := rootChunkIndex + -1
-            else
-                chunk.chunkIndex := rootChunkIndex + 1;
-        
-            chunkShapeGeneration(chunk, world.seed);
+    writeln('world.chunks: ', length(world.chunks));
+    for i := 0 to length(world.chunks)-1 do
+    begin
+        AddIntToArray(existingChunkIndexes, world.chunks[i].chunkIndex);
+    end;
 
+    for i := -1 to 1 do
+    begin
+        if not IsIntOnArray(existingChunkIndexes, rootChunkIndex + i) then
+        begin
+            writeln('chunk generated: ', rootChunkIndex + i);
+            chunk.chunkIndex := rootChunkIndex + i;
+            chunkShapeGeneration(chunk, world.seed);
             AddChunkToArray(world.chunks, chunk);
-            AddIntToArray(world.unsavedChunks, chunk.chunkIndex);
+            AddIntIfNotOnArray(world.unsavedChunks, chunk.chunkIndex);
         end;
+    end;
     end;
 end;
 
