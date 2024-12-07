@@ -12,7 +12,8 @@ var
     running:Boolean;
     event: TSDL_Event;
     windowParam:TWindow;
-    i: Integer;
+    Background: PSDL_Texture;
+    Rect: TSDL_Rect;
 begin
     windowParam.height := SURFACEHEIGHT;
     windowParam.width := SURFACEWIDTH;
@@ -50,7 +51,7 @@ begin
 
     // Initialisation des textures
     LoadTextures(renderer, textures);
-
+    Background := IMG_LoadTexture(Renderer, PChar('assets/sky/sky.png'));
     //Initialisation de la structure du monde
 
     world := worldInit('Save 1'); 
@@ -113,6 +114,18 @@ begin
             end;
         end;
         
+        
+        
+        // on clear l'écran avant de réafficher le monde 
+        SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
+        SDL_RenderClear(renderer);
+
+        // on vient rajouter le fond avec un effet de paralax
+        Rect.w := Round(1107/1.4);
+        Rect.h := Round(707/1.4);
+        Rect.x := Round(world.player.pos.x);
+        Rect.y := Round(707/2 - world.player.pos.y*0.5);
+        SDL_RenderCopy(Renderer, Background, @Rect, nil);
         //Mise à jour du monde et action du joueur
         tick.tick(world,windowParam, playerAction, renderer, textures);  
 

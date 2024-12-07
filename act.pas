@@ -94,19 +94,17 @@ begin
     // Calculate current chunk
     x := Trunc(playerAction.selectedBlock.x) mod 100;
     y := Trunc(playerAction.selectedBlock.y);
-
     currentChunk := getChunkByIndex(world, getChunkIndex(playerAction.selectedBlock.x));
-
     for i := 0 to length(playerAction.acts) - 1 do
     begin
         case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                currentChunk.layout[x][y]:= world.player.heldItem; 
+                currentChunk.layout[abs(x)][y]:= world.player.heldItem; 
             end;
             REMOVE_BLOCK: 
             begin
-                currentChunk.layout[x][y] := 0;
+                currentChunk.layout[abs(x)][y] := 0;
             end;
         end;
     end;

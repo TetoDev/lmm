@@ -121,19 +121,13 @@ begin
     else
         time := time + 1;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
-    SDL_RenderClear(renderer);
 
     if x > 50 then
-    begin
-        // displayBlocks(world, window,currentChunk, rightChunk, renderer);
-        displayBlocksTextured(window,currentChunk, rightChunk, world.player.pos, textures, renderer);
-    end
+        // displayBlocks(world, window,currentChunk, rightChunk, renderer)
+        displayBlocksTextured(window,currentChunk, rightChunk, world.player.pos, textures, renderer)
     else
-    begin
-        // displayBlocks(world, window,currentChunk, leftChunk, world.player.pos, renderer);
+        // displayBlocks(world, window,currentChunk, leftChunk, renderer);
         displayBlocksTextured(window,currentChunk, leftChunk, world.player.pos, textures, renderer);
-    end;
 
     //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement
     
