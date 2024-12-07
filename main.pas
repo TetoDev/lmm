@@ -11,9 +11,11 @@ var
     renderer: PSDL_Renderer;
     running:Boolean;
     event: TSDL_Event;
+    windowParam:TWindow;
+    i: Integer;
 begin
-    world.windowHeight := SURFACEHEIGHT;
-    world.windowWidth := SURFACEWIDTH;
+    windowParam.height := SURFACEHEIGHT;
+    windowParam.width := SURFACEWIDTH;
     //Initialisation de la SDL
     if SDL_Init(SDL_INIT_VIDEO) < 0 then
     begin
@@ -29,7 +31,7 @@ begin
     end;
 
     //Création de la fenêtre
-    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, world.windowWidth, world.windowHeight, SDL_WINDOW_RESIZABLE );
+    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowParam.width, windowParam.height, SDL_WINDOW_RESIZABLE );
     if window = nil then
     begin
         writeln('Erreur création fenêtre : ', SDL_GetError());
@@ -59,8 +61,8 @@ begin
     //Initialisation de la santé du joueur
     world.player.health := 100;
     world.player.heldItem := 1;
-    world.windowHeight := SURFACEHEIGHT;
-    world.windowWidth := SURFACEWIDTH;
+    windowParam.width := SURFACEHEIGHT;
+    windowParam.height := SURFACEWIDTH;
 
     //Boucle principale
     running := true;
@@ -85,9 +87,9 @@ begin
                 SDL_MOUSEBUTTONDOWN:
                 begin
                     if event.button.button = SDL_BUTTON_RIGHT then
-                        handleMouse(event.button.x, event.button.y, world, PLACE_BLOCK, playerAction);
+                        handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction);
                     if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouse(event.button.x, event.button.y, world, REMOVE_BLOCK, playerAction);
+                        handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction);
                 end;
                 SDL_MOUSEWHEEL: 
                 begin
@@ -105,14 +107,14 @@ begin
                 SDL_WINDOWEVENT:
                 if Event.window.event = SDL_WINDOWEVENT_RESIZED then
                 begin
-                    world.windowWidth := event.window.data1; // Nouvelle largeur
-                    world.windowHeight := event.window.data2; // Nouvelle hauteur
+                    windowParam.width := event.window.data1; // Nouvelle largeur
+                    windowParam.height := event.window.data2; // Nouvelle hauteur
                 end;
             end;
         end;
         
         //Mise à jour du monde et action du joueur
-        tick.tick(world, playerAction, renderer, textures);  
+        tick.tick(world,windowParam, playerAction, renderer, textures);  
 
         playerAction.acts := [];
 

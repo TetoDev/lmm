@@ -4,7 +4,7 @@ Interface
 uses LMMTypes, SDL2, util, display; 
 
 procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
-procedure handleMouse(x:Integer ; y:Integer; world:TWorld; action:TActs; var playerAction: TPlayerAction);
+procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction);
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
 
@@ -53,10 +53,10 @@ begin
     end;
 end;
 
-procedure handleMouse(x:Integer ; y:Integer; world:TWorld; action:TActs; var playerAction: TPlayerAction);
+procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction);
 begin
-    playerAction.selectedBlock.x := world.player.pos.x + x div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) - ((world.windowWidth div SIZE)-1) div 2;
-    playerAction.selectedBlock.y := world.player.pos.y - y div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) + ((world.windowHeight div SIZE)-1) div 2;
+    playerAction.selectedBlock.x := world.player.pos.x + x div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) - ((window.width div SIZE)-1) div 2;
+    playerAction.selectedBlock.y := world.player.pos.y - y div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) + ((window.height div SIZE)-1) div 2;
     AddActToArray(playerAction.acts, action)
 end;
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);

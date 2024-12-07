@@ -4,11 +4,11 @@ interface
 
 uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, util, worldGeneration;
 
-procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
+procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
 
 implementation
 
-procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
+procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
@@ -126,13 +126,13 @@ begin
 
     if x > 50 then
     begin
-        // displayBlocks(currentChunk, rightChunk, world.player.pos, renderer);
-        displayBlocksTextured(currentChunk, rightChunk, world.player.pos, textures, renderer);
+        // displayBlocks(world, window,currentChunk, rightChunk, renderer);
+        displayBlocksTextured(window,currentChunk, rightChunk, world.player.pos, textures, renderer);
     end
     else
     begin
-        // displayBlocks(currentChunk, leftChunk, world.player.pos, renderer);
-        displayBlocksTextured(currentChunk, leftChunk, world.player.pos, textures, renderer);
+        // displayBlocks(world, window,currentChunk, leftChunk, world.player.pos, renderer);
+        displayBlocksTextured(window,currentChunk, leftChunk, world.player.pos, textures, renderer);
     end;
 
     //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement
@@ -140,8 +140,8 @@ begin
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
 
     
-    displayPlayer(world, renderer, False);
-    displayInventory(world,renderer);
+    displayPlayer(world, window,renderer, False);
+    displayInventory(world,window, renderer);
 
     world.lastChunk := currentChunk.chunkIndex;
 
