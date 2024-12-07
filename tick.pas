@@ -13,14 +13,9 @@ var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockLeft, blockRight, blockBelow: Boolean;
-<<<<<<< HEAD
-    x, y: Integer;
-    currentChunk, leftChunk, rightChunk: TChunk;
-=======
     lastChunkIndex, x, y: Integer;
     currentChunk: TChunk;
     leftChunk, rightChunk: TChunk;
->>>>>>> 5a3d3ce (NOT WORKING, added loadplayerchunks to tick.pas)
 begin
     playerPos := world.player.pos;
     playerVel := world.player.vel;
@@ -34,34 +29,9 @@ begin
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
     
-<<<<<<< HEAD
-    if currentChunk.chunkIndex = world.lastLeftChunk then
-    begin
-        world.lastLeftChunk := world.lastLeftChunk - 1;
-        leftChunk.chunkIndex := world.lastLeftChunk;
-        chunkShapeGeneration(leftChunk,world.seed);
-        AddChunkToArray(world.chunks, leftChunk);
-
-        // Save world on chunk change
-        AddIntToArray(world.unsavedChunks, world.lastLeftChunk);
-        worldSave(world);
-    end;
-    if currentChunk.chunkIndex = world.LastRightChunk then
-    begin
-        world.lastRightChunk := world.lastRightChunk + 1;
-        rightChunk.chunkIndex := world.LastRightChunk;
-        chunkShapeGeneration(rightChunk,world.seed);
-        AddChunkToArray(world.chunks, rightChunk);
-
-        // Save world on chunk change
-        AddIntToArray(world.unsavedChunks, world.lastRightChunk);
-        worldSave(world);
-    end;
-=======
     if not (world.lastChunk = currentChunk.chunkIndex) then
         loadPlayerChunks(world);
 
->>>>>>> 5a3d3ce (NOT WORKING, added loadplayerchunks to tick.pas)
 
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
