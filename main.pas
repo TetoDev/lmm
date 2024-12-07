@@ -122,8 +122,8 @@ begin
         SDL_RenderPresent(renderer);
     end;  
 
-	for i:=1 to 6 do
-			SDL_DestroyTexture(textures.blocks[i]);
+    //Fermeture de la fenêtre
+    destroyTextures(textures);
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindow(Window);
     IMG_Quit;
