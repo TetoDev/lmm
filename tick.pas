@@ -4,11 +4,11 @@ interface
 
 uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, util, worldGeneration;
 
-procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer);
+procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
 
 implementation
 
-procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer);
+procedure tick(var world: TWorld; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
@@ -126,13 +126,13 @@ begin
 
     if x > 50 then
     begin
-        displayBlocks(world,currentChunk, rightChunk, renderer);
-        //displayBlocksTextured(currentChunk, rightChunk, world.player.pos, world.textures, renderer);
+        // displayBlocks(currentChunk, rightChunk, world.player.pos, renderer);
+        displayBlocksTextured(currentChunk, rightChunk, world.player.pos, textures, renderer);
     end
     else
     begin
-        displayBlocks(world,currentChunk, leftChunk, renderer);
-        //displayBlocksTextured(currentChunk, leftChunk, world.player.pos, world.textures, renderer);
+        // displayBlocks(currentChunk, leftChunk, world.player.pos, renderer);
+        displayBlocksTextured(currentChunk, leftChunk, world.player.pos, textures, renderer);
     end;
 
     //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement

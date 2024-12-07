@@ -20,6 +20,7 @@ procedure displayBlocks(world:TWorld; chunk,nextChunk:TChunk; var renderer: PSDL
 
 procedure displayBlocksTextured(chunk,nextChunk:TChunk; pos:TPosition; textures:TTextures; var renderer: PSDL_Renderer);
 
+
 Implementation
 
 // procedure pour afficher le chunk entier dans le terminal
@@ -104,16 +105,17 @@ end;
 
 
 procedure LoadTextures(var renderer: PSDL_Renderer; var textures: TTextures);
-var chemin:string; pchemin:PChar; i:Integer;
+var chemin:String; pchemin:PChar; i:Integer;
 begin
 	for i := 1 to 6 do
     begin
         chemin := 'assets/textures/'+IntToStr(i)+'.png';
         pchemin:=StrAlloc(length(chemin)+1);
         strPCopy(pchemin, chemin);
-        textures[i]:=IMG_LoadTexture(renderer, pchemin);
+        textures.blocks[i]:=IMG_LoadTexture(renderer, pchemin);
         StrDispose(pchemin);
     end
+
 end;
 
 procedure displayPlayer(world:TWorld; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
@@ -382,7 +384,7 @@ begin
             begin  
                 Rect.x := Trunc((j - x + 6)*width);
                 Rect.y := Trunc((i - y + 6)*height);
-	            SDL_RenderCopy(renderer, textures[chunk.layout[j][99-i]], nil, @Rect);
+	            SDL_RenderCopy(renderer, textures.blocks[chunk.layout[j][99-i]], nil, @Rect);
             end;
         end
     // But if the chunk is negative we render it in the opposite direction
@@ -394,7 +396,7 @@ begin
             begin 
                 Rect.x := Trunc((j - (99+x) + 6)*width);
                 Rect.y := Trunc((i - y  + 6)*height);
-	            SDL_RenderCopy(renderer, textures[chunk.layout[99-j][99-i]], nil, @Rect)
+	            SDL_RenderCopy(renderer, textures.blocks[chunk.layout[99-j][99-i]], nil, @Rect)
             end;  
         end;
     delta:= nextChunk.chunkIndex - chunk.chunkIndex; // We determine if the next chunk is on the right or on the left
@@ -408,7 +410,7 @@ begin
             begin      
                 Rect.x := Trunc((j - x + 6)*width) + 100*width*delta;
                 Rect.y := Trunc((i - y + 6)*height);
-	            SDL_RenderCopy(renderer, textures[nextChunk.layout[j][99-i]], nil, @Rect)
+	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[j][99-i]], nil, @Rect)
             end;
         end
     // But if the chunk is negative we render it in the opposite direction
@@ -420,10 +422,21 @@ begin
             begin   
                 Rect.x := Trunc((j - (99+x) + 6)*width) + 100*width * delta;
                 Rect.y := Trunc((i - y  + 6)*height);
-	            SDL_RenderCopy(renderer, textures[nextChunk.layout[99-j][99-i]], nil, @Rect)
+	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[99-j][99-i]], nil, @Rect)
             end;  
         end;
 end;
 
+procedure destroyTextures(var textures: TTextures);
+var i:Integer;
+begin
+    for i := 1 to 6 do
+        SDL_DestroyTexture(textures.blocks[i]);
+    SDL_DestroyTexture(textures.sky);
+    for i := 1 to 2 do
+        SDL_DestroyTexture(textures.mobs[i]);
+    for i := 1 to 2 do
+        SDL_DestroyTexture(textures.player[i]);
+end;
 
 end.
