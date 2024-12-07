@@ -42,9 +42,9 @@ type
 
     TTextures = record
         blocks: Array[1..6] of PSDL_TEXTURE;
-        mobs: Array[1..2] of PSDL_TEXTURE;
+        mobs: Array[1..3] of PSDL_TEXTURE;
         sky: PSDL_TEXTURE;
-        player: Array[1..2] of PSDL_TEXTURE;
+        player: Array[1..4] of PSDL_TEXTURE;
     end;
     
     TWorld = record 
