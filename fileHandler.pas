@@ -123,7 +123,7 @@ var
     chunk: TChunk;
     rootChunkIndex: Integer;
     chunkString: String;
-    existingChunkIndexes: IntArray;
+    existingChunkIndexes, alreadyLoadedChunkIndexes: IntArray;
 begin
     // On charge le fichier texte du monde
     worldStringList := TStringList.Create();
@@ -152,6 +152,12 @@ begin
         writeln('unsavedChunks: ', world.unsavedChunks[j]);
     end;
 
+    for i:= 0 to length(world.chunks)-1 do
+    begin
+        writeln(world.chunks[i].chunkIndex);
+        AddIntToArray(alreadyLoadedChunkIndexes, world.chunks[i].chunkIndex);
+    end;
+
     // On charge les chunks du fichier texte
     for i := 2 to worldStringList.Count-1 do
     begin
@@ -161,7 +167,7 @@ begin
 
 
         // On charge seulement les chunks qui sont a une distance de 1 chunk du chunk dans lequel le joueur se trouve
-        if ((rootChunkIndex -1) <= chunk.chunkIndex) and (chunk.chunkIndex <= (rootChunkIndex + 1)) then
+        if ((rootChunkIndex -1) <= chunk.chunkIndex) and (chunk.chunkIndex <= (rootChunkIndex + 1)) and not IsIntOnArray(alreadyLoadedChunkIndexes, chunk.chunkIndex) then
         begin
             chunkString := line[1];
             // On enleve les crochets (mise en propre)
