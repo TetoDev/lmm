@@ -132,7 +132,7 @@ begin
     // On charge le monde a partir du chunk dans lequel le joueur se trouve
     rootChunkIndex := getChunkIndex(world.player.pos.x);
     
-    writeln('rootChunkIndex: ', rootChunkIndex);
+    writeln('Current chunk: ', rootChunkIndex);
     
 
 
@@ -147,14 +147,8 @@ begin
         end;
     end;
 
-    for j := 0 to length(world.unsavedChunks)-1 do
-    begin
-        writeln('unsavedChunks: ', world.unsavedChunks[j]);
-    end;
-
     for i:= 0 to length(world.chunks)-1 do
     begin
-        writeln(world.chunks[i].chunkIndex);
         AddIntToArray(alreadyLoadedChunkIndexes, world.chunks[i].chunkIndex);
     end;
 
@@ -196,7 +190,7 @@ begin
             
             // Ajout du chunk dans le monde
             AddChunkToArray(world.chunks, chunk);
-
+            setLength(alreadyLoadedChunkIndexes, 0);
             // freeandnil(worldStringList);
         end;
     end;
@@ -204,7 +198,6 @@ begin
     // Generating chunks if they don't exist
     while length(world.chunks) < 3 do
     begin
-    writeln('world.chunks: ', length(world.chunks));
     for i := 0 to length(world.chunks)-1 do
     begin
         AddIntToArray(existingChunkIndexes, world.chunks[i].chunkIndex);

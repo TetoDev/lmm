@@ -1,10 +1,11 @@
 program main;
 
 
-uses fileHandler,sdl2, LMMTypes, util, tick, act, display;
+uses fileHandler,sdl2, SDL2_image, LMMTypes, util, tick, act, display;
 
 var
     world: TWorld;
+    textures: TTextures;
     playerAction: TPlayerAction;
     window: PSDL_Window;
     renderer: PSDL_Renderer;
@@ -18,6 +19,14 @@ begin
         writeln('Erreur initialisation SDL : ', SDL_GetError());
         exit;
     end;
+
+    if (IMG_Init(IMG_INIT_PNG) and IMG_INIT_PNG) = 0 then
+    begin
+        Writeln('SDL_image could not initialize! IMG_Error: ', IMG_GetError);
+        SDL_Quit;
+        Halt(1);
+    end;
+
     //Création de la fenêtre
     window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SURFACEWIDTH, SURFACEHEIGHT, SDL_WINDOW_SHOWN);
     if window = nil then
@@ -25,6 +34,7 @@ begin
         writeln('Erreur création fenêtre : ', SDL_GetError());
         exit;
     end;
+
 
     //Création du rendu
     renderer := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -36,7 +46,7 @@ begin
     end;
 
     // Initialisation des textures
-    LoadTextures(renderer, world.textures);
+    LoadTextures(renderer, textures);
 
     //Initialisation de la structure du monde
 
@@ -74,16 +84,18 @@ begin
         end;
         
         //Mise à jour du monde et action du joueur
-        tick.tick(world, playerAction, renderer);  
+        tick.tick(world, playerAction, renderer, textures);  
 
         playerAction.acts := [];
+
         //Affichage du monde
-        SDL_RenderPresent(Renderer);
+        SDL_RenderPresent(renderer);
     end;  
 
 	for i:=1 to 6 do
-			SDL_DestroyTexture(world.textures[i]);
+			SDL_DestroyTexture(textures.blocks[i]);
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindow(Window);
+    IMG_Quit;
     SDL_Quit;
 end.
