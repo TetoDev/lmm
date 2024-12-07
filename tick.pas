@@ -141,7 +141,7 @@ begin
 
     
     displayPlayer(world, window,renderer, False);
-    displayInventory(world,window, renderer);
+    displayInventory(world,window, renderer, textures, True);
 
     world.lastChunk := currentChunk.chunkIndex;
 

@@ -12,7 +12,7 @@ procedure LoadTextures(var renderer: PSDL_Renderer; var Textures: TTextures);
 
 procedure displayPlayer(world:TWorld; window:TWindow;var renderer: PSDL_Renderer; displayAsChunk: Boolean);
 
-procedure displayInventory(world:TWorld; window:TWindow; var renderer: PSDL_renderer);
+procedure displayInventory(world:TWorld; window:TWindow; var renderer: PSDL_renderer; textures:TTextures; textured :Boolean);
 
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer; positiveDir:Boolean);
 
@@ -150,7 +150,7 @@ begin
     end;
 end;
 
-procedure displayInventory(world:TWorld; window:TWindow; var renderer: PSDL_renderer);
+procedure displayInventory(world:TWorld; window:TWindow; var renderer: PSDL_renderer; textures:TTextures; textured :Boolean);
 var Rect: TSDL_Rect;
 begin
     
@@ -174,7 +174,8 @@ begin
     Rect.h := 50;
 
 
-
+    if not textured then
+    begin
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     Rect.x := window.width div 2 - 175 ;
     Rect.y := window.height - 90;
@@ -204,6 +205,33 @@ begin
     Rect.x := window.width div 2 + 125 ;
     Rect.y := window.height - 90;
     SDL_RenderFillRect(Renderer, @Rect);
+    end
+    else
+    begin
+    Rect.x := window.width div 2 - 175 ;
+    Rect.y := window.height - 90;
+    SDL_RenderCopy(renderer, textures.blocks[1], nil, @Rect);
+
+    Rect.x := window.width div 2 - 115 ;
+    Rect.y := window.height - 90;
+    SDL_RenderCopy(renderer, textures.blocks[2], nil, @Rect);
+
+    Rect.x := window.width div 2 - 55 ;
+    Rect.y := window.height - 90;
+    SDL_RenderCopy(renderer, textures.blocks[3], nil, @Rect);
+
+    Rect.x := window.width div 2 + 5 ;
+    Rect.y := window.height - 90;
+    SDL_RenderCopy(renderer, textures.blocks[4], nil, @Rect);
+
+    Rect.x := window.width div 2 + 65 ;
+    Rect.y := window.height - 90;
+    SDL_RenderCopy(renderer, textures.blocks[5], nil, @Rect);
+
+    Rect.x := window.width div 2 + 125 ;
+    Rect.y := window.height - 90;
+    SDL_RenderCopy(renderer, textures.blocks[6], nil, @Rect);
+    end;
 end;
 
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer;positiveDir:Boolean);
