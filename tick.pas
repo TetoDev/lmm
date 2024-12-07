@@ -13,7 +13,7 @@ var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockLeft, blockRight, blockBelow: Boolean;
-    lastChunkIndex, x, y: Integer;
+    x, y: Integer;
     currentChunk: TChunk;
     leftChunk, rightChunk: TChunk;
 begin
@@ -123,27 +123,25 @@ begin
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
     SDL_RenderClear(renderer);
-    
-    //CameraCheck(world); // Ne marche pas pour l'instant
 
     if x > 50 then
     begin
-        displayBlocks(currentChunk, rightChunk, world.player.pos, renderer);
+        displayBlocks(world,currentChunk, rightChunk, renderer);
         //displayBlocksTextured(currentChunk, rightChunk, world.player.pos, world.textures, renderer);
     end
     else
     begin
-        displayBlocks(currentChunk, leftChunk, world.player.pos, renderer);
+        displayBlocks(world,currentChunk, leftChunk, renderer);
         //displayBlocksTextured(currentChunk, leftChunk, world.player.pos, world.textures, renderer);
     end;
 
-
     //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement
-
-    displayPlayer(world, renderer, False);
-
     
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
+
+    
+    displayPlayer(world, renderer, False);
+    displayInventory(world,renderer);
 
     world.lastChunk := currentChunk.chunkIndex;
 

@@ -10,8 +10,9 @@ var
     renderer: PSDL_Renderer;
     running:Boolean;
     event: TSDL_Event;
-    i: Integer;
 begin
+    world.windowHeight := SURFACEHEIGHT;
+    world.windowWidth := SURFACEWIDTH;
     //Initialisation de la SDL
     if SDL_Init(SDL_INIT_VIDEO) < 0 then
     begin
@@ -19,7 +20,7 @@ begin
         exit;
     end;
     //Création de la fenêtre
-    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SURFACEWIDTH, SURFACEHEIGHT, SDL_WINDOW_SHOWN);
+    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, world.windowWidth, world.windowHeight, SDL_WINDOW_RESIZABLE );
     if window = nil then
     begin
         writeln('Erreur création fenêtre : ', SDL_GetError());
@@ -47,6 +48,9 @@ begin
 
     //Initialisation de la santé du joueur
     world.player.health := 100;
+    world.player.heldItem := 1;
+    world.windowHeight := SURFACEHEIGHT;
+    world.windowWidth := SURFACEWIDTH;
 
     //Boucle principale
     running := true;
@@ -65,10 +69,34 @@ begin
                     case event.key.keysym.sym of
                         SDLK_ESCAPE: running := false;
                     else
-                    begin
                         handleInput(event.key.keysym.sym, playerAction, true);
-                    end;
-                    end;
+                end;
+                end;
+                SDL_MOUSEBUTTONDOWN:
+                begin
+                    if event.button.button = SDL_BUTTON_RIGHT then
+                        handleMouse(event.button.x, event.button.y, world, PLACE_BLOCK, playerAction);
+                    if event.button.button = SDL_BUTTON_LEFT then
+                        handleMouse(event.button.x, event.button.y, world, REMOVE_BLOCK, playerAction);
+                end;
+                SDL_MOUSEWHEEL: 
+                begin
+                    if Event.wheel.y > 0 then
+                        world.player.heldItem := (world.player.heldItem + 1) 
+                    else 
+                    if Event.wheel.y < 0 then
+                        world.player.heldItem := (world.player.heldItem - 1) ;
+                        
+                    if world.player.heldItem = 0 then
+                        world.player.heldItem := 1;
+                    if world.player.heldItem = 7 then
+                        world.player.heldItem := 6;
+                end;
+                SDL_WINDOWEVENT:
+                if Event.window.event = SDL_WINDOWEVENT_RESIZED then
+                begin
+                    world.windowWidth := event.window.data1; // Nouvelle largeur
+                    world.windowHeight := event.window.data2; // Nouvelle hauteur
                 end;
             end;
         end;
@@ -81,8 +109,6 @@ begin
         SDL_RenderPresent(Renderer);
     end;  
 
-	for i:=1 to 6 do
-			SDL_DestroyTexture(world.textures[i]);
     SDL_DestroyRenderer(Renderer);
     SDL_DestroyWindow(Window);
     SDL_Quit;

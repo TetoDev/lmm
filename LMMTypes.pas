@@ -31,6 +31,7 @@ type
         pos: TPosition;
         vel: TVelocity;
         health: Integer;
+        heldItem:Integer;
     end;
 
     TMob = record
@@ -48,11 +49,10 @@ type
         name: String;
         seed:Integer;
         player: TPlayer;
-        cameraPos: TPosition;
         textures: TTextures;
         mobs: array of TMob;
         worldFile: Text;
-        time: Integer;
+        windowHeight,windowWidth,time: Integer;
     end;
 
     TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
@@ -67,7 +67,8 @@ type
 const 
 SURFACEWIDTH = 800; { largeur en pixels de la surface de jeu }
 SURFACEHEIGHT = 800; { hauteur en pixels de la surface de jeu }
-BLOCKDISPLAYED = 13; {Taille de l'intérieur des blocks}
+BLOCKDISPLAYED = 13; {nombre de blocs à afficher}
+SIZE = Trunc(SURFACEWIDTH/BLOCKDISPLAYED);
 
 implementation
 end.

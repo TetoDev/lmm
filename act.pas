@@ -4,8 +4,9 @@ Interface
 uses LMMTypes, SDL2, util, display; 
 
 procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
+procedure handleMouse(x:Integer ; y:Integer; world:TWorld; action:TActs; var playerAction: TPlayerAction);
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
-procedure blockAct (playerAction: TPlayerAction; var world: TWorld);
+procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
 
 Implementation
 
@@ -52,6 +53,12 @@ begin
     end;
 end;
 
+procedure handleMouse(x:Integer ; y:Integer; world:TWorld; action:TActs; var playerAction: TPlayerAction);
+begin
+    playerAction.selectedBlock.x := world.player.pos.x + x div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) - ((world.windowWidth div SIZE)-1) div 2;
+    playerAction.selectedBlock.y := world.player.pos.y - y div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) + ((world.windowHeight div SIZE)-1) div 2;
+    AddActToArray(playerAction.acts, action)
+end;
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 var i: Integer;
     action: TActs;
@@ -81,29 +88,28 @@ begin
     end;
 end;
 
-procedure blockAct (playerAction: TPlayerAction; var world: TWorld); 
-var i,x,y:Integer;
-    chunk: TChunk;
+procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
+var i,x,y:Integer;currentChunk:TChunk;
 begin
     // Calculate current chunk
-    chunk := getChunkByIndex(world, getChunkIndex(playerAction.selectedBlock.x));
-
     x := Trunc(playerAction.selectedBlock.x) mod 100;
     y := Trunc(playerAction.selectedBlock.y);
+
+    currentChunk := getChunkByIndex(world, getChunkIndex(playerAction.selectedBlock.x));
 
     for i := 0 to length(playerAction.acts) - 1 do
     begin
         case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                 chunk.layout[x][y]:= 1; 
+                currentChunk.layout[x][y]:= world.player.heldItem; 
             end;
             REMOVE_BLOCK: 
             begin
-                chunk.layout[x][y] := 0;
+                currentChunk.layout[x][y] := 0;
             end;
         end;
     end;
-    reinsertChunk(world, chunk);
+    reinsertChunk(world,currentChunk)
 end;
 end.

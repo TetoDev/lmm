@@ -245,7 +245,6 @@ begin
 
     world.player.pos.x := StrToFloat(line[0]);
     world.player.pos.y := StrToFloat(line[1]);
-    world.cameraPos := world.player.pos;
     world.player.vel.x := StrToFloat(line[2]);
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
