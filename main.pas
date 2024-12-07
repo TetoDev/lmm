@@ -94,10 +94,10 @@ begin
                 SDL_MOUSEWHEEL: 
                 begin
                     if Event.wheel.y > 0 then
-                        world.player.heldItem := (world.player.heldItem + 1) 
+                        world.player.heldItem := (world.player.heldItem - 1) 
                     else 
                     if Event.wheel.y < 0 then
-                        world.player.heldItem := (world.player.heldItem - 1) ;
+                        world.player.heldItem := (world.player.heldItem + 1) ;
                         
                     if world.player.heldItem = 0 then
                         world.player.heldItem := 1;
