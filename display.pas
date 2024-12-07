@@ -20,6 +20,8 @@ procedure displayBlocks(world:TWorld; chunk,nextChunk:TChunk; var renderer: PSDL
 
 procedure displayBlocksTextured(chunk,nextChunk:TChunk; pos:TPosition; textures:TTextures; var renderer: PSDL_Renderer);
 
+procedure destroyTextures(var textures: TTextures);
+
 
 Implementation
 
