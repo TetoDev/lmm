@@ -12,7 +12,7 @@ procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; v
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
-    blockLeft, blockRight, blockBelow: Boolean;
+    blockBelow: Boolean;
     x, y: Integer;
     currentChunk: TChunk;
     leftChunk, rightChunk: TChunk;
@@ -36,16 +36,6 @@ begin
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
 
-    // Checking block adjacency for collision checking
-    if x = 0 then
-        blockLeft := leftChunk.layout[99][y] > 0
-    else
-        blockLeft := currentChunk.layout[abs(x - 1)][y] > 0;
-    
-    if x = 99 then
-        blockRight := rightChunk.layout[0][y] > 0
-    else
-        blockRight := currentChunk.layout[abs(x + 1)][y] > 0;
 
     blockBelow := currentChunk.layout[abs(x)][y-1] > 0;
 
@@ -53,33 +43,27 @@ begin
     playerMove(playerVel, blockBelow, playerAction);
     blockAct(playerAction, world);
 
-    // Collision detection
-    if blockBelow then
-        if playerVel.y < 0 then
-            playerVel.y := 0;
-    if blockLeft then
-        if playerVel.x < 0 then
-            playerVel.x := 0;
-    if blockRight then
-        if playerVel.x > 0 then
-            playerVel.x := 0;
 
     // Max running speed
-    if playerVel.x > 0.5 then
-        playerVel.x := 0.5;
-    if playerVel.x < -0.5 then
-        playerVel.x := -0.5;
+    if playerVel.x > 0.3 then
+        playerVel.x := 0.3;
+    if playerVel.x < -0.3 then
+        playerVel.x := -0.3;
     
     // Terminal Velocity limit
     if playerVel.y > 1 then
         playerVel.y := 1;
     if playerVel.y < -2 then
         playerVel.y := -2;
+
+    handleCollision(playerVel, playerPos, world.player.boundingBox, currentChunk);
     
     // Updating player position
     playerPos.x := playerPos.x + playerVel.x;
     playerPos.y := playerPos.y + playerVel.y;
 
+
+        
     // Friction
     if blockBelow then
     begin

@@ -27,9 +27,15 @@ type
         y: Real;
     end;
 
+    TBoundingBox = record
+        width: Real;
+        height: Real;
+    end;
+
     TPlayer = record
         pos: TPosition;
         vel: TVelocity;
+        boundingBox: TBoundingBox;
         health: Integer;
         heldItem:Integer;
     end;
@@ -37,6 +43,7 @@ type
     TMob = record
         pos: TPosition;
         vel: TVelocity;
+        boundingBox: TBoundingBox;
         health: Integer;
     end;
 

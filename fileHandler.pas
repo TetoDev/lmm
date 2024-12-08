@@ -241,6 +241,9 @@ begin
     world.player.vel.x := StrToFloat(line[2]);
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
+
+    world.player.boundingBox.width := 0.4;
+    world.player.boundingBox.height := 1.8;
     freeandnil(worldStringList);
     
     // On charge les chunks autour du jouer

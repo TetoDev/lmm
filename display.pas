@@ -397,10 +397,10 @@ end;
 
 
 procedure displayBlocksTextured(window:TWindow;chunk,nextChunk:TChunk; pos:TPosition; textures:TTextures; var renderer: PSDL_Renderer);
-var i,j,x,y,xAdjustement,yAdjustement,delta:Integer; Rect: TSDL_Rect;
+var i,j,xAdjustement,yAdjustement,delta:Integer; Rect: TSDL_Rect; x,y:Real;
 begin
-    x:= Trunc(pos.x) mod 100; 
-    y:= 99 - Trunc(pos.y);
+    x:= pos.x - 100*(trunc(pos.x/100)); 
+    y:= 99 - pos.y;
 
     Rect.w := SIZE;
     Rect.h := SIZE;
