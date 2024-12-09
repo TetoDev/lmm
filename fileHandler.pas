@@ -242,7 +242,7 @@ begin
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
 
-    world.player.boundingBox.width := 0.4;
+    world.player.boundingBox.width := 0.8;
     world.player.boundingBox.height := 1.8;
     freeandnil(worldStringList);
     

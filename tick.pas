@@ -24,7 +24,6 @@ begin
 
     // Player's BLOCK chunk coordinates
     x := Trunc(playerPos.x) mod 100;
-    y := Trunc(playerPos.y);
 
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
@@ -37,7 +36,7 @@ begin
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
 
 
-    blockBelow := currentChunk.layout[abs(x)][y-1] > 0;
+    blockBelow := isBlockBelow(playerPos, world.player.boundingBox, currentChunk);
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
@@ -56,6 +55,7 @@ begin
     if playerVel.y < -2 then
         playerVel.y := -2;
 
+    
     handleCollision(playerVel, playerPos, world.player.boundingBox, currentChunk);
     
     // Updating player position
@@ -98,7 +98,7 @@ begin
     world.player.health := playerHealth;
 
 
-    if (time mod 35000) = 0 then
+    if (time mod 3573876) = 0 then
         worldSave(world);
     if time = 24000 then
         time := 0

@@ -140,8 +140,8 @@ begin
     else
     begin
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        width := Trunc(SURFACEWIDTH/BLOCKDISPLAYED);
-        height := Trunc(SURFACEHEIGHT/BLOCKDISPLAYED);
+        width := Trunc(SURFACEWIDTH/BLOCKDISPLAYED*0.8);
+        height := Trunc(SURFACEHEIGHT/BLOCKDISPLAYED*1.8);
         Rect.x := (((window.width div SIZE)-1) div 2)*SIZE;
         Rect.y := (((window.height div SIZE)-1) div 2)*SIZE;
         Rect.w := width;
@@ -405,7 +405,7 @@ begin
     Rect.w := SIZE;
     Rect.h := SIZE;
 
-    xAdjustement := ((window.width div SIZE)-1) div 2;
+    xAdjustement := ((window.width div SIZE)-1) div 2 ;
     yAdjustement := ((window.height div SIZE)-1) div 2;
 
     // We render the current chunk
