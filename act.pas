@@ -175,7 +175,7 @@ function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isD
 var toleranceX, toleranceY, correctionX, correctionY : Real; BlockX, BlockY: Integer;
 begin
     toleranceX := 0.0001;
-    toleranceY := 0.4;
+    toleranceY := 0.3;
 
     if isRight then
         correctionX := corner.x + toleranceX
@@ -231,11 +231,11 @@ begin
     br.x := playerPos.x + box.width + i*velocity.x;
     br.y := playerPos.y - box.height + i*velocity.y;
 
-    // writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
-    // writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    // writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    // writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    // writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
+    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions

@@ -132,7 +132,6 @@ begin
 
     displayInventory(world,window, renderer, textures, True);
 
-    SDL_delay(1000 div 6); // pour caper le nombre de fps 60 
 
     world.lastChunk := currentChunk.chunkIndex;
 
