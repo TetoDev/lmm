@@ -31,6 +31,8 @@ begin
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
 
+    blockBelow := isBlockBelow(playerPos, world.player.boundingBox, currentChunk);
+
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
