@@ -6,7 +6,7 @@ uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils;
 
 procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Renderer; Font: PTTF_Font;x,y:Integer);
 
-procedure MenuQuitter(Window: PSDL_Window; var Renderer: PSDL_Renderer; windowParam:TWindow);
+procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 
 implementation
 
@@ -57,11 +57,10 @@ begin
   TextRect.y := y;  // Position Y
   SDL_QueryTexture(Texture, nil, nil, @TextRect.w, @TextRect.h); // Taille automatique selon le texte
   SDL_RenderCopy(Renderer, Texture, nil, @TextRect); // Affiche le texte
-  SDL_RenderPresent(Renderer);
 end;
 
 
-procedure MenuQuitter(Window: PSDL_Window; var Renderer: PSDL_Renderer; windowParam:TWindow);
+procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 var Rect: TSDL_Rect;
 begin
     
@@ -69,19 +68,22 @@ begin
     SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
     SDL_RenderFillRect(Renderer, nil);
 
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    Rect.w := 200;
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+    Rect.w := 300;
     Rect.h := 100;
-    Rect.x := windowParam.width div 2 - 100;
-    Rect.y := windowParam.height div 2 - 150;
+    Rect.x := window.width div 2 - 150;
+    Rect.y := window.height div 2 - 125;
+    SDL_RenderFillRect(Renderer, @Rect);
+    
+    DisplayText(PChar('Resume'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 - 87);
+
+    Rect.w := 300;
+    Rect.h := 100;
+    Rect.x := window.width div 2 - 150;
+    Rect.y := window.height div 2 + 25;
     SDL_RenderFillRect(Renderer, @Rect);
 
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-    Rect.w := 200;
-    Rect.h := 100;
-    Rect.x := windowParam.width div 2 - 100;
-    Rect.y := windowParam.height div 2 + 50;
-    SDL_RenderFillRect(Renderer, @Rect);
+    DisplayText(PChar('Leave'), window.window,renderer, Font, window.width div 2 - 130 ,window.height div 2 + 63);
 end;
 
 end.

@@ -8,7 +8,6 @@ var
     textures: TTextures;
     data:TAnimationData;
     playerAction: TPlayerAction;
-    window: PSDL_Window;
     renderer: PSDL_Renderer;
     running,pause:Boolean;
     event: TSDL_Event;
@@ -40,17 +39,16 @@ begin
     end;
 
     //Création de la fenêtre
-    window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowParam.width, windowParam.height, SDL_WINDOW_RESIZABLE );
-    if window = nil then
+    windowParam.window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowParam.width, windowParam.height, SDL_WINDOW_RESIZABLE );
+    if windowParam.window = nil then
     begin
         writeln('Erreur création fenêtre : ', SDL_GetError());
         exit;
     end;
 
-    windowParam.window := window;
 
     //Création du rendu
-    renderer := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer := SDL_CreateRenderer(windowParam.window, -1, SDL_RENDERER_ACCELERATED);
 
     if renderer = nil then
     begin
@@ -64,7 +62,7 @@ begin
     begin
         Writeln('Erreur lors du chargement de la police: ', TTF_GetError);
         SDL_DestroyRenderer(Renderer);
-        SDL_DestroyWindow(Window);
+        SDL_DestroyWindow(windowParam.window);
         TTF_Quit;
         SDL_Quit;
         Halt(1);
@@ -102,8 +100,6 @@ begin
         while SDL_PollEvent(@event) <> 0 do
         begin 
             case event.type_ of
-                SDL_QUITEV: 
-                    running := false;
 
                 SDL_KEYDOWN:
                         handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, playerAction, world.player.direction,true, true, running, pause);
@@ -114,17 +110,9 @@ begin
                 SDL_MOUSEBUTTONDOWN:
                     begin
                         if event.button.button = SDL_BUTTON_RIGHT then
-                        begin
-                            if not pause then
-                                handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction,pause,running)
-                            else 
-                                handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction ,pause,running);
-                        end;
+                            handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction ,pause,running);
                         if event.button.button = SDL_BUTTON_LEFT then
-                        begin
-                            if not pause then
-                                handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction, pause,running);
-                        end;
+                            handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction, pause,running);
                     end;
 
                 SDL_MOUSEWHEEL: 
@@ -151,9 +139,8 @@ begin
             end;
             
         end;
+
         addAction(playerAction,key);
-        
-        
         
         // on clear l'écran avant de réafficher le monde 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -162,7 +149,7 @@ begin
         //Mise à jour du monde et action du joueur
         tick.tick(world,windowParam, playerAction, renderer, textures, data, Font, key);  
         if pause then
-          MenuQuitter(window,renderer,windowParam);
+          MenuQuitter(renderer,windowParam, Font);
 
         playerAction.acts := [];
 
@@ -174,7 +161,7 @@ begin
     //Fermeture de la fenêtre
     destroyTextures(textures);
     SDL_DestroyRenderer(Renderer);
-    SDL_DestroyWindow(Window);
+    SDL_DestroyWindow(windowParam.window);
     IMG_Quit;
     SDL_Quit;
 end.
