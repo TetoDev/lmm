@@ -22,6 +22,8 @@ procedure displayBlocksTextured(window:TWindow;chunk,nextChunk:TChunk; pos:TPosi
 
 procedure destroyTextures(var textures: TTextures);
 
+procedure displaySky(var renderer: PSDL_Renderer; world: TWorld; textures:TTextures);
+
 
 Implementation
 
@@ -116,8 +118,8 @@ begin
         strPCopy(pchemin, chemin);
         textures.blocks[i]:=IMG_LoadTexture(renderer, pchemin);
         StrDispose(pchemin);
-    end
-
+    end;
+    textures.sky:=IMG_LoadTexture(renderer, PChar('assets/sky/sky.png'));
 end;
 
 procedure displayPlayer(world:TWorld; window:TWindow; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
@@ -458,6 +460,22 @@ begin
 	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[99-j][99-i]], nil, @Rect)
             end;  
         end;
+end;
+
+procedure displaySky(var renderer: PSDL_Renderer; world: TWorld; textures:TTextures);
+var Rect: TSDL_Rect; opacity:Integer;
+begin
+    opacity := 255 - world.time mod 24000;
+
+    SDL_SetTextureAlphaMod(textures.sky, opacity);
+
+    Rect.w := Round(1107/1.4);
+    Rect.h := Round(707/1.4);
+    Rect.x := Round(world.player.pos.x);
+    Rect.y := Round(707/2 - world.player.pos.y*0.5);
+    SDL_RenderCopy(Renderer, textures.sky, @Rect, nil);
+
+    SDL_SetTextureAlphaMod(textures.sky, 255);
 end;
 
 procedure destroyTextures(var textures: TTextures);

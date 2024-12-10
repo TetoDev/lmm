@@ -102,11 +102,13 @@ begin
         case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                currentChunk.layout[abs(x)][y]:= world.player.heldItem; 
+                currentChunk.layout[abs(x)][y]:= world.player.heldItem;
+                AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
             end;
             REMOVE_BLOCK: 
             begin
                 currentChunk.layout[abs(x)][y] := 0;
+                AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
             end;
         end;
     end;
