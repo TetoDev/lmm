@@ -175,7 +175,7 @@ function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isD
 var toleranceX, toleranceY, correctionX, correctionY : Real; BlockX, BlockY: Integer;
 begin
     toleranceX := 0.0001;
-    toleranceY := 0.3;
+    toleranceY := 0.4;
 
     if isRight then
         correctionX := corner.x + toleranceX
@@ -241,7 +241,7 @@ begin
     // For right corner horizontal collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        // writeln('block right');
+        writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
@@ -251,7 +251,7 @@ begin
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        // writeln('block above');
+        writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -260,7 +260,7 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        // writeln('block below');
+        writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
@@ -270,8 +270,8 @@ begin
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        // writeln('block left');
-        if velocity.x <= 0 then
+        writeln('block left');
+        if velocity.x < 0 then
         begin
             velocity.x := 0;
             playerPos.x := floor(tl.x+0.2);

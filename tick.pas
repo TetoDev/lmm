@@ -118,7 +118,7 @@ begin
 
     //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement
     
-	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
+	
 
     
     displayPlayer(world, window, textures, data, renderer);
@@ -131,6 +131,8 @@ begin
     DisplayText(PChar('X :' + IntToStr(Trunc(playerPos.x)) + ' | Y : ' + IntToStr(Trunc(playerPos.y))), window.window,renderer, Font, trunc(SIZE/2),trunc(SIZE/2));
 
     displayInventory(world,window, renderer, textures, True);
+
+    SDL_delay(1000 div 6); // pour caper le nombre de fps 60 
 
     world.lastChunk := currentChunk.chunkIndex;
 
