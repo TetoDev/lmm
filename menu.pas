@@ -68,7 +68,7 @@ begin
     SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
     SDL_RenderFillRect(Renderer, nil);
 
-    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 210);
     Rect.w := 300;
     Rect.h := 100;
     Rect.x := window.width div 2 - 150;
