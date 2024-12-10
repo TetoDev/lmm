@@ -1,18 +1,21 @@
 program main;
 
 
-uses fileHandler,sdl2, SDL2_image, LMMTypes, util, tick, act, display;
+uses fileHandler,sdl2, sdl2_ttf,SDL2_image, LMMTypes, util, tick, act, display, mob, menu;
 
 var
     world: TWorld;
     textures: TTextures;
+    data:TAnimationData;
     playerAction: TPlayerAction;
     window: PSDL_Window;
     renderer: PSDL_Renderer;
-    running:Boolean;
+    running,pause:Boolean;
     event: TSDL_Event;
+    key:TKey;
     windowParam:TWindow;
     Background: PSDL_Texture;
+    Font: PTTF_Font;
     Rect: TSDL_Rect;
 begin
     windowParam.height := SURFACEHEIGHT;
@@ -31,6 +34,13 @@ begin
         Halt(1);
     end;
 
+    if TTF_Init < 0 then
+    begin
+        Writeln('Erreur lors de l''initialisation de SDL_ttf: ', TTF_GetError);
+        SDL_Quit;
+        Halt(1);
+    end;
+
     //Création de la fenêtre
     window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowParam.width, windowParam.height, SDL_WINDOW_RESIZABLE );
     if window = nil then
@@ -39,6 +49,7 @@ begin
         exit;
     end;
 
+    windowParam.window := window;
 
     //Création du rendu
     renderer := SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -49,8 +60,23 @@ begin
         exit;
     end;
 
+    // Charger une police de caractères
+    Font := TTF_OpenFont(PChar('assets/GoblinOne-Regular.ttf'), 24); // Charge la police Arial taille 24
+    if Font = nil then
+    begin
+        Writeln('Erreur lors du chargement de la police: ', TTF_GetError);
+        SDL_DestroyRenderer(Renderer);
+        SDL_DestroyWindow(Window);
+        TTF_Quit;
+        SDL_Quit;
+        Halt(1);
+    end;
+
+
     // Initialisation des textures
-    LoadTextures(renderer, textures);
+    LoadTextures(renderer, textures, data);
+    data.Fram:= 1;
+    data.playerAction := 1;
     Background := IMG_LoadTexture(Renderer, PChar('assets/sky/sky.png'));
     //Initialisation de la structure du monde
 
@@ -59,14 +85,20 @@ begin
     playerAction.selectedBlock.x := 0;
 
 
-    //Initialisation de la santé du joueur
+    //Initialisation des paramètres du joueur
     world.player.health := 100;
     world.player.heldItem := 1;
+    world.player.direction := True;
     windowParam.width := SURFACEHEIGHT;
     windowParam.height := SURFACEWIDTH;
 
     //Boucle principale
     running := true;
+
+    // ajout de mob;
+    generateMob(world,data); // rendu pas très beau, a modifier
+    world.mobs[0].direction := 0; 
+
     while running do
     begin
         //Gestion des événements
@@ -74,45 +106,55 @@ begin
         begin 
             case event.type_ of
                 SDL_QUITEV: 
-                begin
                     running := false;
-                end;
+
                 SDL_KEYDOWN:
-                begin
-                    case event.key.keysym.sym of
-                        SDLK_ESCAPE: running := false;
-                    else
-                        handleInput(event.key.keysym.sym, playerAction, true);
-                end;
-                end;
+                        handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, playerAction, world.player.direction,true, true, running, pause);
+
+                SDL_KEYUP:
+                        handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, playerAction, world.player.direction,true, false, running, pause);
+
                 SDL_MOUSEBUTTONDOWN:
-                begin
-                    if event.button.button = SDL_BUTTON_RIGHT then
-                        handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction);
-                    if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction);
-                end;
+                    begin
+                        if event.button.button = SDL_BUTTON_RIGHT then
+                        begin
+                            if not pause then
+                                handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction,pause,running)
+                            else 
+                                handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction ,pause,running);
+                        end;
+                        if event.button.button = SDL_BUTTON_LEFT then
+                        begin
+                            if not pause then
+                                handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction, pause,running);
+                        end;
+                    end;
+
                 SDL_MOUSEWHEEL: 
-                begin
-                    if Event.wheel.y > 0 then
-                        world.player.heldItem := (world.player.heldItem - 1) 
-                    else 
-                    if Event.wheel.y < 0 then
-                        world.player.heldItem := (world.player.heldItem + 1) ;
-                        
-                    if world.player.heldItem = 0 then
-                        world.player.heldItem := 1;
-                    if world.player.heldItem = 7 then
-                        world.player.heldItem := 6;
-                end;
+                    begin
+                        if Event.wheel.y > 0 then
+                            world.player.heldItem := (world.player.heldItem - 1) 
+                        else 
+                        if Event.wheel.y < 0 then
+                            world.player.heldItem := (world.player.heldItem + 1) ;
+                            
+                        if world.player.heldItem = 0 then
+                            world.player.heldItem := 1;
+                        if world.player.heldItem = 7 then
+                            world.player.heldItem := 6;
+                    end;
+                    
                 SDL_WINDOWEVENT:
-                if Event.window.event = SDL_WINDOWEVENT_RESIZED then
-                begin
-                    windowParam.width := event.window.data1; // Nouvelle largeur
-                    windowParam.height := event.window.data2; // Nouvelle hauteur
-                end;
+                    if Event.window.event = SDL_WINDOWEVENT_RESIZED then
+                    begin
+                        windowParam.width := event.window.data1; // Nouvelle largeur
+                        windowParam.height := event.window.data2; // Nouvelle hauteur
+                    end;
+                
             end;
+            
         end;
+        addAction(playerAction,key);
         
         
         
@@ -127,7 +169,9 @@ begin
         Rect.y := Round(707/2 - world.player.pos.y*0.5);
         SDL_RenderCopy(Renderer, Background, @Rect, nil);
         //Mise à jour du monde et action du joueur
-        tick.tick(world,windowParam, playerAction, renderer, textures);  
+        tick.tick(world,windowParam, playerAction, renderer, textures, data, Font, key);  
+        if pause then
+          MenuQuitter(window,renderer,windowParam);
 
         playerAction.acts := [];
 

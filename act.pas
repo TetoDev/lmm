@@ -3,8 +3,9 @@ unit act;
 Interface
 uses LMMTypes, SDL2, util, display, math; 
 
-procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
-procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction);
+procedure handleInput(keyPressed: String;var key:TKey; var playerAction: TPlayerAction; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
+procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction; var pause,running:Boolean);
+procedure addAction(var playerAction: TPlayerAction; key:TKey);
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
 procedure handleCollision(var velocity: TVelocity; var playerPos: TPosition; box: TBoundingBox; chunk: TChunk);
@@ -12,54 +13,80 @@ function isBlockBelow (playerPos: TPosition; box: TBoundingBox; chunk: TChunk): 
 
 Implementation
 
-procedure handleInput(keyPressed: TSDL_Keycode; var playerAction: TPlayerAction; french: Boolean);
+procedure handleInput(keyPressed: String;var key:TKey; var playerAction: TPlayerAction; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
 begin
     //Suivant la touche appuyée on effectue différente action
     if french then
         case keyPressed of // FRENCH LAYOUT
-            SDLK_q: 
+            'Q': 
             begin 
-                AddActToArray(playerAction.acts, WALK_LEFT);
+                key.q := state;
+                direction:=False;
             end;
-            SDLK_d: 
+            'D': 
             begin 
-                AddActToArray(playerAction.acts, WALK_RIGHT);
+                key.d := state;
+                direction:=True;
             end;
-            SDLK_z: 
-            begin 
-                AddActToArray(playerAction.acts, JUMP);
-            end;
-            SDLK_s: 
-            begin 
-                AddActToArray(playerAction.acts, CROUCH);
-            end;
+            'Z': 
+                key.z := state;
+            'S': 
+                key.s := state;
+            'Escape':
+                running := False;
+            'E':
+                pause := True;
     else
         case keyPressed of // ENGLISH LAYOUT
-            SDLK_a: 
+            'A': 
             begin 
-                AddActToArray(playerAction.acts, WALK_LEFT);
+                key.q := state;
+                direction:=False;
             end;
-            SDLK_d: 
+            'D': 
             begin 
-                AddActToArray(playerAction.acts, WALK_RIGHT);
+                key.d := state;
+                direction:=True;
             end;
-            SDLK_w: 
-            begin 
-                AddActToArray(playerAction.acts, JUMP);
-            end;
-            SDLK_s: 
-            begin 
-                AddActToArray(playerAction.acts, CROUCH);
-            end;
+            'W': 
+                key.z := state;
+            'S': 
+                key.s := state;
+            'Escape':
+                running := False;
+            'E':
+                pause := True;
         end;
     end;
 end;
 
-procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction);
+
+procedure addAction(var playerAction: TPlayerAction; key:TKey);
 begin
-    playerAction.selectedBlock.x := world.player.pos.x + x div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) - ((window.width div SIZE)-1) div 2;
-    playerAction.selectedBlock.y := world.player.pos.y - y div Trunc(SURFACEWIDTH/BLOCKDISPLAYED) + ((window.height div SIZE)-1) div 2;
-    AddActToArray(playerAction.acts, action)
+    if key.z then 
+        AddActToArray(playerAction.acts, JUMP);
+    if key.q then 
+        AddActToArray(playerAction.acts, WALK_LEFT); 
+    if key.d then 
+        AddActToArray(playerAction.acts, WALK_RIGHT);
+      
+end;
+
+procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction; var pause,running:Boolean);
+begin
+    if not pause then
+    begin
+        playerAction.selectedBlock.x := world.player.pos.x + x/Trunc(SURFACEWIDTH/BLOCKDISPLAYED) - ((window.width/SIZE)-world.player.boundingBox.width)/ 2;
+        playerAction.selectedBlock.y := world.player.pos.y - y/Trunc(SURFACEWIDTH/BLOCKDISPLAYED) + ((window.height/SIZE)-world.player.boundingBox.height*2)/ 2;
+        AddActToArray(playerAction.acts, action)
+    end
+    else 
+    begin
+        if ((x > window.width div 2 - 100) and ( x < window.width div 2 + 100)) and ((y > window.height div 2 - 150) and ( y < window.height div 2 - 50)) then
+            running := False;
+        if ((x > window.width div 2 - 100) and ( x < window.width div 2 + 100)) and ((y > window.height div 2 + 50) and ( y < window.height div 2 + 150)) then
+            pause := False;
+    end;
 end;
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 var i: Integer;
@@ -71,16 +98,16 @@ begin
         case action of
             WALK_LEFT: 
             begin
-                velocity.x := velocity.x - 0.5;
+                velocity.x := velocity.x - 0.4;
             end;
             WALK_RIGHT: 
             begin
-                velocity.x := velocity.x + 0.5;
+                velocity.x := velocity.x + 0.4;
             end;
             JUMP: 
             begin
                 if blockBelow then
-                    velocity.y := velocity.y + 1;
+                    velocity.y := velocity.y + 0.65;
             end;
             CROUCH: 
             begin
@@ -186,7 +213,7 @@ var tl, tr, bl, br: TPosition; i: Integer;
 begin
     for i := 0 to 1 do
     begin
-    writeln(box.width);
+    // writeln(box.width);
     // Defining the corners of the player's bounding box
     // Top Left Corner
     tl.x := playerPos.x + i* velocity.x;
@@ -201,28 +228,27 @@ begin
     br.x := playerPos.x + box.width + i*velocity.x;
     br.y := playerPos.y - box.height + i*velocity.y;
 
-    writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
-    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    // writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
+    // writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    // writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    // writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    // writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        writeln('block right');
+        // writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
             playerPos.x := floor(tr.x) - box.width;
         end;
     end;
-
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        writeln('block above');
+        // writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -231,18 +257,17 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        writeln('block below');
+        // writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
             playerPos.y := ceil(tl.y+0.19)- (ceil(box.height)-box.height);
         end;
     end;
-
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        writeln('block left');
+        // writeln('block left');
         if velocity.x <= 0 then
         begin
             velocity.x := 0;

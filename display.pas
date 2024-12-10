@@ -2,17 +2,23 @@ unit display;
 
 Interface
 
-uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf,sdl2_mixer, SysUtils;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils;
 
 procedure printChunk(chunk:TChunk);
 
 procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
 
-procedure LoadTextures(var renderer: PSDL_Renderer; var Textures: TTextures);
+procedure LoadTextures(var renderer: PSDL_Renderer; var textures: TTextures; var data:TAnimationData);
 
-procedure displayPlayer(world:TWorld; window:TWindow;var renderer: PSDL_Renderer; displayAsChunk: Boolean);
+procedure displayPlayerBlock(world:TWorld; window:TWindow;var renderer: PSDL_Renderer; displayAsChunk: Boolean);
+
+procedure displayPlayer(world:TWorld; window:TWindow;Textures:TTextures; data:TAnimationData;var renderer: PSDL_Renderer);
+
+procedure displayMobs(world:TWorld; window:TWindow; Textures: TTextures; data:TAnimationData; var renderer: PSDL_Renderer);
 
 procedure displayInventory(world:TWorld; window:TWindow; var renderer: PSDL_renderer; textures:TTextures; textured :Boolean);
+
+procedure displayHpBar(world:TWorld; window:TWindow; var renderer: PSDL_renderer);
 
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer; positiveDir:Boolean);
 
@@ -106,7 +112,7 @@ begin
 end;
 
 
-procedure LoadTextures(var renderer: PSDL_Renderer; var textures: TTextures);
+procedure LoadTextures(var renderer: PSDL_Renderer; var textures: TTextures; var data:TAnimationData);
 var chemin:String; pchemin:PChar; i:Integer;
 begin
 	for i := 1 to 6 do
@@ -116,11 +122,35 @@ begin
         strPCopy(pchemin, chemin);
         textures.blocks[i]:=IMG_LoadTexture(renderer, pchemin);
         StrDispose(pchemin);
-    end
+    end;
+    for i := 1 to 5 do
+    begin
+        chemin := 'assets/player/'+IntToStr(i)+'.png';
+        pchemin:=StrAlloc(length(chemin)+1);
+        strPCopy(pchemin, chemin);
+        textures.player[i]:=IMG_LoadTexture(renderer, pchemin);
+        StrDispose(pchemin);
+    end;
+    data.PlayerNbFram[1] := 4;
+    data.PlayerNbFram[2] := 6;
+    data.PlayerNbFram[3] := 6;
+    data.PlayerNbFram[4] := 6;
+    data.PlayerNbFram[5] := 3;
 
+    for i := 1 to 3 do
+    begin
+        chemin := 'assets/mob/'+IntToStr(i)+'.png';
+        pchemin:=StrAlloc(length(chemin)+1);
+        strPCopy(pchemin, chemin);
+        textures.mobs[i]:=IMG_LoadTexture(renderer, pchemin);
+        StrDispose(pchemin);
+    end;
+    data.mobNbFram[1] := 4;
+    data.mobNbFram[2] := 4;
+    data.mobNbFram[3] := 2;
 end;
 
-procedure displayPlayer(world:TWorld; window:TWindow; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
+procedure displayPlayerBlock(world:TWorld; window:TWindow; var renderer: PSDL_Renderer; displayAsChunk: Boolean);
 var Rect: TSDL_Rect;height,width:Integer;
 begin
     if displayAsChunk then
@@ -147,6 +177,66 @@ begin
         Rect.w := width;
         Rect.h := height;
         SDL_RenderFillRect(Renderer, @Rect);
+    end;
+end;
+
+
+procedure displayPlayer(world:TWorld; window:TWindow;Textures:TTextures; data:TAnimationData;var renderer: PSDL_Renderer);
+var Rect, subRect : TSDL_RECT;
+begin
+
+    // the direction of the sprite change the way it is render so we have to modify the coords
+    if world.player.direction then 
+	    Rect.x := (((window.width div SIZE)-1) div 2)*SIZE
+    else 
+	    Rect.x := (((window.width div SIZE)-2) div 2)*SIZE;
+
+    Rect.y := (((window.height div SIZE)-2) div 2)*SIZE;
+	
+    Rect.w := SIZE*2;
+    Rect.h := SIZE*2;
+
+    SDL_QueryTexture(Textures.player[data.playerAction], nil, nil, @subRect.w, @subRect.h);
+
+    subRect.w := subRect.w div data.PlayerNbFram[data.playerAction];
+    subRect.x := subRect.w * data.playerStep;
+    subRect.y := 0;
+
+    if world.player.direction then
+        SDL_RenderCopyEx(renderer, Textures.player[data.playerAction], @subRect, @Rect, 0, nil, SDL_FLIP_NONE )
+    else
+        SDL_RenderCopyEx(renderer, Textures.player[data.playerAction], @subRect, @Rect, 0, nil, SDL_FLIP_HORIZONTAL);
+
+end;
+
+procedure displayMobs(world:TWorld; window:TWindow; Textures: TTextures; data:TAnimationData; var renderer: PSDL_Renderer);
+var i,x,xMob,y,xAdjustement,yAdjustement:Integer; Rect, subRect : TSDL_RECT;
+begin
+    x:= Trunc(world.player.pos.x) mod 100; 
+    y:= Trunc(world.player.pos.y);
+
+    Rect.w := SIZE;
+    Rect.h := SIZE;
+
+    xAdjustement := ((window.width div SIZE)-1) div 2;
+    yAdjustement := ((window.height div SIZE)-2) div 2;
+
+    for i:= 0 to (Length(world.mobs)-1) do
+    begin
+        xMob := Trunc(world.mobs[i].pos.x) - 100*trunc(world.player.pos.x/100);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        Rect.x := (xMob - x + xAdjustement)*SIZE;
+        Rect.y := (y - 1 - Trunc(world.mobs[i].pos.y)  + yAdjustement)*SIZE;
+
+        SDL_QueryTexture(Textures.mobs[data.mobsData[i].mobAction], nil, nil, @subRect.w, @subRect.h);
+
+        subRect.w := subRect.w div data.mobNbFram[data.mobsData[i].mobAction];
+        subRect.x := subRect.w * (data.playerStep mod data.mobNbFram[data.mobsData[i].mobAction]);
+        subRect.y := 0;
+        if world.mobs[i].direction > 0 then
+            SDL_RenderCopyEx(renderer, Textures.mobs[data.mobsData[i].mobAction], @subRect, @Rect, 0, nil, SDL_FLIP_NONE )
+        else
+            SDL_RenderCopyEx(renderer, Textures.mobs[data.mobsData[i].mobAction], @subRect, @Rect, 0, nil, SDL_FLIP_HORIZONTAL);
     end;
 end;
 
@@ -234,6 +324,24 @@ begin
     end;
 end;
 
+procedure displayHpBar(world:TWorld; window:TWindow; var renderer: PSDL_renderer);
+var Rect: TSDL_Rect;
+begin
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    Rect.w := 370;
+    Rect.h := 40;
+    Rect.x := window.width div 2 - 185;
+    Rect.y := window.height - 1650;
+    SDL_RenderFillRect(Renderer, @Rect);
+
+    SDL_SetRenderDrawColor(renderer, 240, 0, 0, 255);
+    Rect.w := 370*Trunc(world.player.health/100);
+    Rect.h := 40;
+    Rect.x := window.width div 2 - 185;
+    Rect.y := window.height - 150;
+    SDL_RenderFillRect(Renderer, @Rect);
+end;
+
 procedure displayChunk(chunk:TChunk; var renderer: PSDL_Renderer;positiveDir:Boolean);
 var i,j,height,width:Integer; Rect: TSDL_Rect;
 begin
@@ -281,7 +389,7 @@ begin
                         if chunk.layout[99-j][99-i] = 6 then 
                             SDL_SetRenderDrawColor(renderer, 26, 26, 26, 255);       
                         Rect.x := j*width;
-                        Rect.y :=  i*height;
+                        Rect.y := i*height;
                         SDL_RenderFillRect(Renderer, @Rect);
                     end;
                 end
@@ -406,7 +514,7 @@ begin
     Rect.h := SIZE;
 
     xAdjustement := ((window.width div SIZE)-1) div 2 ;
-    yAdjustement := ((window.height div SIZE)-1) div 2;
+    yAdjustement := ((window.height div SIZE)-4) div 2;
 
     // We render the current chunk
     if chunk.chunkIndex >=0 then 

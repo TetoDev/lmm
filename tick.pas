@@ -2,18 +2,18 @@ unit tick;
 
 interface
 
-uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, util, worldGeneration;
+uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, sdl2_ttf, util, worldGeneration, mob, menu;
 
-procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
+procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; var textures: TTextures; var data:TAnimationData; Font: PTTF_Font;key:TKey);
 
 implementation
 
-procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; textures: TTextures);
+procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; var textures: TTextures; var data:TAnimationData; Font: PTTF_Font;key:TKey);
 var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockBelow: Boolean;
-    x, y: Integer;
+    x: Integer;
     currentChunk: TChunk;
     leftChunk, rightChunk: TChunk;
 begin
@@ -36,7 +36,11 @@ begin
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
 
 
-    blockBelow := isBlockBelow(playerPos, world.player.boundingBox, currentChunk);
+    if x > findTop(currentChunk,x) then
+        blockBelow := False
+    else 
+        blockBelow := True;
+
 
     // Enacting layer input
     playerMove(playerVel, blockBelow, playerAction);
@@ -44,16 +48,16 @@ begin
 
 
     // Max running speed
-    if playerVel.x > 0.3 then
-        playerVel.x := 0.3;
-    if playerVel.x < -0.3 then
-        playerVel.x := -0.3;
+    if playerVel.x > 0.15 then
+        playerVel.x := 0.15;
+    if playerVel.x < -0.15 then
+        playerVel.x := -0.15;
     
     // Terminal Velocity limit
-    if playerVel.y > 1 then
-        playerVel.y := 1;
-    if playerVel.y < -2 then
-        playerVel.y := -2;
+    if playerVel.y > 0.4 then
+        playerVel.y := 0.4;
+    if playerVel.y < -0.8 then
+        playerVel.y := -0.8;
 
     
     handleCollision(playerVel, playerPos, world.player.boundingBox, currentChunk);
@@ -62,41 +66,33 @@ begin
     playerPos.x := playerPos.x + playerVel.x;
     playerPos.y := playerPos.y + playerVel.y;
 
+    // we update which animation the player will have depending on its velocity and the player input
+    if not (playerVel.x = 0) and (playerVel.y = 0) then
+        data.playerAction := 2
+    else if not(playerVel.y = 0) then
+        data.playerAction := 3
+     else 
+        data.playerAction := 1;
 
-        
     // Friction
-    if blockBelow then
-    begin
-        if playerVel.x > 0 then
-            playerVel.x := playerVel.x - 0.1;
-        if playerVel.x < 0 then
-            playerVel.x := playerVel.x + 0.1;
+    if playerVel.x > 0 then
+        playerVel.x := playerVel.x - 0.074;
+    if playerVel.x < 0 then
+        playerVel.x := playerVel.x + 0.074;
 
-        if (playerVel.x > 0) and (playerVel.x < 0.1) then
-            playerVel.x := 0;
-        if (playerVel.x < 0) and (playerVel.x > -0.1)then
-            playerVel.x := 0;
-    end
-    else
-    begin
-        if playerVel.x > 0 then
-            playerVel.x := playerVel.x - 0.05;
-        if playerVel.x < 0 then
-            playerVel.x := playerVel.x + 0.05;
+    // we add a tolerance just in case 
+    if (playerVel.x > 0) and (playerVel.x < 0.075) then
+        playerVel.x := 0;
+    if (playerVel.x < 0) and (playerVel.x > -0.075)then
+        playerVel.x := 0;
 
-        if (playerVel.x > 0) and (playerVel.x < 0.1) then
-            playerVel.x := 0;
-        if (playerVel.x < 0) and (playerVel.x > -0.1)then
-            playerVel.x := 0;
-    end;
     // Gravity
-    playerVel.y := playerVel.y - 0.1;
-
-
+    playerVel.y := playerVel.y - 0.05;
+    
     world.player.pos := playerPos;
     world.player.vel := playerVel;
     world.player.health := playerHealth;
-
+    updateMob(world);
 
     if (time mod 3573876) = 0 then
         worldSave(world);
@@ -104,6 +100,20 @@ begin
         time := 0
     else
         time := time + 1;
+
+
+
+    // we calculate the fram of the sprite we have to display 
+    data.Fram := data.Fram + 1;
+    if data.Fram >= data.PlayerNbFram[data.playerAction]*5 then
+    begin
+        data.Fram := 1;
+        data.playerStep := 1;
+    end;
+    if data.playerStep < Trunc(data.Fram/5) then
+    begin
+        data.playerStep := Trunc(data.Fram/5);
+    end;
 
 
     if x > 50 then
@@ -118,7 +128,15 @@ begin
 	SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
 
     
-    displayPlayer(world, window,renderer, False);
+    displayPlayer(world, window, textures, data, renderer);
+    displayMobs(world,window,textures, data,renderer); 
+    displayHpBar(world,window,renderer);
+
+    // affichage du nombre de PV
+    DisplayText(PChar(IntToStr(playerHealth) +' HP'), window.window,renderer, Font, window.width div 2 - 180,window.height - 145);
+    // affichage des coordonnées du joueur
+    DisplayText(PChar('X :' + IntToStr(Trunc(playerPos.x)) + ' | Y : ' + IntToStr(Trunc(playerPos.y))), window.window,renderer, Font, trunc(SIZE/2),trunc(SIZE/2));
+
     displayInventory(world,window, renderer, textures, True);
 
     world.lastChunk := currentChunk.chunkIndex;
