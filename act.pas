@@ -129,11 +129,13 @@ begin
         case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                currentChunk.layout[abs(x)][y]:= world.player.heldItem; 
+                currentChunk.layout[abs(x)][y]:= world.player.heldItem;
+                AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
             end;
             REMOVE_BLOCK: 
             begin
                 currentChunk.layout[abs(x)][y] := 0;
+                AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
             end;
         end;
     end;
@@ -159,7 +161,8 @@ begin
     // checkVerticalCollision := false; 
 
     // Checking vertical collisions
-    BlockX := Floor(correctionX);
+    BlockX := abs(Floor(correctionX)) - abs(trunc(correctionX/100)*100);
+    // Writeln(BlockX);
     BlockY := floor(correctionY);
 
     if chunk.layout[BlockX][BlockY] > 0 then
@@ -187,7 +190,8 @@ begin
     // checkHorizontalCollision := false;
 
     // Checking horizontal collisions
-    BlockX := floor(correctionX);
+    BlockX := abs(floor(correctionX)) - abs(trunc(correctionX/100)*100);
+    // Writeln(BlockX);
     BlockY := floor(correctionY);
     
     if chunk.layout[BlockX][BlockY] > 0 then
@@ -213,7 +217,6 @@ var tl, tr, bl, br: TPosition; i: Integer;
 begin
     for i := 0 to 1 do
     begin
-    // writeln(box.width);
     // Defining the corners of the player's bounding box
     // Top Left Corner
     tl.x := playerPos.x + i* velocity.x;

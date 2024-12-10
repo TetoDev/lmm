@@ -13,7 +13,6 @@ var playerPos: TPosition;
     playerVel: TVelocity;
     playerHealth, time: Integer;
     blockBelow: Boolean;
-    x: Integer;
     currentChunk: TChunk;
     leftChunk, rightChunk: TChunk;
 begin
@@ -21,9 +20,6 @@ begin
     playerVel := world.player.vel;
     playerHealth := world.player.health;
     time := world.time;
-
-    // Player's BLOCK chunk coordinates
-    x := Trunc(playerPos.x) mod 100;
 
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
@@ -34,12 +30,6 @@ begin
 
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
-
-
-    if x > findTop(currentChunk,x) then
-        blockBelow := False
-    else 
-        blockBelow := True;
 
 
     // Enacting layer input
@@ -100,7 +90,8 @@ begin
         time := 0
     else
         time := time + 1;
-
+    world.time := time;
+    displaySky(renderer, world, textures);
 
 
     // we calculate the fram of the sprite we have to display 
@@ -116,7 +107,7 @@ begin
     end;
 
 
-    if x > 50 then
+    if abs(trunc(playerPos.x)) - abs(trunc(playerPos.x/100)*100) > 50 then
         // displayBlocks(world, window,currentChunk, rightChunk, renderer)
         displayBlocksTextured(window,currentChunk, rightChunk, world.player.pos, textures, renderer)
     else
