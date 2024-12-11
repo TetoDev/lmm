@@ -4,8 +4,8 @@ Interface
 uses LMMTypes, SDL2, util, display, math, fileHandler; 
 
 // acts procedure for the menu 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,running,leave:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,running,leave:Boolean);
 
 // acts procedure for the in game
 procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
@@ -25,7 +25,7 @@ procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorl
 Implementation
 
 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,running,leave:Boolean);
 begin 
     while SDL_PollEvent(@event) <> 0 do
     begin 
@@ -39,7 +39,7 @@ begin
             SDL_MOUSEBUTTONDOWN:
                 begin
                     if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,chooseWorld,running,leave);
+                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,page,chooseWorld,running,leave);
                 end;
 
             SDL_MOUSEWHEEL: 
@@ -59,7 +59,7 @@ begin
 end;
 
 
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,running,leave:Boolean);
 var i:Integer; worlds:StringArray;
 begin
     if not chooseWorld then
@@ -85,6 +85,13 @@ begin
                 running := False;
                 fileName := worlds[i];
             end;
+        if (Length(worlds) - 1) > (Trunc((window.height - 250)/105)-1) then 
+            if ((x > window.width div 2 + 170) and ( x < window.width div 2 + 270)) and ((y > (250 + (Trunc((window.height - 250)/105)-1)*105)) and (y < (350 + (Trunc((window.height - 250)/105)-1)*105))) then
+                    page := page + 1;
+        if page > 1 then 
+            if ((x > window.width div 2 -270) and ( x < window.width div 2 - 170)) and ((y > (250 + (Trunc((window.height - 250)/105)-1)*105)) and (y < (350 + (Trunc((window.height - 250)/105)-1)*105))) then
+                    page := page - 1;
+
     end;
 end;
 

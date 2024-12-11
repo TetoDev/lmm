@@ -12,7 +12,7 @@ procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Rendere
 
 procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld:Boolean);
 
 implementation
 
@@ -145,8 +145,29 @@ begin
   
 end;
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
-var worlds : StringArray; i : Integer;Buffer: array[0..255] of Char;Rect: TSDL_Rect;
+procedure MenuWorldsList(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;page:Integer);
+var worlds : StringArray; i,n : Integer;Buffer: array[0..255] of Char;Rect: TSDL_Rect;
+begin
+  Rect.w := 320;
+        Rect.h := 20 + trunc((window.height - 250)/105)*105;
+        Rect.x := window.width div 2 - 160;
+        Rect.y := 240;
+        SDL_RenderFillRect(Renderer, @Rect);
+        worlds := getWorlds();
+        for i:=0 to min(Length(worlds) - 1 - (page-1)*(Trunc((window.height - 250)/105)-1), Trunc((window.height - 250)/105)-1) do 
+        begin
+          n := i + (page-1)*(Trunc((window.height - 250)/105)-1);
+          button(Renderer,window,Font,StrPCopy(Buffer,worlds[n]),(window.width - 300) div 2, (250 + i*105),300,100);
+        end;
+        if (Length(worlds) - 1) > (page)*(Trunc((window.height - 250)/105)-1) then 
+          button(Renderer,window,Font,PChar('   >'),(window.width div 2 +170), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
+        if page > 1 then 
+          button(Renderer,window,Font,PChar('   <'),(window.width div 2 -270), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
+
+        button(Renderer,window,Font,PChar('Back'),25, 25,150,100);
+end;
+
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld:Boolean);
 begin
     background(textures,Renderer, window, chooseWorld);
 
@@ -159,17 +180,7 @@ begin
     end;
     if chooseWorld then
     begin
-        Rect.w := 320;
-        Rect.h := 20 + trunc((window.height - 250)/105)*105;
-        Rect.x := window.width div 2 - 160;
-        Rect.y := 240;
-        SDL_RenderFillRect(Renderer, @Rect);
-        worlds := getWorlds();
-        for i:=0 to min(Length(worlds) - 1, Trunc((window.height - 250)/105)-1) do 
-        begin
-          button(Renderer,window,Font,StrPCopy(Buffer,worlds[i]),(window.width - 300) div 2, (250 + i*105),300,100);
-        end;
-        button(Renderer,window,Font,PChar('Back'),25, 25,200,100);
+        MenuWorldsList(Renderer,window,Font,page);
     end;
 end;
 
