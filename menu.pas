@@ -12,7 +12,7 @@ procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Rendere
 
 procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld:Boolean);
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, createWorld:Boolean; worldName:String);
 
 implementation
 
@@ -92,7 +92,7 @@ begin
     DisplayText(PChar('Leave'), window.window,renderer, Font, window.width div 2 - 130 ,window.height div 2 + 63);
 end;
 
-procedure background(textures:TTextures;var renderer:PSDL_Renderer; window:TWindow; chooseWorld:Boolean);
+procedure background(textures:TTextures;var renderer:PSDL_Renderer; window:TWindow; chooseWorld,createWorld:Boolean);
 var Rect: TSDL_Rect;i,j:Integer;
 begin
     //affichage du back ground constitué de blocks et du ciel
@@ -128,6 +128,12 @@ begin
       SDL_SetRenderDrawColor(renderer, 80, 80, 80, 128); 
       SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
       SDL_RenderFillRect(Renderer, nil);
+    end
+    else if createWorld then
+    begin
+      SDL_SetRenderDrawColor(renderer, 40, 40, 40, 188); 
+      SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
+      SDL_RenderFillRect(Renderer, nil);
     end;
 end;
 
@@ -149,31 +155,62 @@ procedure MenuWorldsList(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF
 var worlds : StringArray; i,n : Integer;Buffer: array[0..255] of Char;Rect: TSDL_Rect;
 begin
   Rect.w := 320;
-        Rect.h := 20 + trunc((window.height - 250)/105)*105;
-        Rect.x := window.width div 2 - 160;
-        Rect.y := 240;
-        SDL_RenderFillRect(Renderer, @Rect);
-        worlds := getWorlds();
-        for i:=0 to min(Length(worlds) - 1 - (page-1)*(Trunc((window.height - 250)/105)-1), Trunc((window.height - 250)/105)-1) do 
-        begin
-          n := i + (page-1)*(Trunc((window.height - 250)/105)-1);
-          button(Renderer,window,Font,StrPCopy(Buffer,worlds[n]),(window.width - 300) div 2, (250 + i*105),300,100);
-        end;
-        if (Length(worlds) - 1) > (page)*(Trunc((window.height - 250)/105)-1) then 
-          button(Renderer,window,Font,PChar('   >'),(window.width div 2 +170), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
-        if page > 1 then 
-          button(Renderer,window,Font,PChar('   <'),(window.width div 2 -270), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
+  Rect.h := 20 + trunc((window.height - 250)/105)*105;
+  Rect.x := window.width div 2 - 160;
+  Rect.y := 240;
+  SDL_RenderFillRect(Renderer, @Rect);
 
-        button(Renderer,window,Font,PChar('Back'),25, 25,150,100);
+  worlds := getWorlds();
+
+  for i:=0 to min(Length(worlds) - 1 - (page-1)*(Trunc((window.height - 250)/105)-1), Trunc((window.height - 250)/105)-1) do 
+  begin
+    n := i + (page-1)*(Trunc((window.height - 250)/105)-1);
+    button(Renderer,window,Font,StrPCopy(Buffer,worlds[n]),(window.width - 300) div 2, (250 + i*105),300,100);
+  end;
+
+  if (Length(worlds) - 1) > (page)*(Trunc((window.height - 250)/105)-1) then 
+    button(Renderer,window,Font,PChar('   >'),(window.width div 2 +170), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
+  if page > 1 then 
+    button(Renderer,window,Font,PChar('   <'),(window.width div 2 -270), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
+
+  button(Renderer,window,Font,PChar('Back'),25, 25,150,100);
 end;
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld:Boolean);
+procedure MenuInputName(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;worldName:String);
+var Rect: TSDL_Rect;
 begin
-    background(textures,Renderer, window, chooseWorld);
+
+  SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
+  Rect.w := 420;
+  Rect.h := 70;
+  Rect.x := window.width div 2 - 220;
+  Rect.y := window.height div 2 - 10;
+  SDL_RenderFillRect(Renderer, @Rect);
+
+  SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+  Rect.w := 400;
+  Rect.h := 60;
+  Rect.x := window.width div 2 - 210;
+  Rect.y := window.height div 2 - 5;
+  SDL_RenderFillRect(Renderer, @Rect);
+
+  DisplayText('Entrez le nom du monde', window.window,renderer, Font, window.width div 2 - 220, window.height div 2 - 50);
+  if worldName <> '' then
+    DisplayText(PChar(worldName),window.window,Renderer,Font,window.width div 2 - 200, window.height div 2 + 12)
+  else 
+    DisplayText(PChar('Nom du monde'),window.window,Renderer,Font,window.width div 2 - 200, window.height div 2 + 12);
+    
+    SDL_SetRenderDrawColor(renderer, 20, 180, 20, 100);
+    button(Renderer,window,Font,PChar('Valider'),(window.width div 2 - 90), (window.height div 2 + 75),180,100)
+end;
+
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, createWorld:Boolean; worldName:String);
+begin
+    background(textures,Renderer, window, chooseWorld, createWorld);
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
 
-    if not chooseWorld then
+    if not chooseWorld and not createWorld then
     begin
         button(Renderer,window,Font,PChar('Play'),(window.width - 300) div 2, (window.height div 2 -125),300,100);
         button(Renderer,window,Font,PChar('Leave'),(window.width - 300) div 2, (window.height div 2 +25),300,100);
@@ -182,7 +219,12 @@ begin
     begin
         button(Renderer,window,Font,PChar('New World'),(window.width - 300) div 2, 100 ,300,100);
         MenuWorldsList(Renderer,window,Font,page);
-    end;
+    end
+    else if createWorld then
+    begin
+        button(Renderer,window,Font,PChar('Back'),25, 25,150,100);
+        MenuInputName(Renderer,window,Font,worldName);
+    end; 
 end;
 
 

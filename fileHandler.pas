@@ -132,9 +132,6 @@ begin
 
     // On charge le monde a partir du chunk dans lequel le joueur se trouve
     rootChunkIndex := getChunkIndex(world.player.pos.x);
-    
-    writeln('Current chunk: ', rootChunkIndex);
-    
 
 
     // Removing previous chunks and saving them
