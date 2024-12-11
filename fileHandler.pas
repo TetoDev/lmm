@@ -242,14 +242,13 @@ begin
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
 
-    world.player.boundingBox.width := 0.8;
-    world.player.boundingBox.height := 1.8;
+    world.player.boundingBox.width := 0.6;
+    world.player.boundingBox.height := 0.8;
     freeandnil(worldStringList);
     
     // On charge les chunks autour du jouer
-    // loadPlayerChunks(world);  A MODIFIER !!
+    loadPlayerChunks(world);
     world.seed := 10;
-    InitialiseWorld(world);
     //loadPlayerChunks(world);
     
     world.player.pos.y := 1 + findTop(world.chunks[1], Trunc(world.player.pos.x)); // Temporary y init pos 
