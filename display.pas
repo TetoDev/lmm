@@ -4,6 +4,9 @@ Interface
 
 uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils;
 
+
+procedure InitDisplay(var windowParam:TWindow; var renderer:PSDL_renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData);
+
 procedure printChunk(chunk:TChunk);
 
 procedure cameraDisplacement(world: TWorld; position: TPosition; viewHeight,viewWidth: Integer);
@@ -32,6 +35,68 @@ procedure displaySky(var renderer: PSDL_Renderer; world: TWorld; textures:TTextu
 
 
 Implementation
+
+procedure InitDisplay(var windowParam:TWindow; var renderer:PSDL_renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData);
+begin
+  windowParam.height := SURFACEHEIGHT;
+    windowParam.width := SURFACEWIDTH;
+    //Initialisation de la SDL
+    if SDL_Init(SDL_INIT_VIDEO) < 0 then
+    begin
+        writeln('Erreur initialisation SDL : ', SDL_GetError());
+        exit;
+    end;
+
+    if (IMG_Init(IMG_INIT_PNG) and IMG_INIT_PNG) = 0 then
+    begin
+        Writeln('SDL_image could not initialize! IMG_Error: ', IMG_GetError);
+        SDL_Quit;
+        Halt(1);
+    end;
+
+    if TTF_Init < 0 then
+    begin
+        Writeln('Erreur lors de l''initialisation de SDL_ttf: ', TTF_GetError);
+        SDL_Quit;
+        Halt(1);
+    end;
+
+    //Création de la fenêtre
+    windowParam.window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowParam.width, windowParam.height, SDL_WINDOW_RESIZABLE );
+    if windowParam.window = nil then
+    begin
+        writeln('Erreur création fenêtre : ', SDL_GetError());
+        exit;
+    end;
+
+
+    //Création du rendu
+    renderer := SDL_CreateRenderer(windowParam.window, -1, SDL_RENDERER_ACCELERATED);
+
+    if renderer = nil then
+    begin
+        writeln('Erreur création rendu : ', SDL_GetError());
+        exit;
+    end;
+
+    // Charger une police de caractères
+    Font := TTF_OpenFont(PChar('assets/GoblinOne-Regular.ttf'), 24); // Charge la police Arial taille 24
+    if Font = nil then
+    begin
+        Writeln('Erreur lors du chargement de la police: ', TTF_GetError);
+        SDL_DestroyRenderer(Renderer);
+        SDL_DestroyWindow(windowParam.window);
+        TTF_Quit;
+        SDL_Quit;
+        Halt(1);
+    end;
+
+
+    // Initialisation des textures
+    LoadTextures(renderer, textures, data);
+    data.Fram:= 1;
+    data.playerAction := 1;
+end;
 
 // procedure pour afficher le chunk entier dans le terminal
 procedure printChunk(chunk:TChunk);
@@ -213,10 +278,11 @@ begin
 end;
 
 procedure displayMobs(world:TWorld; window:TWindow; Textures: TTextures; data:TAnimationData; var renderer: PSDL_Renderer);
-var i,x,xMob,y,xAdjustement,yAdjustement:Integer; Rect, subRect : TSDL_RECT;
+var i,xMob,xAdjustement,yAdjustement:Integer; Rect, subRect : TSDL_RECT;x,y:Real;
 begin
-    x:= Trunc(world.player.pos.x) mod 100; 
-    y:= Trunc(world.player.pos.y);
+    x:= world.player.pos.x - 100*(trunc(world.player.pos.x/100)); 
+    y:= 99 - world.player.pos.y;
+
 
     Rect.w := SIZE;
     Rect.h := SIZE;
@@ -228,8 +294,8 @@ begin
     begin
         xMob := Trunc(world.mobs[i].pos.x) - 100*trunc(world.player.pos.x/100);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        Rect.x := (xMob - x + xAdjustement)*SIZE;
-        Rect.y := (y - 1 - Trunc(world.mobs[i].pos.y)  + yAdjustement)*SIZE;
+        Rect.x := Trunc(xMob - x + xAdjustement)*SIZE;
+        Rect.y := Trunc(y - 1 - Trunc(world.mobs[i].pos.y)  + yAdjustement)*SIZE;
 
         SDL_QueryTexture(Textures.mobs[data.mobsData[i].mobAction], nil, nil, @subRect.w, @subRect.h);
 
@@ -244,7 +310,7 @@ begin
 end;
 
 procedure displayInventory(world:TWorld; window:TWindow; var renderer: PSDL_renderer; textures:TTextures; textured :Boolean);
-var Rect: TSDL_Rect;
+var Rect: TSDL_Rect; i :Integer;
 begin
     
     SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
@@ -260,8 +326,6 @@ begin
     Rect.x := window.width div 2 - 185 + (world.player.heldItem-1)*60;
     Rect.y := window.height - 100;
     SDL_RenderFillRect(Renderer, @Rect);
-
-
 
     Rect.w := 50;
     Rect.h := 50;
@@ -301,29 +365,12 @@ begin
     end
     else
     begin
-    Rect.x := window.width div 2 - 175 ;
-    Rect.y := window.height - 90;
-    SDL_RenderCopy(renderer, textures.blocks[1], nil, @Rect);
-
-    Rect.x := window.width div 2 - 115 ;
-    Rect.y := window.height - 90;
-    SDL_RenderCopy(renderer, textures.blocks[2], nil, @Rect);
-
-    Rect.x := window.width div 2 - 55 ;
-    Rect.y := window.height - 90;
-    SDL_RenderCopy(renderer, textures.blocks[3], nil, @Rect);
-
-    Rect.x := window.width div 2 + 5 ;
-    Rect.y := window.height - 90;
-    SDL_RenderCopy(renderer, textures.blocks[4], nil, @Rect);
-
-    Rect.x := window.width div 2 + 65 ;
-    Rect.y := window.height - 90;
-    SDL_RenderCopy(renderer, textures.blocks[5], nil, @Rect);
-
-    Rect.x := window.width div 2 + 125 ;
-    Rect.y := window.height - 90;
-    SDL_RenderCopy(renderer, textures.blocks[6], nil, @Rect);
+    for i := 0 to 5 do 
+    begin
+        Rect.x := window.width div 2 - 175 +i*60;
+        Rect.y := window.height - 90;
+        SDL_RenderCopy(renderer, textures.blocks[i+1], nil, @Rect);
+    end;
     end;
 end;
 

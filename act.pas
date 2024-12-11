@@ -16,42 +16,45 @@ Implementation
 procedure handleInput(keyPressed: String;var key:TKey; var playerAction: TPlayerAction; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
 begin
     //Suivant la touche appuyée on effectue différente action
-    if french then
-        case keyPressed of // FRENCH LAYOUT
-            'Q': 
-            begin 
-                key.q := state;
-                direction:=False;
+    if not pause then 
+    begin
+        if french then
+            case keyPressed of // FRENCH LAYOUT
+                'Q': 
+                begin 
+                    key.q := state;
+                    direction:=False;
+                end;
+                'D': 
+                begin 
+                    key.d := state;
+                    direction:=True;
+                end;
+                'Z': 
+                    key.z := state;
+                'S': 
+                    key.s := state;
+                'Escape':
+                    pause := True;
+        else
+            case keyPressed of // ENGLISH LAYOUT
+                'A': 
+                begin 
+                    key.q := state;
+                    direction:=False;
+                end;
+                'D': 
+                begin 
+                    key.d := state;
+                    direction:=True;
+                end;
+                'W': 
+                    key.z := state;
+                'S': 
+                    key.s := state;
+                'Escape':
+                    pause := True;
             end;
-            'D': 
-            begin 
-                key.d := state;
-                direction:=True;
-            end;
-            'Z': 
-                key.z := state;
-            'S': 
-                key.s := state;
-            'Escape':
-                pause := True;
-    else
-        case keyPressed of // ENGLISH LAYOUT
-            'A': 
-            begin 
-                key.q := state;
-                direction:=False;
-            end;
-            'D': 
-            begin 
-                key.d := state;
-                direction:=True;
-            end;
-            'W': 
-                key.z := state;
-            'S': 
-                key.s := state;
-            'Escape':
-                pause := True;
         end;
     end;
 end;

@@ -15,64 +15,9 @@ var
     windowParam:TWindow;
     Font: PTTF_Font;
 begin
-    windowParam.height := SURFACEHEIGHT;
-    windowParam.width := SURFACEWIDTH;
-    //Initialisation de la SDL
-    if SDL_Init(SDL_INIT_VIDEO) < 0 then
-    begin
-        writeln('Erreur initialisation SDL : ', SDL_GetError());
-        exit;
-    end;
+    
+    InitDisplay(windowParam,renderer,Font,textures,data);
 
-    if (IMG_Init(IMG_INIT_PNG) and IMG_INIT_PNG) = 0 then
-    begin
-        Writeln('SDL_image could not initialize! IMG_Error: ', IMG_GetError);
-        SDL_Quit;
-        Halt(1);
-    end;
-
-    if TTF_Init < 0 then
-    begin
-        Writeln('Erreur lors de l''initialisation de SDL_ttf: ', TTF_GetError);
-        SDL_Quit;
-        Halt(1);
-    end;
-
-    //Création de la fenêtre
-    windowParam.window := SDL_CreateWindow('LMM', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowParam.width, windowParam.height, SDL_WINDOW_RESIZABLE );
-    if windowParam.window = nil then
-    begin
-        writeln('Erreur création fenêtre : ', SDL_GetError());
-        exit;
-    end;
-
-
-    //Création du rendu
-    renderer := SDL_CreateRenderer(windowParam.window, -1, SDL_RENDERER_ACCELERATED);
-
-    if renderer = nil then
-    begin
-        writeln('Erreur création rendu : ', SDL_GetError());
-        exit;
-    end;
-
-    // Charger une police de caractères
-    Font := TTF_OpenFont(PChar('assets/GoblinOne-Regular.ttf'), 24); // Charge la police Arial taille 24
-    if Font = nil then
-    begin
-        Writeln('Erreur lors du chargement de la police: ', TTF_GetError);
-        SDL_DestroyRenderer(Renderer);
-        SDL_DestroyWindow(windowParam.window);
-        TTF_Quit;
-        SDL_Quit;
-        Halt(1);
-    end;
-
-
-    // Initialisation des textures
-    LoadTextures(renderer, textures, data);
-    data.Fram:= 1;
-    data.playerAction := 1;
     //Initialisation de la structure du monde
 
     world := worldInit('Save 1'); 

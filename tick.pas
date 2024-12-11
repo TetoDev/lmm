@@ -84,7 +84,7 @@ begin
     world.player.pos := playerPos;
     world.player.vel := playerVel;
     world.player.health := playerHealth;
-    // updateMob(world);
+    updateMob(world);
 
     if (time mod 3573876) = 0 then
         worldSave(world);
@@ -122,7 +122,7 @@ begin
 
     
     displayPlayer(world, window, textures, data, renderer);
-    //displayMobs(world,window,textures, data,renderer); 
+    displayMobs(world,window,textures, data,renderer); 
     displayHpBar(world,window,renderer);
 
     // affichage du nombre de PV
