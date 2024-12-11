@@ -12,13 +12,15 @@ procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowPar
 procedure handleInput(keyPressed: String;var key:TKey; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
 procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction; var pause,running:Boolean);
 procedure addAction(var playerAction: TPlayerAction; key:TKey);
-procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
+procedure playerMove(var player: TPlayer; var vel: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction; time: Integer);
 procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
 procedure handleCollision(var velocity: TVelocity; var pos: TPosition; box: TBoundingBox; chunk: TChunk);
 function checkVerticalCollision(corner: TPosition; chunk: TChunk; isRight, isDown: Boolean): Boolean;
 function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isDown: Boolean): Boolean;
 function isBlockBelow (pos: TPosition; box: TBoundingBox; chunk: TChunk): Boolean;
-procedure attack (var targetHealth: Integer; damage: Integer);
+procedure inflictDamage (var targetHealth: Integer; damage: Integer);
+procedure playerAttack (var player: TPlayer; var vel: TVelocity; time: Integer);
+procedure resetPlayerAttack(var player: TPlayer; time: Integer);
 
 Implementation
 
@@ -151,6 +153,8 @@ begin
                     key.s := state;
                 'Escape':
                     pause := True;
+                'F':
+                    key.f := state;
         else
             case keyPressed of // ENGLISH LAYOUT
                 'A': 
@@ -169,6 +173,8 @@ begin
                     key.s := state;
                 'Escape':
                     pause := True;
+                'F':
+                    key.f := state;
             end;
         end;
     end;
@@ -183,6 +189,8 @@ begin
         AddActToArray(playerAction.acts, WALK_LEFT); 
     if key.d then 
         AddActToArray(playerAction.acts, WALK_RIGHT);
+    if key.f then
+        AddActToArray(playerAction.acts, ATTACK);
       
 end;
 
@@ -203,7 +211,7 @@ begin
     end;
 end;
 
-procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
+procedure playerMove(var player: TPlayer; var vel: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction; time: Integer);
 var i: Integer;
     action: TActs;
 begin
@@ -213,20 +221,24 @@ begin
         case action of
             WALK_LEFT: 
             begin
-                velocity.x := velocity.x - 0.4;
+                vel.x := vel.x - 0.4;
             end;
             WALK_RIGHT: 
             begin
-                velocity.x := velocity.x + 0.4;
+                vel.x := vel.x + 0.4;
             end;
             JUMP: 
             begin
                 if blockBelow then
-                    velocity.y := velocity.y + 0.65;
+                    vel.y := vel.y + 0.65;
             end;
             CROUCH: 
             begin
-                //On ne fait rien
+                // NOT IMPLEMENTED, cool but not relevant
+            end;
+            ATTACK:
+            begin
+                playerAttack(player, vel, time);
             end;
         end;
     end;
@@ -356,7 +368,7 @@ begin
     // For right corner horizontal collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        //writeln('block right');
+        writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
@@ -366,7 +378,7 @@ begin
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        //writeln('block above');
+        writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -375,7 +387,7 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        //writeln('block below');
+        writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
@@ -385,8 +397,8 @@ begin
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        //writeln('block left');
-        if velocity.x < 0 then
+        writeln('block left');
+        if velocity.x <= 0 then
         begin
             velocity.x := 0;
             pos.x := floor(tl.x+0.2);
@@ -395,9 +407,27 @@ begin
     end;
 end;
 
-procedure attack (var targetHealth: Integer; damage: Integer);
+procedure inflictDamage (var targetHealth: Integer; damage: Integer);
 begin
     targetHealth := targetHealth - damage;
+end;
+
+procedure playerAttack (var player: TPlayer; var vel: TVelocity; time: Integer);
+begin
+    if abs(time - player.lastAttack) < 30 then
+    begin
+        player.attacking := true;
+        vel.x := 0.5;
+        vel.y := 0.15;
+    end;
+end;
+
+procedure resetPlayerAttack(var player: TPlayer; time: Integer);
+begin
+    if abs(time - player.lastAttack) > 20 then
+    begin
+        player.attacking := false; // MAYBE DO SOMETHING WITH ANIMATION I DUNNO
+    end;
 end;
 
 end.

@@ -39,6 +39,8 @@ type
         health: Integer;
         heldItem:Integer;
         direction:Boolean;
+        attacking: Boolean;
+        lastAttack: Integer;
     end;
 
     TMob = record
@@ -89,7 +91,7 @@ type
         time: Integer;
     end;
 
-    TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK);
+    TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK, ATTACK);
 
     actsArray = array of TActs;
 
@@ -104,7 +106,7 @@ type
     end;
 
     TKey = record
-        z,q,s,d :Boolean;
+        z,q,s,d,f :Boolean;
     end;
 
 const 

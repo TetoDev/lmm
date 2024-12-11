@@ -16,7 +16,7 @@ var running,chooseWorld:Boolean;
 begin
     running := true;
     chooseWorld:=False;
-    while running do // Changer de place act.pas
+    while running do
     begin
         eventMenuListener(event,world,windowParam ,chooseWorld,running,leave);
         MenuHomescreen(renderer,windowParam, Font, textures,chooseWorld);

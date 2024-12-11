@@ -70,7 +70,7 @@ begin
     if (abs(playerPos.x - mob.pos.x) < 0.1) and (abs(playerPos.y - mob.pos.y) < 0.8) then
         if abs(time - mob.lastAttack) > 15 then
         begin
-            attack(playerHealth, 10);
+            inflictDamage(playerHealth, 10);
             mob.lastAttack := time;
         end;
 end;

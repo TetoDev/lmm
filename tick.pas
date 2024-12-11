@@ -39,7 +39,7 @@ begin
 
 
     // Enacting layer input
-    playerMove(playerVel, blockBelow, playerAction);
+    playerMove(world.player, playerVel, blockBelow, playerAction, world.time);
     blockAct(playerAction, world);
 
 
