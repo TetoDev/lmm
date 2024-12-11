@@ -564,7 +564,7 @@ begin
     Rect.h := SIZE;
 
     xAdjustement := ((window.width div SIZE)-1) div 2 ;
-    yAdjustement := ((window.height div SIZE)-4) div 2;
+    yAdjustement := trunc(((window.height div SIZE)-1.2)/2);
 
     // We render the current chunk
     if chunk.chunkIndex >=0 then 

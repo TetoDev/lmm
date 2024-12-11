@@ -230,17 +230,17 @@ begin
     br.x := playerPos.x + box.width + i*velocity.x;
     br.y := playerPos.y - box.height + i*velocity.y;
 
-    // writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
-    // writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    // writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    // writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    // writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
+    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        // writeln('block right');
+        writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
@@ -250,7 +250,7 @@ begin
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        // writeln('block above');
+        writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -259,7 +259,7 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        //writeln('block below');
+        writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
@@ -269,7 +269,7 @@ begin
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        //writeln('block left');
+        writeln('block left');
         if velocity.x < 0 then
         begin
             velocity.x := 0;

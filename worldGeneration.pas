@@ -8,8 +8,6 @@ function NewSeed():LongInt;
 
 procedure chunkShapeGeneration(var chunk: TChunk; seed: LongInt);
 
-procedure InitialiseWorld(var world:TWorld);
-
 Implementation
 
 function NewSeed():LongInt;
@@ -104,25 +102,6 @@ begin
     end;
     for i := 0 to random(8) do 
         createTree(chunk, random(95)+3)
-end;
-
-
-
-procedure InitialiseWorld(var world:TWorld);
-var chunkLeft, chunkMid, chunkRight:TChunk;
-begin
-    chunkLeft.chunkIndex := -1;
-    chunkMid.chunkIndex:= 0;
-    chunkRight.chunkIndex := 1;
-
-    AddChunkToArray(world.chunks, chunkLeft);
-    AddChunkToArray(world.chunks, chunkMid);
-    AddChunkToArray(world.chunks, chunkRight);
-
-    chunkShapeGeneration(world.chunks[0],world.seed);
-    chunkShapeGeneration(world.chunks[1],world.seed);
-    chunkShapeGeneration(world.chunks[2],world.seed);
-
 end;
 
 end.
