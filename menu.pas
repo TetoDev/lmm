@@ -92,10 +92,25 @@ end;
 procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
 var Rect: TSDL_Rect;i,j:Integer;
 begin
+
+    //affichage du back ground constitué de blocks et du ciel
+    
+    Rect.w := Round(1107/1.4);
+    Rect.h := Round(707/1.4);
+    Rect.x := 0;
+    Rect.y := 0;
+    SDL_RenderCopy(Renderer, textures.sky, @Rect, nil);
+    SDL_SetTextureAlphaMod(textures.sky, 255);
     Rect.w := SIZE;
     Rect.h := SIZE;
-    for j := 0 to ceil(window.width/SIZE) do
-      for i := 0 to ceil(window.height/SIZE) do
+    for i := 0 to ceil(window.width/SIZE) do
+    begin 
+        Rect.x := i*SIZE;
+        Rect.y := 5*SIZE;
+        SDL_RenderCopy(renderer, textures.blocks[1], nil, @Rect);
+    end;
+    for j := 6 to ceil(window.height/SIZE) do
+      for i := 0 to ceil(window.width/SIZE) do
       begin 
           Rect.x := i*SIZE;
           Rect.y := j*SIZE;

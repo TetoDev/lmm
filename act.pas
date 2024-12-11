@@ -1,11 +1,11 @@
 unit act;
 
 Interface
-uses LMMTypes, SDL2, util, display, math; 
+uses LMMTypes, SDL2, util, display, math, fileHandler; 
 
 // acts procedure for the menu 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var chooseWorld,running,leave:Boolean);
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow;var chooseWorld,running,leave:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
 
 // acts procedure for the in game
 procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
@@ -23,7 +23,7 @@ procedure attack (var targetHealth: Integer; damage: Integer);
 Implementation
 
 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var chooseWorld,running,leave:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
 begin 
     while SDL_PollEvent(@event) <> 0 do
     begin 
@@ -37,7 +37,7 @@ begin
             SDL_MOUSEBUTTONDOWN:
                 begin
                     if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouseMenu(event.button.x, event.button.y, windowParam,chooseWorld,running,leave);
+                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,chooseWorld,running,leave);
                 end;
 
             SDL_MOUSEWHEEL: 
@@ -57,7 +57,7 @@ begin
 end;
 
 
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow;var chooseWorld,running,leave:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
 begin
     if not chooseWorld then
     begin
@@ -79,6 +79,10 @@ begin
         end;
     end;
 end;
+
+
+
+
 
 
 
@@ -187,6 +191,7 @@ begin
 end;
 
 procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction; var pause,running:Boolean);
+var i : Integer;
 begin
     if not pause then
     begin
@@ -199,7 +204,12 @@ begin
         if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 - 125) and ( y < window.height div 2 - 25)) then
             pause := False;
         if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 + 25) and ( y < window.height div 2 + 125)) then
+        begin
             running := False;
+            for i := 0 to Length(world.chunks) - 1 do
+              AddIntIfNotOnArray(world.unsavedChunks,world.chunks[i].chunkIndex);
+            worldSave(world);
+        end;
     end;
 end;
 

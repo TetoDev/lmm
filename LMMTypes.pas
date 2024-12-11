@@ -65,6 +65,7 @@ type
         mobs: Array [1..3] of PSDL_TEXTURE;
         sky: PSDL_TEXTURE;
         player: Array[1..5] of PSDL_TEXTURE;
+        logo:PSDL_TEXTURE;
     end;
 
     TAnimationData = record

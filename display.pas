@@ -204,6 +204,8 @@ begin
     data.PlayerNbFram[3] := 6;
     data.PlayerNbFram[4] := 6;
     data.PlayerNbFram[5] := 3;
+    
+    textures.logo:=IMG_LoadTexture(renderer, PChar('assets/logo/logo_LMM.png'));
 
     for i := 1 to 3 do
     begin
@@ -278,7 +280,7 @@ begin
 end;
 
 procedure displayMobs(world:TWorld; window:TWindow; Textures: TTextures; data:TAnimationData; var renderer: PSDL_Renderer);
-var i,xMob,xAdjustement,yAdjustement:Integer; Rect, subRect : TSDL_RECT;x,y:Real;
+var i,xAdjustement,yAdjustement:Integer; Rect, subRect : TSDL_RECT;x,y,xMob:Real;
 begin
     x:= world.player.pos.x - 100*(trunc(world.player.pos.x/100)); 
     y:= 99 - world.player.pos.y;
@@ -292,7 +294,7 @@ begin
 
     for i:= 0 to (Length(world.mobs)-1) do
     begin
-        xMob := Trunc(world.mobs[i].pos.x) - 100*trunc(world.player.pos.x/100);
+        xMob := world.mobs[i].pos.x - 100*world.player.pos.x/100;
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         Rect.x := Trunc(xMob - x + xAdjustement)*SIZE;
         Rect.y := Trunc(y - 1 - Trunc(world.mobs[i].pos.y)  + yAdjustement)*SIZE;

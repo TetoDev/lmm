@@ -18,7 +18,7 @@ begin
     chooseWorld:=False;
     while running do // Changer de place act.pas
     begin
-        eventMenuListener(event,world,windowParam ,chooseWorld,running,leave);
+        eventMenuListener(event,world,windowParam, fileName ,chooseWorld,running,leave);
         MenuHomescreen(renderer,windowParam, Font, textures,chooseWorld);
         //Affichage du monde
         SDL_RenderPresent(renderer);
