@@ -94,21 +94,24 @@ var Rect: TSDL_Rect;i,j:Integer;
 begin
 
     //affichage du back ground constitué de blocks et du ciel
-    
+    //affichage du ciel en arrière plan
     Rect.w := Round(1107/1.4);
     Rect.h := Round(707/1.4);
     Rect.x := 0;
     Rect.y := 0;
     SDL_RenderCopy(Renderer, textures.sky, @Rect, nil);
     SDL_SetTextureAlphaMod(textures.sky, 255);
+    //on parametre l'affichage des blocks
     Rect.w := SIZE;
     Rect.h := SIZE;
+    //on affiche la couche d'herbe
     for i := 0 to ceil(window.width/SIZE) do
     begin 
         Rect.x := i*SIZE;
         Rect.y := 5*SIZE;
         SDL_RenderCopy(renderer, textures.blocks[1], nil, @Rect);
     end;
+    //on affiche les couches de terre
     for j := 6 to ceil(window.height/SIZE) do
       for i := 0 to ceil(window.width/SIZE) do
       begin 
@@ -117,7 +120,7 @@ begin
 	        SDL_RenderCopy(renderer, textures.blocks[2], nil, @Rect);
       end;
 
-    
+    //si on est en selection de monde alors le fond est grisé
     if chooseWorld then
     begin
       SDL_SetRenderDrawColor(renderer, 80, 80, 80, 128); 
@@ -127,12 +130,13 @@ begin
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
 
-
+    //affichage des boutons
     Rect.w := 300;
     Rect.h := 100;
     Rect.x := window.width div 2 - 150;
     Rect.y := window.height div 2 - 125;
     SDL_RenderFillRect(Renderer, @Rect);
+    //suivant le menu le text est différent 
     if not chooseWorld then
       DisplayText(PChar('Play'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 - 87);
     if chooseWorld then

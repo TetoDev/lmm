@@ -37,12 +37,15 @@ begin
     playerAction.selectedBlock.x := 0;
     running := true;
     pause := False;
+    key.q := False;
+    key.d:= False;
+    key.f:= False;
+    key.z := False;
     while running do // Changer de place act.pas
     begin
         //Gestion des événements
         eventGameListener(event,world,windowParam, key, playerAction ,running,pause);
         addAction(playerAction,key); 
-
         //Mise à jour du monde et action du joueur
         tick.tick(world,windowParam, playerAction, renderer, textures, data, Font, key);  
         

@@ -24,6 +24,7 @@ begin
     playerVel := world.player.vel;
     playerHealth := world.player.health;
     time := world.time;
+    resetPlayerAttack(world.player,time);
 
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
@@ -63,7 +64,9 @@ begin
     playerPos.y := playerPos.y + playerVel.y;
 
     // we update which animation the player will have depending on its velocity and the player input
-    if not (playerVel.x = 0) and (playerVel.y = 0) then
+    if world.player.attacking then
+      data.playerAction := 4
+    else if not (playerVel.x = 0) and (playerVel.y = 0) then
         data.playerAction := 2
     else if not(playerVel.y = 0) then
         data.playerAction := 3
