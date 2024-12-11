@@ -180,6 +180,7 @@ begin
     end;
     if chooseWorld then
     begin
+        button(Renderer,window,Font,PChar('New World'),(window.width - 300) div 2, 100 ,300,100);
         MenuWorldsList(Renderer,window,Font,page);
     end;
 end;
