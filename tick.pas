@@ -97,7 +97,7 @@ begin
 
 
     updateMob(world);
-    resetPlayerAttack(world.player, world.time);
+    resetPlayerAttack(world.player, world.time, world);
 
     if (time mod 15000) = 0 then
         worldSave(world);

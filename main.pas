@@ -30,7 +30,7 @@ begin
             WriteLn('ici');
                 world := worldInit('Save 1');
             // ajout de mob;
-            // generateMob(world,data); // rendu pas très beau, a modifier
+            generateMob(world,data); // rendu pas très beau, a modifier
             //Boucle principale
             playGame(world,windowParam,renderer,Font,textures,data);
         end;
