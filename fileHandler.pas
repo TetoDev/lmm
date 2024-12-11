@@ -14,6 +14,7 @@ procedure deleteWorld(worldName: String);
 function worldInit(worldName: string): TWorld;
 procedure loadPlayerChunks(var world: TWorld);
 function getWorlds():StringArray;
+function newWorld (name: String): TWorld;
 
 implementation
 
@@ -69,7 +70,7 @@ begin
     rewrite(temp);
 
     // Sauvegarde des informations du monde et de la position du joueur
-    writeln(temp, world.name, ';', world.time); // line 0
+    writeln(temp, world.name, ';', world.time,';',world.seed); // line 0
     writeln(temp, Trunc(world.player.pos.x), ';', Trunc(world.player.pos.y), ';', Trunc(world.player.vel.x), ';', Trunc(world.player.vel.y), ';', world.player.health);
 
     // Sauvegarde des chunks non sauvegardés (tous les chunks qui ont été charges par le joueur depuis la dernière sauvegarde)
@@ -233,6 +234,7 @@ begin
     line := worldStringList.strings[0].Split(';');
     world.name := line[0];
     world.time := StrToInt(line[1]);
+    world.seed := StrToInt(line[2]);
     // Initialisation de la position du joueur et sa vie
     line := worldStringList.strings[1].Split(';');
 
@@ -250,8 +252,6 @@ begin
     
     // On charge les chunks autour du jouer
     loadPlayerChunks(world);
-    world.seed := 10;
-    //loadPlayerChunks(world);
     
     world.player.pos.y := 1 + findTop(world.chunks[1], Trunc(world.player.pos.x)); // Temporary y init pos 
 
@@ -292,5 +292,39 @@ begin
     DeleteFile('worlds/' + worldName + '.txt');
     deleteWorldFromindex(worldName);
 end;
+
+function newWorld (name: String): TWorld;
+var world: TWorld; chunk: TChunk; i: Integer;
+begin
+
+    world.name := name;
+    world.seed := NewSeed();
+    
+    // Generating the new chunks for the new world
+    for i := -1 to 1 do
+    begin
+        chunk.chunkIndex := i;
+        chunkShapeGeneration(chunk,world.seed);
+        AddChunkToArray(world.chunks, chunk);
+        AddIntToArray(world.unsavedChunks, chunk.chunkIndex);
+    end;
+
+    // Init the rest of the variables
+    world.player.pos.x := 50;
+    world.player.pos.y := findTop(world.chunks[1], trunc(world.player.pos.x));
+    world.player.health := 100;
+    world.player.boundingBox.width := 0.6;
+    world.player.boundingBox.height := 0.8;
+    world.player.heldItem := 0;
+    world.player.direction := true;
+    world.player.vel.x := 0;
+    world.player.vel.y := 0;
+
+    worldSave(world);
+    saveToIndex(world.name);
+
+    newWorld := world;
+end;
+
 end.
 

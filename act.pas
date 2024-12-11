@@ -14,8 +14,11 @@ procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; actio
 procedure addAction(var playerAction: TPlayerAction; key:TKey);
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
-procedure handleCollision(var velocity: TVelocity; var playerPos: TPosition; box: TBoundingBox; chunk: TChunk);
-function isBlockBelow (playerPos: TPosition; box: TBoundingBox; chunk: TChunk): Boolean;
+procedure handleCollision(var velocity: TVelocity; var pos: TPosition; box: TBoundingBox; chunk: TChunk);
+function checkVerticalCollision(corner: TPosition; chunk: TChunk; isRight, isDown: Boolean): Boolean;
+function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isDown: Boolean): Boolean;
+function isBlockBelow (pos: TPosition; box: TBoundingBox; chunk: TChunk): Boolean;
+procedure attack (var targetHealth: Integer; damage: Integer);
 
 Implementation
 
@@ -312,42 +315,42 @@ begin
     end;
 end;
 
-function isBlockBelow (playerPos: TPosition; box: TBoundingBox; chunk: TChunk): Boolean;
+function isBlockBelow (pos: TPosition; box: TBoundingBox; chunk: TChunk): Boolean;
 var br, bl: TPosition;
 begin
-    bl.x := playerPos.x;
-    bl.y := playerPos.y - box.height;
-    br.x := playerPos.x + box.width;
-    br.y := playerPos.y - box.height;
+    bl.x := pos.x;
+    bl.y := pos.y - box.height;
+    br.x := pos.x + box.width;
+    br.y := pos.y - box.height;
     
 
     isBlockBelow := checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true);
 end;
 
-procedure handleCollision(var velocity: TVelocity; var playerPos: TPosition; box: TBoundingBox; chunk: TChunk);
+procedure handleCollision(var velocity: TVelocity; var pos: TPosition; box: TBoundingBox; chunk: TChunk);
 var tl, tr, bl, br: TPosition; i: Integer;
 begin
     for i := 0 to 1 do
     begin
     // Defining the corners of the player's bounding box
     // Top Left Corner
-    tl.x := playerPos.x + i* velocity.x;
-    tl.y := playerPos.y + i*velocity.y;
+    tl.x := pos.x + i* velocity.x;
+    tl.y := pos.y + i*velocity.y;
     // Top Right Corner
-    tr.x := playerPos.x + box.width + i*velocity.x;
-    tr.y := playerPos.y + i*velocity.y;
+    tr.x := pos.x + box.width + i*velocity.x;
+    tr.y := pos.y + i*velocity.y;
     // Bottom Left Corner
-    bl.x := playerPos.x + i*velocity.x;
-    bl.y := playerPos.y - box.height + i*velocity.y;
+    bl.x := pos.x + i*velocity.x;
+    bl.y := pos.y - box.height + i*velocity.y;
     // Bottom Right Corner
-    br.x := playerPos.x + box.width + i*velocity.x;
-    br.y := playerPos.y - box.height + i*velocity.y;
+    br.x := pos.x + box.width + i*velocity.x;
+    br.y := pos.y - box.height + i*velocity.y;
 
-    //writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
-    //writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    //writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    //writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    writeln('Player Position: (', pos.x, ', ', pos.y, ')');
+    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions
@@ -357,7 +360,7 @@ begin
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
-            playerPos.x := floor(tr.x) - box.width;
+            pos.x := floor(tr.x) - box.width;
         end;
     end;
     // For vertical corner colllisions
@@ -367,7 +370,7 @@ begin
         if velocity.y > 0 then
         begin
             velocity.y := 0;
-            playerPos.y := floor(tl.y);
+            pos.y := floor(tl.y);
         end;
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
@@ -376,7 +379,7 @@ begin
         if velocity.y < 0 then
         begin
             velocity.y := 0;
-            playerPos.y := ceil(tl.y+0.19)- (ceil(box.height)-box.height);
+            pos.y := ceil(tl.y+0.19)- (ceil(box.height)-box.height);
         end;
     end;
     // For left corner horizontal collisions
@@ -386,9 +389,15 @@ begin
         if velocity.x < 0 then
         begin
             velocity.x := 0;
-            playerPos.x := floor(tl.x+0.2);
+            pos.x := floor(tl.x+0.2);
         end;
     end;
     end;
 end;
+
+procedure attack (var targetHealth: Integer; damage: Integer);
+begin
+    targetHealth := targetHealth - damage;
+end;
+
 end.

@@ -47,6 +47,7 @@ type
         boundingBox: TBoundingBox;
         health: Integer;
         direction:Integer;
+        lastAttack: Integer;
     end;
 
 

@@ -84,15 +84,19 @@ begin
 
     // Gravity
     playerVel.y := playerVel.y - 0.05;
+
+    // Player healing
+    if playerHealth < 100 then
+        playerHealth := playerHealth + 1;
     
     world.player.pos := playerPos;
     world.player.vel := playerVel;
     world.player.health := playerHealth;
     updateMob(world);
 
-    if (time mod 3573876) = 0 then
+    if (time mod 15000) = 0 then
         worldSave(world);
-    if time = 24000 then
+    if time >= 24000 then
         time := 0
     else
         time := time + 1;

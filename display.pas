@@ -621,7 +621,7 @@ end;
 procedure displaySky(var renderer: PSDL_Renderer; world: TWorld; textures:TTextures);
 var Rect: TSDL_Rect; opacity:Integer;
 begin
-    opacity := 255 - world.time mod 24000;
+    opacity := 255 - trunc(world.time/24000)*255;
 
     SDL_SetTextureAlphaMod(textures.sky, opacity);
 
