@@ -24,7 +24,6 @@ begin
     playerVel := world.player.vel;
     playerHealth := world.player.health;
     time := world.time;
-    resetPlayerAttack(world.player,time);
 
     // Current chunk
     currentChunk := getChunkByIndex(world, getChunkIndex(playerPos.x));
@@ -91,8 +90,6 @@ begin
     // Player healing
     if playerHealth < 100 then
         playerHealth := playerHealth + 1;
-
-    writeln(world.player.attacking);
     
     world.player.pos := playerPos;
     world.player.vel := playerVel;

@@ -26,8 +26,8 @@ begin
         homeScreen(world,windowParam,renderer,Font,textures, leave, fileName);
         if not leave then
         begin
-            //if fileName <> '' then
-                world := worldInit('Save 1');
+            if fileName <> '' then
+                world := worldInit(fileName);
             // ajout de mob;
             generateMob(world,data); // rendu pas très beau, a modifier
             //Boucle principale

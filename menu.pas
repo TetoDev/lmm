@@ -1,8 +1,12 @@
 unit menu;
 
+// Admettre des strings de plus de 255 caractères
+{$H+}
+{$MODE DELPHI}
+
 interface
 
-uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils, math;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils, math, fileHandler;
 
 procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Renderer; Font: PTTF_Font;x,y:Integer);
 
@@ -88,11 +92,9 @@ begin
     DisplayText(PChar('Leave'), window.window,renderer, Font, window.width div 2 - 130 ,window.height div 2 + 63);
 end;
 
-
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
+procedure background(textures:TTextures;var renderer:PSDL_Renderer; window:TWindow; chooseWorld:Boolean);
 var Rect: TSDL_Rect;i,j:Integer;
 begin
-
     //affichage du back ground constitué de blocks et du ciel
     //affichage du ciel en arrière plan
     Rect.w := Round(1107/1.4);
@@ -127,28 +129,48 @@ begin
       SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
       SDL_RenderFillRect(Renderer, nil);
     end;
+end;
+
+procedure button(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font; text:PChar;x,y, width,height:Integer);
+var Rect: TSDL_Rect;
+begin  
+    //affichage des fond des boutons
+    Rect.w := width;
+    Rect.h := height;
+    Rect.x := x;
+    Rect.y := y;
+    SDL_RenderFillRect(Renderer, @Rect);
+    //affichage du text 
+    DisplayText(text, window.window,renderer, Font, x + 20, y + 38);
+  
+end;
+
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
+var worlds : StringArray; i : Integer;Buffer: array[0..255] of Char;Rect: TSDL_Rect;
+begin
+    background(textures,Renderer, window, chooseWorld);
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
 
-    //affichage des boutons
-    Rect.w := 300;
-    Rect.h := 100;
-    Rect.x := window.width div 2 - 150;
-    Rect.y := window.height div 2 - 125;
-    SDL_RenderFillRect(Renderer, @Rect);
-    //suivant le menu le text est différent 
     if not chooseWorld then
-      DisplayText(PChar('Play'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 - 87);
+    begin
+        button(Renderer,window,Font,PChar('Play'),(window.width - 300) div 2, (window.height div 2 -125),300,100);
+        button(Renderer,window,Font,PChar('Leave'),(window.width - 300) div 2, (window.height div 2 +25),300,100);
+    end;
     if chooseWorld then
-      DisplayText(PChar('Save 1'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 - 87);
-    Rect.x := window.width div 2 - 150;
-    Rect.y := window.height div 2 + 25;
-    SDL_RenderFillRect(Renderer, @Rect);
-
-    if not chooseWorld then
-      DisplayText(PChar('Leave'), window.window,renderer, Font, window.width div 2 - 130 ,window.height div 2 + 63);
-    if chooseWorld then
-      DisplayText(PChar('Back'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 + 63);
+    begin
+        Rect.w := 320;
+        Rect.h := 20 + trunc((window.height - 250)/105)*105;
+        Rect.x := window.width div 2 - 160;
+        Rect.y := 240;
+        SDL_RenderFillRect(Renderer, @Rect);
+        worlds := getWorlds();
+        for i:=0 to min(Length(worlds) - 1, Trunc((window.height - 250)/105)-1) do 
+        begin
+          button(Renderer,window,Font,StrPCopy(Buffer,worlds[i]),(window.width - 300) div 2, (250 + i*105),300,100);
+        end;
+        button(Renderer,window,Font,PChar('Back'),25, 25,200,100);
+    end;
 end;
 
 

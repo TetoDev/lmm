@@ -269,7 +269,6 @@ begin
     begin
         worldArray[i] := worlds.strings[i];
     end;
-
     getWorlds := worldArray;
 end;
 

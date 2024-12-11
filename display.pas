@@ -298,7 +298,6 @@ begin
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         Rect.x := Trunc((xMob - x + xAdjustement)*SIZE);
         Rect.y := Trunc((99  - y - world.mobs[i].pos.y  + yAdjustement)*SIZE);
-        writeln(xMob);
         SDL_QueryTexture(Textures.mobs[data.mobsData[i].mobAction], nil, nil, @subRect.w, @subRect.h);
 
         subRect.w := subRect.w div data.mobNbFram[data.mobsData[i].mobAction];

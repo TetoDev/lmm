@@ -60,6 +60,7 @@ end;
 
 
 procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var chooseWorld,running,leave:Boolean);
+var i:Integer; worlds:StringArray;
 begin
     if not chooseWorld then
     begin
@@ -71,14 +72,19 @@ begin
             leave := True;
         end;
     end
-    else 
+    else if chooseWorld then  
     begin
-        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 - 125) and ( y < window.height div 2 - 25)) then
-            running := False;
-        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 + 25) and ( y < window.height div 2 + 125)) then
-             begin
+        // on regarde si le joueur veux retourner au menu d'avant
+        if ((x > 25) and ( x < 25 + 200 )) and ((y > 25) and ( y < 125)) then
             chooseWorld := False;
-        end;
+         // on viens regarder quel monde le joueur à t'il cliquer
+        worlds := getWorlds();
+        for i:= 0 to Length(worlds) - 1 do
+            if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > 250 + i*105) and (y < 250 + i*105 + 100)) then
+            begin
+                running := False;
+                fileName := worlds[i];
+            end;
     end;
 end;
 
@@ -248,7 +254,6 @@ begin
             end;
             ATTACK:
             begin
-                player.lastAttack := time;
                 playerAttack(player, vel, time);
             end;
         end;
@@ -440,7 +445,7 @@ end;
 procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorld);
 var i: Integer;
 begin
-    if abs(time - player.lastAttack) > 5 then
+    if abs(time - player.lastAttack) > 30 then
     begin
         player.attacking := false; // MAYBE DO SOMETHING WITH ANIMATION I DUNNO
     end
@@ -453,7 +458,6 @@ begin
         begin
             if (floor(world.mobs[i].pos.x) = floor(player.pos.x)) and (floor(world.mobs[i].pos.y) = floor(player.pos.y)) and player.attacking then
                 inflictDamage(world.mobs[i].health, 50);
-            writeln(world.mobs[i].health);
         end;
 end;
 
