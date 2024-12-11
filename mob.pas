@@ -18,8 +18,8 @@ begin
     mob.pos.y := findTop(getChunkByIndex(world, getChunkIndex(mob.pos.x)), Trunc(mob.pos.x));
     mob.vel.x := 0;
     mob.vel.y := 0; 
-    mob.boundingBox.width := 0.5;
-    mob.boundingBox.height := 0.5;
+    mob.boundingBox.width := 0.6;
+    mob.boundingBox.height := 0.27;
     mob.lastAttack := 0;
     AddMobToArray(world.mobs,mob);
     mobData.mobFram:= 1;
@@ -40,8 +40,8 @@ begin
     bl.y := mob.pos.y - mob.boundingBox.height;
 
     // Check horizontal collisions for jumping
-    if checkHorizontalCollision(br, chunk, true, true) or checkHorizontalCollision(bl, chunk, false, true) then
-        mob.vel.y := mob.vel.y + 0.4;
+    if (checkHorizontalCollision(br, chunk, true, true) or checkHorizontalCollision(bl, chunk, false, true)) and isBlockBelow(mob.pos, mob.boundingBox, chunk) then
+        mob.vel.y := mob.vel.y + 0.2;
 
     // Gravity
     mob.vel.y := mob.vel.y - 0.1;
@@ -50,9 +50,9 @@ begin
     if (abs(playerPos.x - mob.pos.x) < 10) and (abs(playerPos.y - mob.pos.y) < 10) then
     begin
         if playerPos.x - mob.pos.x > 0 then
-            mob.vel.x := 0.2
+            mob.vel.x := 0.1
         else
-            mob.vel.x := -0.2;
+            mob.vel.x := -0.1;
     end
     else
         mob.vel.x := 0;
@@ -100,14 +100,14 @@ begin
         updateDirection(mob);
         mobAttack(playerPos, mob, world.player.health, world.time, 10);
 
-        if mob.health < 1 then
-        begin
-            delete(world.mobs,i-j,1);
-            limit := limit - 1;
-            j := j + 1;
-        end;
+        // if mob.health < 1 then
+        // begin
+        //     delete(world.mobs,i-j,1);
+        //     limit := limit - 1;
+        //     // j := j + 1;
+        // end;
 
-        // world.mobs[i] := mob;
+        world.mobs[i] := mob;
     end;
 end;
 

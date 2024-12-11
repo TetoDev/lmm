@@ -20,7 +20,7 @@ function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isD
 function isBlockBelow (pos: TPosition; box: TBoundingBox; chunk: TChunk): Boolean;
 procedure inflictDamage (var targetHealth: Integer; damage: Integer);
 procedure playerAttack (var player: TPlayer; var vel: TVelocity; time: Integer);
-procedure resetPlayerAttack(var player: TPlayer; time: Integer);
+procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorld);
 
 Implementation
 
@@ -313,7 +313,7 @@ function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isD
 var toleranceX, toleranceY, correctionX, correctionY : Real; BlockX, BlockY: Integer;
 begin
     toleranceX := 0.0001;
-    toleranceY := 0.3;
+    toleranceY := 0.25;
 
     if isRight then
         correctionX := corner.x + toleranceX
@@ -437,7 +437,8 @@ begin
     end;
 end;
 
-procedure resetPlayerAttack(var player: TPlayer; time: Integer);
+procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorld);
+var i: Integer;
 begin
     if abs(time - player.lastAttack) > 5 then
     begin
@@ -448,6 +449,12 @@ begin
             player.vel.x := 0.20
         else
             player.vel.x := -0.20;
+        for i := 0 to length(world.mobs) -1 do
+        begin
+            if (floor(world.mobs[i].pos.x) = floor(player.pos.x)) and (floor(world.mobs[i].pos.y) = floor(player.pos.y)) and player.attacking then
+                inflictDamage(world.mobs[i].health, 50);
+            writeln(world.mobs[i].health);
+        end;
 end;
 
 end.
