@@ -44,9 +44,9 @@ begin
 
 
     // Max running speed
-    if playerVel.x > 0.15 then
+    if (playerVel.x > 0.15) and (not world.player.attacking) then
         playerVel.x := 0.15;
-    if playerVel.x < -0.15 then
+    if (playerVel.x < -0.15) and (not world.player.attacking) then
         playerVel.x := -0.15;
     
     // Terminal Velocity limit
@@ -88,11 +88,16 @@ begin
     // Player healing
     if playerHealth < 100 then
         playerHealth := playerHealth + 1;
+
+    writeln(world.player.attacking);
     
     world.player.pos := playerPos;
     world.player.vel := playerVel;
     world.player.health := playerHealth;
+
+
     updateMob(world);
+    resetPlayerAttack(world.player, world.time);
 
     if (time mod 15000) = 0 then
         worldSave(world);

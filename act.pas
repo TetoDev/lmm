@@ -424,20 +424,29 @@ end;
 
 procedure playerAttack (var player: TPlayer; var vel: TVelocity; time: Integer);
 begin
-    if abs(time - player.lastAttack) < 30 then
+    if abs(time - player.lastAttack) > 20 then
     begin
         player.attacking := true;
-        vel.x := 0.5;
-        vel.y := 0.15;
+        if player.direction then
+            vel.x := 0.10
+        else
+            vel.x := -0.10;
+        vel.y := 0.2;
+        player.lastAttack := time
     end;
 end;
 
 procedure resetPlayerAttack(var player: TPlayer; time: Integer);
 begin
-    if abs(time - player.lastAttack) > 20 then
+    if abs(time - player.lastAttack) > 5 then
     begin
         player.attacking := false; // MAYBE DO SOMETHING WITH ANIMATION I DUNNO
-    end;
+    end
+    else
+        if player.direction then
+            player.vel.x := 0.20
+        else
+            player.vel.x := -0.20;
 end;
 
 end.
