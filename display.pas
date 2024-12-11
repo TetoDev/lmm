@@ -38,7 +38,7 @@ Implementation
 
 procedure InitDisplay(var windowParam:TWindow; var renderer:PSDL_renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData);
 begin
-  windowParam.height := SURFACEHEIGHT;
+    windowParam.height := SURFACEHEIGHT;
     windowParam.width := SURFACEWIDTH;
     //Initialisation de la SDL
     if SDL_Init(SDL_INIT_VIDEO) < 0 then

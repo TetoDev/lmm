@@ -16,6 +16,10 @@ var playerPos: TPosition;
     currentChunk: TChunk;
     leftChunk, rightChunk: TChunk;
 begin
+
+    SDL_SetRenderDrawColor(Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(Renderer);
+
     playerPos := world.player.pos;
     playerVel := world.player.vel;
     playerHealth := world.player.health;

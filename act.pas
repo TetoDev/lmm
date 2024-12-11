@@ -3,7 +3,13 @@ unit act;
 Interface
 uses LMMTypes, SDL2, util, display, math; 
 
-procedure handleInput(keyPressed: String;var key:TKey; var playerAction: TPlayerAction; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
+// acts procedure for the menu 
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var chooseWorld,running,leave:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow;var chooseWorld,running,leave:Boolean);
+
+// acts procedure for the in game
+procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
+procedure handleInput(keyPressed: String;var key:TKey; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
 procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction; var pause,running:Boolean);
 procedure addAction(var playerAction: TPlayerAction; key:TKey);
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
@@ -13,7 +19,113 @@ function isBlockBelow (playerPos: TPosition; box: TBoundingBox; chunk: TChunk): 
 
 Implementation
 
-procedure handleInput(keyPressed: String;var key:TKey; var playerAction: TPlayerAction; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
+
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var chooseWorld,running,leave:Boolean);
+begin 
+    while SDL_PollEvent(@event) <> 0 do
+    begin 
+        case event.type_ of
+
+            SDL_QUITEV:
+            begin
+                Running := False;
+                leave := True
+            end;
+            SDL_MOUSEBUTTONDOWN:
+                begin
+                    if event.button.button = SDL_BUTTON_LEFT then
+                        handleMouseMenu(event.button.x, event.button.y, windowParam,chooseWorld,running,leave);
+                end;
+
+            SDL_MOUSEWHEEL: 
+                begin
+                   
+                end;
+                
+            SDL_WINDOWEVENT:
+                if Event.window.event = SDL_WINDOWEVENT_RESIZED then
+                begin
+                    windowParam.width := event.window.data1; // Nouvelle largeur
+                    windowParam.height := event.window.data2; // Nouvelle hauteur
+                end;
+            
+        end;
+    end;
+end;
+
+
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow;var chooseWorld,running,leave:Boolean);
+begin
+    if not chooseWorld then
+    begin
+        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 - 125) and ( y < window.height div 2 - 25)) then
+            chooseWorld := True;
+        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 + 25) and ( y < window.height div 2 + 125)) then
+        begin
+            running := False;
+            leave := True;
+        end;
+    end
+    else 
+    begin
+        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 - 125) and ( y < window.height div 2 - 25)) then
+            running := False;
+        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 + 25) and ( y < window.height div 2 + 125)) then
+             begin
+            chooseWorld := False;
+        end;
+    end;
+end;
+
+
+
+
+procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
+begin 
+    while SDL_PollEvent(@event) <> 0 do
+    begin 
+        case event.type_ of
+
+            SDL_KEYDOWN:
+                    handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, world.player.direction,true, true, running, pause);
+
+            SDL_KEYUP:
+                    handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, world.player.direction,true, false, running, pause);
+
+            SDL_MOUSEBUTTONDOWN:
+                begin
+                    if event.button.button = SDL_BUTTON_RIGHT then
+                        handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction ,pause,running);
+                    if event.button.button = SDL_BUTTON_LEFT then
+                        handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction, pause,running);
+                end;
+
+            SDL_MOUSEWHEEL: 
+                begin
+                    if Event.wheel.y > 0 then
+                        world.player.heldItem := (world.player.heldItem - 1) 
+                    else 
+                    if Event.wheel.y < 0 then
+                        world.player.heldItem := (world.player.heldItem + 1) ;
+                        
+                    if world.player.heldItem = 0 then
+                        world.player.heldItem := 1;
+                    if world.player.heldItem = 7 then
+                        world.player.heldItem := 6;
+                end;
+                
+            SDL_WINDOWEVENT:
+                if Event.window.event = SDL_WINDOWEVENT_RESIZED then
+                begin
+                    windowParam.width := event.window.data1; // Nouvelle largeur
+                    windowParam.height := event.window.data2; // Nouvelle hauteur
+                end;
+            
+        end;
+    end;
+end;
+
+procedure handleInput(keyPressed: String;var key:TKey; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
 begin
     //Suivant la touche appuyée on effectue différente action
     if not pause then 
@@ -87,6 +199,7 @@ begin
             running := False;
     end;
 end;
+
 procedure playerMove(var velocity: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction);
 var i: Integer;
     action: TActs;
@@ -230,17 +343,17 @@ begin
     br.x := playerPos.x + box.width + i*velocity.x;
     br.y := playerPos.y - box.height + i*velocity.y;
 
-    writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
-    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    //writeln('Player Position: (', playerPos.x, ', ', playerPos.y, ')');
+    //writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    //writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    //writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        writeln('block right');
+        //writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
@@ -250,7 +363,7 @@ begin
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        writeln('block above');
+        //writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -259,7 +372,7 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        writeln('block below');
+        //writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
@@ -269,7 +382,7 @@ begin
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        writeln('block left');
+        //writeln('block left');
         if velocity.x < 0 then
         begin
             velocity.x := 0;

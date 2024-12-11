@@ -2,11 +2,13 @@ unit menu;
 
 interface
 
-uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils, math;
 
 procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Renderer; Font: PTTF_Font;x,y:Integer);
 
 procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
+
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
 
 implementation
 
@@ -85,5 +87,50 @@ begin
 
     DisplayText(PChar('Leave'), window.window,renderer, Font, window.width div 2 - 130 ,window.height div 2 + 63);
 end;
+
+
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures; chooseWorld:Boolean);
+var Rect: TSDL_Rect;i,j:Integer;
+begin
+    Rect.w := SIZE;
+    Rect.h := SIZE;
+    for j := 0 to ceil(window.width/SIZE) do
+      for i := 0 to ceil(window.height/SIZE) do
+      begin 
+          Rect.x := i*SIZE;
+          Rect.y := j*SIZE;
+	        SDL_RenderCopy(renderer, textures.blocks[2], nil, @Rect);
+      end;
+
+    
+    if chooseWorld then
+    begin
+      SDL_SetRenderDrawColor(renderer, 80, 80, 80, 128); 
+      SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
+      SDL_RenderFillRect(Renderer, nil);
+    end;
+
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
+
+
+    Rect.w := 300;
+    Rect.h := 100;
+    Rect.x := window.width div 2 - 150;
+    Rect.y := window.height div 2 - 125;
+    SDL_RenderFillRect(Renderer, @Rect);
+    if not chooseWorld then
+      DisplayText(PChar('Play'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 - 87);
+    if chooseWorld then
+      DisplayText(PChar('Save 1'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 - 87);
+    Rect.x := window.width div 2 - 150;
+    Rect.y := window.height div 2 + 25;
+    SDL_RenderFillRect(Renderer, @Rect);
+
+    if not chooseWorld then
+      DisplayText(PChar('Leave'), window.window,renderer, Font, window.width div 2 - 130 ,window.height div 2 + 63);
+    if chooseWorld then
+      DisplayText(PChar('Back'), window.window,renderer, Font, window.width div 2 - 130, window.height div 2 + 63);
+end;
+
 
 end.

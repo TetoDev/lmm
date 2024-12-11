@@ -22,6 +22,7 @@ begin
     mobData.mobFram:= 1;
     mobData.mobAction := 1;
     mobData.AnimFinished := False;
+    mob.direction := 0;
     AddMobInfoToArray(data.mobsData, mobData);
 end;
 

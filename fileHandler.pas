@@ -241,6 +241,8 @@ begin
     world.player.vel.x := StrToFloat(line[2]);
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
+    world.player.heldItem := 1;
+    world.player.direction := True;
 
     world.player.boundingBox.width := 0.6;
     world.player.boundingBox.height := 0.8;
