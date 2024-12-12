@@ -12,7 +12,7 @@ procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Rendere
 
 procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, createWorld:Boolean; worldName:String);
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, delete, createWorld:Boolean; worldName:String);
 
 implementation
 
@@ -46,7 +46,6 @@ begin
   // Convertir la surface en texture
   Texture := SDL_CreateTextureFromSurface(Renderer, Surface);
   SDL_FreeSurface(Surface); // Libérer la surface car elle n'est plus nécessaire
-
   if Texture = nil then
   begin
     Writeln('Erreur lors de la création de la texture: ', SDL_GetError);
@@ -63,6 +62,7 @@ begin
   TextRect.y := y;  // Position Y
   SDL_QueryTexture(Texture, nil, nil, @TextRect.w, @TextRect.h); // Taille automatique selon le texte
   SDL_RenderCopy(Renderer, Texture, nil, @TextRect); // Affiche le texte
+  SDL_DestroyTexture(Texture);
 end;
 
 
@@ -151,9 +151,25 @@ begin
   
 end;
 
+procedure buttonDelete(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font; text:PChar;x,y, width,height:Integer);
+var Rect: TSDL_Rect;
+begin
+    SDL_SetRenderDrawColor(renderer, 180, 20, 20, 220);  
+    //affichage des fond des boutons
+    Rect.w := width;
+    Rect.h := height;
+    Rect.x := x;
+    Rect.y := y;
+    SDL_RenderFillRect(Renderer, @Rect);
+    //affichage du text 
+    DisplayText(text, window.window,renderer, Font, x + 12, y + 12);
+  
+end;
+
 procedure MenuWorldsList(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;page:Integer);
 var worlds : StringArray; i,n : Integer;Buffer: array[0..255] of Char;Rect: TSDL_Rect;
 begin
+  
   Rect.w := 320;
   Rect.h := 20 + trunc((window.height - 250)/105)*105;
   Rect.x := window.width div 2 - 160;
@@ -165,8 +181,12 @@ begin
   for i:=0 to min(Length(worlds) - 1 - (page-1)*(Trunc((window.height - 250)/105)-1), Trunc((window.height - 250)/105)-1) do 
   begin
     n := i + (page-1)*(Trunc((window.height - 250)/105)-1);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
     button(Renderer,window,Font,StrPCopy(Buffer,worlds[n]),(window.width - 300) div 2, (250 + i*105),300,100);
+    buttonDelete(Renderer,window,Font,PChar('X'),(window.width) div 2+90, (270 + i*105),50,50)
   end;
+  
+  SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
 
   if (Length(worlds) - 1) > (page)*(Trunc((window.height - 250)/105)-1) then 
     button(Renderer,window,Font,PChar('   >'),(window.width div 2 +170), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
@@ -204,7 +224,47 @@ begin
     button(Renderer,window,Font,PChar('Valider'),(window.width div 2 - 90), (window.height div 2 + 75),180,100)
 end;
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, createWorld:Boolean; worldName:String);
+
+procedure menuDelete(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
+var Rect: TSDL_Rect;
+begin
+    
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128); 
+    SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
+    SDL_RenderFillRect(Renderer, nil);
+
+    // affichage du fond de la box 
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+    Rect.w := 450;
+    Rect.h := 200;
+    Rect.x := window.width div 2 - 225;
+    Rect.y := window.height div 2 - 100;
+    SDL_RenderFillRect(Renderer, @Rect);
+    // affichage du text 'Voulez-vous vraiment supprimer ce monde'
+    DisplayText(PChar('Delete this world ?'), window.window,renderer, Font, window.width div 2 - 170, window.height div 2 - 75);
+    //affichage du bouton Yes avec fond vert
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 210);
+    Rect.w := 75;
+    Rect.h := 60;
+    Rect.x := window.width div 2 - 125;
+    Rect.y := window.height div 2 ;
+    SDL_SetRenderDrawColor(renderer, 20, 180, 20, 220); 
+    SDL_RenderFillRect(Renderer, @Rect);
+     
+    DisplayText(PChar('Yes'), window.window,renderer, Font, window.width div 2 - 120, window.height div 2 + 20);
+
+    //affichage du bouton No avec fond rouge
+    Rect.w := 75;
+    Rect.h := 60;
+    Rect.x := window.width div 2 + 50;
+    Rect.y := window.height div 2 ;
+    SDL_SetRenderDrawColor(renderer, 180, 20, 20, 220); 
+    SDL_RenderFillRect(Renderer, @Rect);
+
+    DisplayText(PChar('No'), window.window,renderer, Font, window.width div 2 + 65 ,window.height div 2 + 20);
+end;
+
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, delete, createWorld:Boolean; worldName:String);
 begin
     background(textures,Renderer, window, chooseWorld, createWorld);
 
@@ -219,6 +279,8 @@ begin
     begin
         button(Renderer,window,Font,PChar('New World'),(window.width - 300) div 2, 100 ,300,100);
         MenuWorldsList(Renderer,window,Font,page);
+        if delete then
+           menuDelete(Renderer,window,Font);
     end
     else if createWorld then
     begin

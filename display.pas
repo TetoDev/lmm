@@ -386,7 +386,7 @@ begin
     SDL_RenderFillRect(Renderer, @Rect);
 
     SDL_SetRenderDrawColor(renderer, 240, 0, 0, 255);
-    Rect.w := 370*Trunc(world.player.health/100);
+    Rect.w := Trunc(370*world.player.health/100);
     Rect.h := 40;
     Rect.x := window.width div 2 - 185;
     Rect.y := window.height - 150;

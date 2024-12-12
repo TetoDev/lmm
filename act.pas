@@ -4,8 +4,8 @@ Interface
 uses LMMTypes, SDL2, util, display, math, fileHandler; 
 
 // acts procedure for the menu 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,running,leave,createWorld:Boolean);
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,running,leave,createWorld:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,delete,running,leave,createWorld:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,delete,running,leave,createWorld:Boolean);
 procedure handleInputMenu(keyPressed: String;var fileName:String; var running:Boolean);
 
 // acts procedure for the in game
@@ -26,7 +26,7 @@ procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorl
 Implementation
 
 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,running,leave,createWorld:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,delete,running,leave,createWorld:Boolean);
 begin 
     while SDL_PollEvent(@event) <> 0 do
     begin 
@@ -47,7 +47,7 @@ begin
             SDL_MOUSEBUTTONDOWN:
                 begin
                     if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,page,chooseWorld,running,leave,createWorld);
+                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,page,chooseWorld,delete,running,leave,createWorld);
                 end;
                 
             SDL_WINDOWEVENT:
@@ -62,7 +62,7 @@ begin
 end;
 
 
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,running,leave,createWorld:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,delete,running,leave,createWorld:Boolean);
 var i:Integer; worlds:StringArray;
 begin
     if not chooseWorld and not createWorld then
@@ -82,12 +82,35 @@ begin
             chooseWorld := False;
          // on viens regarder quel monde le joueur à t'il cliquer
         worlds := getWorlds();
-        for i:= 0 to Length(worlds) - 1 do
-            if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > 250 + i*105) and (y < 250 + i*105 + 100)) then
+        if not Delete then
+        begin
+            for i:= 0 to Length(worlds) - 1 do
+                if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > 250 + i*105) and (y < 250 + i*105 + 100)) then
+                begin
+                    if ((x > window.width div 2+90) and ( x < (window.width) div 2+140 )) and ((y > 270 + i*105) and (y < 320 + i*105 + 100)) then
+                    begin
+                        delete := True;
+                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105)-1)];
+                    end
+                    else 
+                    begin
+                        running := False;
+                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105)-1)];
+                    end;
+                end;
+        end
+        else if Delete then 
+        begin
+            if ((x > window.width div 2 - 125) and ( x < window.width div 2 -50)) and ((y > window.height div 2) and (y < window.height + 60)) then
             begin
-                running := False;
-                fileName := worlds[i];
+                delete := False;
+                deleteWorld(fileName);
             end;
+            if ((x > window.width div 2 + 50) and ( x < window.width div 2 + 125)) and ((y > window.height div 2) and (y < window.height + 60)) then
+            begin
+                delete := False;
+            end;
+        end;
         // Nous venon verifier si il y a trop de monde pour la page, puis si le joueur à cliquer pour acceder à la page suivante ou précédente
         if (Length(worlds) - 1) > (Trunc((window.height - 250)/105)-1) then 
             if ((x > window.width div 2 + 170) and ( x < window.width div 2 + 270)) and ((y > (250 + (Trunc((window.height - 250)/105)-1)*105)) and (y < (350 + (Trunc((window.height - 250)/105)-1)*105))) then
@@ -119,22 +142,20 @@ end;
 
 procedure handleInputMenu(keyPressed: String;var fileName:String; var running:Boolean);
 begin
-
     if keyPressed = 'Space' then
         fileName := fileName + ' '
     else if keyPressed = 'Backspace' then
-        begin
+    begin
         if Length(fileName) > 0 then
             Dec(fileName[0])
-        end
+    end
     else if keyPressed = 'Return' then
        running := False
-    else if keyPressed = 'Left Shift'then exit
-    else if (Length(fileName) = 0) and (LowerCase(keyPressed)  >= 'a') and (LowerCase(keyPressed)  <= 'z')then 
+    else if (Length(fileName) = 0) and (LowerCase(keyPressed)  >= 'a') and (LowerCase(keyPressed)  <= 'z') and (Length(keyPressed) = 1)then 
         fileName := fileName + keyPressed
-    else if (keyPressed  >= 'A') and (keyPressed  <= 'Z') then
+    else if (keyPressed  >= 'A') and (keyPressed  <= 'Z') and (Length(keyPressed) = 1)then
         fileName := fileName + LowerCase(keyPressed)
-    else if (keyPressed  >= '0') and (keyPressed  <= '9') then
+    else if (keyPressed  >= '0') and (keyPressed  <= '9') and (Length(keyPressed) = 1) then
         fileName := fileName + keyPressed
     else fileName := fileName;
     

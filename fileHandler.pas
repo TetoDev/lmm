@@ -173,10 +173,6 @@ begin
                 // writeln('row[j]: ', row[j]);
 
                 column := row[j].Split('-');
-                
-
-
-
               
                 for k := 0 to 99 do
                 begin
@@ -270,16 +266,17 @@ begin
 end;
 
 procedure deleteWorldFromindex(const worldName: String); // TO TEST
-var index: TStringList;i:Integer;
+var index, newIndex: TStringList;i:Integer;
 begin
     index := TStringList.Create();
+    newIndex := TStringList.Create();
     index.LoadFromFile('world_index.txt');
 
     for i := 0 to index.count -1 do
-        if index.strings[i] = 'worldName' then
-            index.strings[i] := '';
+        if not (index.strings[i] = worldName) then
+            newIndex.append(index.strings[i]);
     
-    index.SaveToFile('world_index.text');
+    newIndex.SaveToFile('world_index.txt');
 end;
 
 procedure deleteWorld(worldName: String);
