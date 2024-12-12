@@ -170,44 +170,63 @@ procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowPar
 begin 
     while SDL_PollEvent(@event) <> 0 do
     begin 
-        case event.type_ of
 
-            SDL_KEYDOWN:
-                    handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, world.player.direction,true, true, running, pause);
+        if world.player.health > 0 then
+        begin
+            case event.type_ of
 
-            SDL_KEYUP:
-                    handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, world.player.direction,true, false, running, pause);
+                SDL_KEYDOWN:
+                        handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, world.player.direction,true, true, running, pause);
 
-            SDL_MOUSEBUTTONDOWN:
-                begin
-                    if event.button.button = SDL_BUTTON_RIGHT then
-                        handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction ,pause,running);
-                    if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction, pause,running);
-                end;
+                SDL_KEYUP:
+                        handleInput(SDL_GetKeyName(Event.key.keysym.sym),key, world.player.direction,true, false, running, pause);
 
-            SDL_MOUSEWHEEL: 
-                begin
-                    if Event.wheel.y > 0 then
-                        world.player.heldItem := (world.player.heldItem - 1) 
-                    else 
-                    if Event.wheel.y < 0 then
-                        world.player.heldItem := (world.player.heldItem + 1) ;
-                        
-                    if world.player.heldItem = 0 then
-                        world.player.heldItem := 1;
-                    if world.player.heldItem = 7 then
-                        world.player.heldItem := 6;
-                end;
+                SDL_MOUSEBUTTONDOWN:
+                    begin
+                        if event.button.button = SDL_BUTTON_RIGHT then
+                            handleMouse(event.button.x, event.button.y, world,windowParam, PLACE_BLOCK, playerAction ,pause,running);
+                        if event.button.button = SDL_BUTTON_LEFT then
+                            handleMouse(event.button.x, event.button.y, world,windowParam, REMOVE_BLOCK, playerAction, pause,running);
+                    end;
+
+                SDL_MOUSEWHEEL: 
+                    begin
+                        if Event.wheel.y > 0 then
+                            world.player.heldItem := (world.player.heldItem - 1) 
+                        else 
+                        if Event.wheel.y < 0 then
+                            world.player.heldItem := (world.player.heldItem + 1) ;
+                            
+                        if world.player.heldItem = 0 then
+                            world.player.heldItem := 1;
+                        if world.player.heldItem = 7 then
+                            world.player.heldItem := 6;
+                    end;
+                    
+                SDL_WINDOWEVENT:
+                    if Event.window.event = SDL_WINDOWEVENT_RESIZED then
+                    begin
+                        windowParam.width := event.window.data1; // Nouvelle largeur
+                        windowParam.height := event.window.data2; // Nouvelle hauteur
+                    end;
                 
-            SDL_WINDOWEVENT:
-                if Event.window.event = SDL_WINDOWEVENT_RESIZED then
+            end;
+        end
+
+        else 
+        begin
+          case event.type_ of
+                SDL_KEYDOWN:
                 begin
-                    windowParam.width := event.window.data1; // Nouvelle largeur
-                    windowParam.height := event.window.data2; // Nouvelle hauteur
+                    if SDL_GetKeyName(Event.key.keysym.sym) = 'Escape' then 
+                    begin
+                      running := False;  
+                    end;    
+                  
                 end;
-            
+            end;
         end;
+
     end;
 end;
 

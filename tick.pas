@@ -73,7 +73,7 @@ begin
     // we update which animation the player will have depending on its velocity and the player input
     if world.player.attacking then
       data.playerAction := 4
-    else if (abs(world.time-world.player.lastDamaged) <= 18)then
+    else if (abs(world.time - world.player.lastDamaged) <= 18)then
         data.playerAction := 5
     else if not (playerVel.x = 0) and (playerVel.y = 0) then
         data.playerAction := 2
@@ -163,6 +163,8 @@ begin
     // affichage des coordonnées du joueur
     DisplayText(PChar('X :' + IntToStr(Trunc(playerPos.x)) + ' | Y : ' + IntToStr(Trunc(playerPos.y))), window.window,renderer, Font, trunc(SIZE/2),trunc(SIZE/2));
 
+    if (world.player.health <= 0) then
+      displayDeath(window,renderer, Font);
 
     world.lastChunk := currentChunk.chunkIndex;
 

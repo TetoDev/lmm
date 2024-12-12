@@ -84,7 +84,7 @@ begin
     mob.pos.y := mob.pos.y + mob.vel.y;
 end;
 
-procedure mobAttack(player: TPlayer; var mob: TMob; var playerHealth: Integer; time, damage: Integer);
+procedure mobAttack(var player: TPlayer; var mob: TMob; var playerHealth: Integer; time, damage: Integer);
 begin
     // Attack if close enough and if its last attack has been more than 15 ticks ago
     if (abs(player.pos.x - mob.pos.x) < 0.1) and (abs(player.pos.y - mob.pos.y) < 0.8) then

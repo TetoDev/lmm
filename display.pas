@@ -2,7 +2,7 @@ unit display;
 
 Interface
 
-uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils,menu;
 
 
 procedure InitDisplay(var windowParam:TWindow; var renderer:PSDL_renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData);
@@ -22,6 +22,8 @@ procedure displayBlocksTextured(window:TWindow;chunk,nextChunk:TChunk; pos:TPosi
 procedure destroyTextures(var textures: TTextures);
 
 procedure displaySky(var renderer: PSDL_Renderer; world: TWorld; textures:TTextures);
+
+procedure displayDeath(window:TWindow; var renderer: PSDL_Renderer; Font: PTTF_Font);
 
 
 Implementation
@@ -328,6 +330,27 @@ begin
     SDL_RenderCopy(Renderer, textures.sky, @Rect, nil);
 
     SDL_SetTextureAlphaMod(textures.sky, 255);
+end;
+
+procedure displayDeath(window:TWindow; var renderer: PSDL_Renderer; Font: PTTF_Font);
+var Rect: TSDL_Rect;
+begin
+    
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128); 
+    SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
+    SDL_RenderFillRect(Renderer, nil);
+
+    // affichage du fond de la box 
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+    Rect.w := 450;
+    Rect.h := 200;
+    Rect.x := window.width div 2 - 225;
+    Rect.y := window.height div 2 - 100;
+    SDL_RenderFillRect(Renderer, @Rect);
+    // affichage du text 'GAME OVER'
+    DisplayText(PChar('GAME OVER - You lost'), window.window,renderer, Font, window.width div 2 - 190, window.height div 2 - 12);
+    //affichage de comment quitter 
+    DisplayText(PChar('Press Esc to leave this world'), window.window,renderer, Font, window.width div 2 - 245, window.height div 2 + 110);
 end;
 
 procedure destroyTextures(var textures: TTextures);

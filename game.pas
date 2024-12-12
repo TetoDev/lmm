@@ -74,6 +74,8 @@ begin
         SDL_RenderPresent(renderer);
         SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
     end;  
+    if world.player.health <= 0 then
+      deleteWorld(world.name);
 end;
 
 end.
