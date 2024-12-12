@@ -214,14 +214,14 @@ begin
   Rect.y := window.height div 2 - 5;
   SDL_RenderFillRect(Renderer, @Rect);
 
-  DisplayText('Entrez le nom du monde', window.window,renderer, Font, window.width div 2 - 220, window.height div 2 - 50);
+  DisplayText('Enter your world name', window.window,renderer, Font, window.width div 2 - 220, window.height div 2 - 50);
   if worldName <> '' then
     DisplayText(PChar(worldName),window.window,Renderer,Font,window.width div 2 - 200, window.height div 2 + 12)
   else 
-    DisplayText(PChar('Nom du monde'),window.window,Renderer,Font,window.width div 2 - 200, window.height div 2 + 12);
+    DisplayText(PChar('world name'),window.window,Renderer,Font,window.width div 2 - 200, window.height div 2 + 12);
     
     SDL_SetRenderDrawColor(renderer, 20, 180, 20, 100);
-    button(Renderer,window,Font,PChar('Valider'),(window.width div 2 - 90), (window.height div 2 + 75),180,100)
+    button(Renderer,window,Font,PChar('Create'),(window.width div 2 - 90), (window.height div 2 + 75),180,100)
 end;
 
 
