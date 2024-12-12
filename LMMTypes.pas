@@ -41,6 +41,7 @@ type
         direction:Boolean;
         attacking: Boolean;
         lastAttack: Integer;
+        lastDamaged: Integer;
     end;
 
     TMob = record

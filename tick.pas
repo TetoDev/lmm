@@ -73,6 +73,8 @@ begin
     // we update which animation the player will have depending on its velocity and the player input
     if world.player.attacking then
       data.playerAction := 4
+    else if (abs(world.time-world.player.lastDamaged) <= 18)then
+        data.playerAction := 5
     else if not (playerVel.x = 0) and (playerVel.y = 0) then
         data.playerAction := 2
     else if not(playerVel.y = 0) then
@@ -140,7 +142,7 @@ begin
     else
     begin
         if abs(trunc(playerPos.x)) - abs(trunc(playerPos.x/100)*100) > 50 then
-            sideChunk := leftChunk // Si negatif et a droite
+            sideChunk := leftChunk // Si negatif et 50% a droite
         else
             sideChunk := rightChunk; // Si negatif et 50% a gauche
     end;
@@ -148,18 +150,18 @@ begin
         
     // On affiche le monde avec les textures charges dans TTextures, on passe comme argument le chunk dans lequel le player se trouve et aussi celui qui est a cote.
     displayBlocksTextured(window,currentChunk, sideChunk, world.player.pos, textures, renderer);
-    
-    
+    //affichage du joueur
     displayPlayer(world, window, textures, data, renderer);
+    //affichage des mobs
     displayMobs(world,window,textures, data,renderer); 
-    displayHpBar(world,window,renderer);
 
+    //affichage d'information supplémentaire
+    displayHpBar(world,window,renderer);
+    displayInventory(world,window, renderer, textures);
     // affichage du nombre de PV
     DisplayText(PChar(IntToStr(playerHealth) +' HP'), window.window,renderer, Font, window.width div 2 - 180,window.height - 145);
     // affichage des coordonnées du joueur
     DisplayText(PChar('X :' + IntToStr(Trunc(playerPos.x)) + ' | Y : ' + IntToStr(Trunc(playerPos.y))), window.window,renderer, Font, trunc(SIZE/2),trunc(SIZE/2));
-
-    displayInventory(world,window, renderer, textures, True);
 
 
     world.lastChunk := currentChunk.chunkIndex;

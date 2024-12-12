@@ -17,7 +17,6 @@ procedure AddChunkToArray(var Arr: ChunkArray; const Element: TChunk);
 function getChunkIndex(x : Real): Integer;
 function findTop(chunk:TChunk; x:Integer):Integer;
 procedure reinsertChunk(var world: TWorld; chunk: TChunk);
-procedure checkBlockAdjency(world:TWorld; pos:TPosition; var blockLeft,blockBelow,blockRight :Boolean);
 
 
 implementation
@@ -124,36 +123,10 @@ begin
     begin
         if chunk.layout[xRelatif][i] = 0 then 
         begin
-            findTop := i;
+            findTop := i+1;
             Exit
         end;
         i := i + 1;
     end;
 end;
-
-procedure checkBlockAdjency(world:TWorld; pos:TPosition; var blockLeft,blockBelow,blockRight :Boolean);
-var x,y:Integer; currentChunk,leftChunk,rightChunk:TChunk;
-begin
-    x := Trunc(pos.x) mod 100;
-    y := Trunc(pos.y);
-
-    // Current chunk
-    currentChunk := getChunkByIndex(world, getChunkIndex(pos.x));
-    leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
-    rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
-
-    // Checking block adjacency for collision checking
-    if x = 0 then
-        blockLeft := leftChunk.layout[99][y] > 0
-    else
-        blockLeft := currentChunk.layout[abs(x - 1)][y] > 0;
-    
-    if x = 99 then
-        blockRight := rightChunk.layout[0][y] > 0
-    else
-        blockRight := currentChunk.layout[abs(x + 1)][y] > 0;
-
-    blockBelow := currentChunk.layout[abs(x)][y-1] > 0;
-end;
-
 end.

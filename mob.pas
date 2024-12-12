@@ -84,13 +84,14 @@ begin
     mob.pos.y := mob.pos.y + mob.vel.y;
 end;
 
-procedure mobAttack(playerPos: TPosition; var mob: TMob; var playerHealth: Integer; time, damage: Integer);
+procedure mobAttack(player: TPlayer; var mob: TMob; var playerHealth: Integer; time, damage: Integer);
 begin
     // Attack if close enough and if its last attack has been more than 15 ticks ago
-    if (abs(playerPos.x - mob.pos.x) < 0.1) and (abs(playerPos.y - mob.pos.y) < 0.8) then
+    if (abs(playerPos.pos.x - mob.pos.x) < 0.1) and (abs(player.pos.y - mob.pos.y) < 0.8) then
         if abs(time - mob.lastAttack) > 15 then
         begin
             inflictDamage(playerHealth, 10);
+            player.lastDamaged := time;
             mob.lastAttack := time;
         end;
 end;
@@ -137,7 +138,7 @@ begin
         mobMove(playerPos, mob, chunk);
         data.mobsData[i].mobAction := 1;
         updateDirection(mob);
-        mobAttack(playerPos, mob, world.player.health, world.time, 10);
+        mobAttack(world.player, mob, world.player.health, world.time, 10);
 
         writeln('Mob ', i, ' health: ', mob.health);
 
