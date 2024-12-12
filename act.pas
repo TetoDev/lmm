@@ -528,7 +528,10 @@ begin
         for i := 0 to length(world.mobs) -1 do
         begin
             if (floor(world.mobs[i].pos.x) = floor(player.pos.x)) and (floor(world.mobs[i].pos.y) = floor(player.pos.y)) and player.attacking then
+            begin
                 inflictDamage(world.mobs[i].health, 20);
+                world.mobs[i].lastDamaged := world.time;
+            end;
         end;
 end;
 

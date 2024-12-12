@@ -51,6 +51,7 @@ type
         health: Integer;
         direction:Integer;
         lastAttack: Integer;
+        lastDamaged: Integer;
         lastJump: Integer;
     end;
 

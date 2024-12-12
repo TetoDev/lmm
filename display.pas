@@ -303,9 +303,11 @@ begin
         subRect.w := subRect.w div data.mobNbFram[data.mobsData[i].mobAction];
         subRect.x := subRect.w * (data.playerStep mod data.mobNbFram[data.mobsData[i].mobAction]);
         subRect.y := 0;
+        if abs(world.mobs[i].lastDamaged-world.time) < 5 then
+            data.mobsData[i].mobAction := 3;
         if world.mobs[i].direction > 0 then
             SDL_RenderCopyEx(renderer, Textures.mobs[data.mobsData[i].mobAction], @subRect, @Rect, 0, nil, SDL_FLIP_NONE )
-        else
+        else 
             SDL_RenderCopyEx(renderer, Textures.mobs[data.mobsData[i].mobAction], @subRect, @Rect, 0, nil, SDL_FLIP_HORIZONTAL);
     end;
 end;

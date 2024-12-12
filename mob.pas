@@ -21,6 +21,7 @@ begin
     mob.boundingBox.width := 0.6;
     mob.boundingBox.height := 0.25;
     mob.lastAttack := 0;
+    mob.lastDamaged := 0;
     mob.id := world.mobsGenerated + 1;
     AddMobToArray(world.mobs,mob);
     mobData.mobId := mob.id;
@@ -65,7 +66,6 @@ begin
 
     // Check for collisions so that mobs don't go through walls (allegedly)
     handleCollision(mob.vel, mob.pos, mob.boundingBox, chunk);
-
     mob.pos.x := mob.pos.x + mob.vel.x;
     mob.pos.y := mob.pos.y + mob.vel.y;
 end;
@@ -121,6 +121,7 @@ begin
         chunk := getChunkByIndex(world, getChunkIndex(mob.pos.x));
 
         mobMove(playerPos, mob, chunk);
+        data.mobsData[i].mobAction := 1;
         updateDirection(mob);
         mobAttack(playerPos, mob, world.player.health, world.time, 10);
 
