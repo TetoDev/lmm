@@ -14,7 +14,7 @@ var playerPos: TPosition;
     playerHealth, time: Integer;
     blockBelow: Boolean;
     currentChunk: TChunk;
-    leftChunk, rightChunk: TChunk;
+    leftChunk, rightChunk, sideChunk: TChunk;
 begin
 
     SDL_SetRenderDrawColor(Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -130,18 +130,25 @@ begin
         data.playerStep := Trunc(data.Fram/5);
     end;
 
-
-    if abs(trunc(playerPos.x)) - abs(trunc(playerPos.x/100)*100) > 50 then
-        // displayBlocks(world, window,currentChunk, rightChunk, renderer)
-        displayBlocksTextured(window,currentChunk, rightChunk, world.player.pos, textures, renderer)
+    if playerPos.x > 0.0 then
+    begin
+        if abs(trunc(playerPos.x)) - abs(trunc(playerPos.x/100)*100) > 50 then
+            sideChunk := rightChunk // Si positif et 50% a droite
+        else
+            sideChunk := leftChunk // Si positif et 50% a gauche
+    end
     else
-        // displayBlocks(world, window,currentChunk, leftChunk, renderer);
-        displayBlocksTextured(window,currentChunk, leftChunk, world.player.pos, textures, renderer);
+    begin
+        if abs(trunc(playerPos.x)) - abs(trunc(playerPos.x/100)*100) > 50 then
+            sideChunk := leftChunk // Si negatif et a droite
+        else
+            sideChunk := rightChunk; // Si negatif et 50% a gauche
+    end;
 
-    //displayChunk(currentChunk,renderer, world.player.pos.x > 0); Si on veut afficher le chunk actuel entierement
+        
+    // On affiche le monde avec les textures charges dans TTextures, on passe comme argument le chunk dans lequel le player se trouve et aussi celui qui est a cote.
+    displayBlocksTextured(window,currentChunk, sideChunk, world.player.pos, textures, renderer);
     
-	
-
     
     displayPlayer(world, window, textures, data, renderer);
     displayMobs(world,window,textures, data,renderer); 

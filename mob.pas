@@ -35,7 +35,7 @@ begin
 end;
 
 procedure spawnMobs(var world:TWorld; var data:TAnimationData);
-var i: Integer; spawnCriterion: Boolean;
+var spawnCriterion: Boolean;
 begin
     if world.time > 19000 then
         spawnCriterion := (Random(200) < 1)

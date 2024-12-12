@@ -593,8 +593,11 @@ begin
 	            SDL_RenderCopy(renderer, textures.blocks[chunk.layout[99-j][99-i]], nil, @Rect)
             end;  
         end;
-    delta:= nextChunk.chunkIndex - chunk.chunkIndex; // We determine if the next chunk is on the right or on the left
 
+    if (nextChunk.chunkIndex > chunk.chunkIndex) then // We determine if the next chunk is on the right or on the left
+        delta:= 1 
+    else 
+        delta:= -1;
     //We render the next chunk
     if nextChunk.chunkIndex >=0 then 
     for i := 0 to 99 do
@@ -614,7 +617,7 @@ begin
         begin
             if nextChunk.layout[99-j][99-i] > 0 then 
             begin   
-                Rect.x := Trunc((j - (99+x) + xAdjustement)*SIZE) + 100*SIZE * delta;
+                Rect.x := Trunc((j - (99+x) + xAdjustement)*SIZE) + 100*SIZE*delta;
                 Rect.y := Trunc((i - y  + yAdjustement)*SIZE);
 	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[99-j][99-i]], nil, @Rect)
             end;  
