@@ -558,8 +558,9 @@ end;
 
 
 procedure displayBlocksTextured(window:TWindow;chunk,nextChunk:TChunk; pos:TPosition; textures:TTextures; var renderer: PSDL_Renderer);
-var i,j,xAdjustement,yAdjustement,delta:Integer; Rect: TSDL_Rect; x,y:Real;
+var i,j,xAdjustement,yAdjustement:Integer; Rect: TSDL_Rect; x,y:Real;delta:Boolean;
 begin
+    // position relative du joueur par rapport au chunk
     x:= pos.x - 100*(trunc(pos.x/100)); 
     y:= 99 - pos.y;
 
@@ -595,9 +596,10 @@ begin
         end;
 
     if (nextChunk.chunkIndex > chunk.chunkIndex) then // We determine if the next chunk is on the right or on the left
-        delta:= 1 
+        delta:= True
     else 
-        delta:= -1;
+        delta:= False;
+    
     //We render the next chunk
     if nextChunk.chunkIndex >=0 then 
     for i := 0 to 99 do
@@ -605,7 +607,10 @@ begin
         begin
             if nextChunk.layout[j][99-i] > 0 then 
             begin      
-                Rect.x := Trunc((j - x + xAdjustement)*SIZE) + 100*SIZE*delta;
+                if delta then
+                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) + 100*SIZE
+                else
+                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) - 100*SIZE;
                 Rect.y := Trunc((i - y + yAdjustement)*SIZE);
 	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[j][99-i]], nil, @Rect)
             end;
@@ -616,8 +621,11 @@ begin
         for j := 0 to 99 do
         begin
             if nextChunk.layout[99-j][99-i] > 0 then 
-            begin   
-                Rect.x := Trunc((j - (99+x) + xAdjustement)*SIZE) + 100*SIZE*delta;
+            begin
+                if delta then
+                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) + 100*SIZE  
+                else 
+                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) - 100*SIZE;
                 Rect.y := Trunc((i - y  + yAdjustement)*SIZE);
 	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[99-j][99-i]], nil, @Rect)
             end;  
