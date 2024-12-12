@@ -44,16 +44,19 @@ type
     end;
 
     TMob = record
+        id: LongInt;
         pos: TPosition;
         vel: TVelocity;
         boundingBox: TBoundingBox;
         health: Integer;
         direction:Integer;
         lastAttack: Integer;
+        lastJump: Integer;
     end;
 
 
     TMobTexture = record
+        mobId: LongInt;
         mobFram: Integer;
         mobAction:integer;
         AnimFinished:Boolean;
@@ -90,6 +93,7 @@ type
         mobs: mobArray;
         worldFile: Text;
         time: Integer;
+        mobsGenerated: LongInt;
     end;
 
     TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK, ATTACK);

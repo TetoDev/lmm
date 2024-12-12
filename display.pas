@@ -297,7 +297,7 @@ begin
         xMob := world.mobs[i].pos.x - 100*trunc(world.player.pos.x/100);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         Rect.x := Trunc((xMob - x + xAdjustement)*SIZE);
-        Rect.y := Trunc((99  - y - world.mobs[i].pos.y  + yAdjustement)*SIZE);
+        Rect.y := Trunc((99  - y - world.mobs[i].pos.y  + yAdjustement + world.mobs[i].boundingBox.height)*SIZE);
         SDL_QueryTexture(Textures.mobs[data.mobsData[i].mobAction], nil, nil, @subRect.w, @subRect.h);
 
         subRect.w := subRect.w div data.mobNbFram[data.mobsData[i].mobAction];
@@ -386,7 +386,7 @@ begin
     SDL_RenderFillRect(Renderer, @Rect);
 
     SDL_SetRenderDrawColor(renderer, 240, 0, 0, 255);
-    Rect.w := 370*Trunc(world.player.health/100);
+    Rect.w := Trunc(370*world.player.health/100);
     Rect.h := 40;
     Rect.x := window.width div 2 - 185;
     Rect.y := window.height - 150;
@@ -565,7 +565,7 @@ begin
     Rect.h := SIZE;
 
     xAdjustement := ((window.width div SIZE)-1) div 2 ;
-    yAdjustement := trunc(((window.height div SIZE)-1.2)/2);
+    yAdjustement := trunc(((window.height / SIZE) -1.8)/2);
 
     // We render the current chunk
     if chunk.chunkIndex >=0 then 
