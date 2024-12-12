@@ -8,13 +8,15 @@ procedure generateMob(var world:TWorld; var data:TAnimationData);
 
 procedure updateMob(var world:TWorld; var data:TAnimationData);
 
+procedure spawnMobs(var world:TWorld; var data:TAnimationData);
+
 implementation
 
 procedure generateMob(var world:TWorld; var data:TAnimationData);
 var mob:TMob; mobData:TMobTexture;
 begin
     mob.health := 100;
-    mob.pos.x := world.player.pos.x + 2;//(Random(200) - 100);
+    mob.pos.x := world.player.pos.x + (Random(100) - 50);
     mob.pos.y := findTop(getChunkByIndex(world, getChunkIndex(mob.pos.x)), Trunc(mob.pos.x));
     mob.vel.x := 0;
     mob.vel.y := 0; 
@@ -30,6 +32,18 @@ begin
     mobData.AnimFinished := False;
     mob.direction := 0;
     AddMobInfoToArray(data.mobsData, mobData);
+end;
+
+procedure spawnMobs(var world:TWorld; var data:TAnimationData);
+var i: Integer; spawnCriterion: Boolean;
+begin
+    if world.time > 19000 then
+        spawnCriterion := (Random(200) < 1)
+    else
+        spawnCriterion := (Random(4000) < 1);
+    
+    if spawnCriterion then
+        generateMob(world, data);
 end;
 
 procedure mobMove (playerPos: TPosition; var mob: TMob; chunk: TChunk);

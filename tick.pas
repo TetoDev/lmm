@@ -105,6 +105,7 @@ begin
 
 
     updateMob(world, data);
+    spawnMobs(world, data);
     resetPlayerAttack(world.player, world.time, world);
 
     if (time mod 15000) = 0 then
