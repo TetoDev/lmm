@@ -76,7 +76,7 @@ begin
     // Sauvegarde des chunks non sauvegardés (tous les chunks qui ont été charges par le joueur depuis la dernière sauvegarde)
     for i := 0 to length(world.unsavedChunks)-1 do
     begin
-        unsavedChunk := getChunkByIndex(world, world.unsavedChunks[i]); // Chumks may unload before saving TO FIXXX
+        unsavedChunk := getChunkByIndex(world, world.unsavedChunks[i]); // Chunks may unload before saving 
         writeln(temp, stringifyChunk(unsavedChunk));
         AddIntToArray(alreadySavedChunkIndexes, unsavedChunk.chunkIndex);
     end;

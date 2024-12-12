@@ -37,12 +37,13 @@ end;
 procedure spawnMobs(var world:TWorld; var data:TAnimationData);
 var spawnCriterion: Boolean;
 begin
+    // Spawn mobs at night more frequently than during the day
     if world.time > 19000 then
         spawnCriterion := (Random(200) < 1)
     else
         spawnCriterion := (Random(4000) < 1);
-    
-    if spawnCriterion then
+    // Spawn mobs if there are less than 20 mobs in the world (arbitrary number)
+    if spawnCriterion and (Length(world.mobs) < 20) then
         generateMob(world, data);
 end;
 
@@ -98,6 +99,7 @@ end;
 
 procedure updateDirection (var mob: TMob);
 begin
+    // Update direction depending on velocity
     if mob.vel.x > 0 then
         mob.direction := 1
     else
@@ -107,6 +109,7 @@ end;
 procedure destroyMob(var world:TWorld; var data: TAnimationData ; index: Integer);
 var i, limit: Integer;
 begin
+    // Remove mob from world and data
     limit := Length(world.mobs) - 1;
 
     for i := 0 to Length(data.mobsData) - 1 do
@@ -129,19 +132,19 @@ begin
     playerPos := world.player.pos;
     limit := Length(world.mobs) - 1;
     j := 0;
-
+    
     for i := 0 to limit do
     begin
         mob := world.mobs[i-j];
         chunk := getChunkByIndex(world, getChunkIndex(mob.pos.x));
 
+        // Update mobs and check for collisions with player
         mobMove(playerPos, mob, chunk);
         data.mobsData[i].mobAction := 1;
         updateDirection(mob);
         mobAttack(world.player, mob, world.player.health, world.time, 10);
 
-        // writeln('Mob ', i, ' health: ', mob.health);
-
+        // if mob is dead we remove it from the world and data
         if mob.health <= 0 then
         begin
             destroyMob(world, data, i-j);
