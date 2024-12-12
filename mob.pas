@@ -6,7 +6,7 @@ uses LMMTypes, util, act, sysutils;
 
 procedure generateMob(var world:TWorld; var data:TAnimationData);
 
-procedure updateMob(var world:TWorld);
+procedure updateMob(var world:TWorld; var data:TAnimationData);
 
 implementation
 
@@ -19,9 +19,11 @@ begin
     mob.vel.x := 0;
     mob.vel.y := 0; 
     mob.boundingBox.width := 0.6;
-    mob.boundingBox.height := 0.27;
+    mob.boundingBox.height := 0.25;
     mob.lastAttack := 0;
+    mob.id := world.mobsGenerated + 1;
     AddMobToArray(world.mobs,mob);
+    mobData.mobId := mob.id;
     mobData.mobFram:= 1;
     mobData.mobAction := 1;
     mobData.AnimFinished := False;
@@ -40,8 +42,12 @@ begin
     bl.y := mob.pos.y - mob.boundingBox.height;
 
     // Check horizontal collisions for jumping
-    if (checkHorizontalCollision(br, chunk, true, true) or checkHorizontalCollision(bl, chunk, false, true)) and isBlockBelow(mob.pos, mob.boundingBox, chunk) then
-        mob.vel.y := mob.vel.y + 0.2;
+    if (checkHorizontalCollision(br, chunk, true, true) or checkHorizontalCollision(bl, chunk, false, true)) and isBlockBelow(mob.pos, mob.boundingBox, chunk) and (mob.lastJump > 40) then
+    begin
+        mob.lastJump := 0;
+        mob.vel.y := mob.vel.y + 0.5;
+    end;
+    mob.lastJump := mob.lastJump + 1;
 
     // Gravity
     mob.vel.y := mob.vel.y - 0.1;
@@ -50,9 +56,9 @@ begin
     if (abs(playerPos.x - mob.pos.x) < 10) and (abs(playerPos.y - mob.pos.y) < 10) then
     begin
         if playerPos.x - mob.pos.x > 0 then
-            mob.vel.x := 0.1
+            mob.vel.x := 0.05
         else
-            mob.vel.x := -0.1;
+            mob.vel.x := -0.05;
     end
     else
         mob.vel.x := 0;
@@ -83,8 +89,26 @@ begin
         mob.direction := -1;
 end;
 
+procedure destroyMob(var world:TWorld; var data: TAnimationData ; index: Integer);
+var i, limit: Integer;
+begin
+    limit := Length(world.mobs) - 1;
 
-procedure updateMob(var world:TWorld);
+    for i := 0 to Length(data.mobsData) - 1 do
+        if data.mobsData[i].mobId = world.mobs[index].id then
+            begin
+            delete(data.mobsData, i,1);
+            break;
+            end;
+
+    for i := index to limit - 1 do
+        world.mobs[i] := world.mobs[i + 1];
+
+    SetLength(world.mobs, limit);
+end;
+
+
+procedure updateMob(var world:TWorld; var data:TAnimationData);
 var i, j, limit: Integer; mob: TMob; chunk: TChunk; playerPos: TPosition;
 begin
     playerPos := world.player.pos;
@@ -100,14 +124,15 @@ begin
         updateDirection(mob);
         mobAttack(playerPos, mob, world.player.health, world.time, 10);
 
-        // if mob.health < 1 then
-        // begin
-        //     delete(world.mobs,i-j,1);
-        //     limit := limit - 1;
-        //     // j := j + 1;
-        // end;
+        writeln('Mob ', i, ' health: ', mob.health);
 
-        world.mobs[i] := mob;
+        if mob.health <= 0 then
+        begin
+            destroyMob(world, data, i-j);
+            j := j + 1;
+        end
+        else
+            world.mobs[i-j] := mob;
     end;
 end;
 

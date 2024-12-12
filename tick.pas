@@ -43,11 +43,19 @@ begin
     blockAct(playerAction, world);
 
 
-    // Max running speed
-    if (playerVel.x > 0.15) and (not world.player.attacking) then
-        playerVel.x := 0.15;
-    if (playerVel.x < -0.15) and (not world.player.attacking) then
-        playerVel.x := -0.15;
+    // Max running speed, depending on if the player is attacking or not
+    if not world.player.attacking then
+        if (playerVel.x > 0.15) then
+            playerVel.x := 0.15;
+        if (playerVel.x < -0.15) and (not world.player.attacking) then
+            playerVel.x := -0.15
+    else
+    begin
+        if (playerVel.x > 0.20) then
+            playerVel.x := 0.20;
+        if (playerVel.x < -0.20) then
+            playerVel.x := -0.20;
+    end;
     
     // Terminal Velocity limit
     if playerVel.y > 0.4 then
@@ -85,7 +93,7 @@ begin
         playerVel.x := 0;
 
     // Gravity
-    playerVel.y := playerVel.y - 0.05;
+    playerVel.y := playerVel.y - 0.04;
 
     // Player healing
     if playerHealth < 100 then
@@ -96,7 +104,7 @@ begin
     world.player.health := playerHealth;
 
 
-    updateMob(world);
+    updateMob(world, data);
     resetPlayerAttack(world.player, world.time, world);
 
     if (time mod 15000) = 0 then

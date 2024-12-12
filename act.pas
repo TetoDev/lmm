@@ -445,17 +445,17 @@ begin
     br.x := pos.x + box.width + i*velocity.x;
     br.y := pos.y - box.height + i*velocity.y;
 
-    //writeln('Player Position: (', pos.x, ', ', pos.y, ')');
-    //writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    //writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    //writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    writeln('Player Position: (', pos.x, ', ', pos.y, ')');
+    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        //writeln('block right');
+        writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
@@ -465,7 +465,7 @@ begin
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        //writeln('block above');
+        writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -474,17 +474,17 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        //writeln('block below');
+        writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
-            pos.y := ceil(tl.y+0.19)- (ceil(box.height)-box.height);
+            pos.y := ceil(tl.y + 0.1)- (ceil(box.height)-box.height);
         end;
     end;
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        //writeln('block left');
+        writeln('block left');
         if velocity.x <= 0 then
         begin
             velocity.x := 0;
@@ -508,7 +508,7 @@ begin
             vel.x := 0.10
         else
             vel.x := -0.10;
-        vel.y := 0.2;
+        vel.y := 0.15;
         player.lastAttack := time
     end;
 end;
@@ -528,7 +528,7 @@ begin
         for i := 0 to length(world.mobs) -1 do
         begin
             if (floor(world.mobs[i].pos.x) = floor(player.pos.x)) and (floor(world.mobs[i].pos.y) = floor(player.pos.y)) and player.attacking then
-                inflictDamage(world.mobs[i].health, 50);
+                inflictDamage(world.mobs[i].health, 20);
         end;
 end;
 
