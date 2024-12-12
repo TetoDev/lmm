@@ -3,11 +3,6 @@ unit act;
 Interface
 uses LMMTypes, SDL2, util, display, math, fileHandler; 
 
-// acts procedure for the menu 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,delete,running,leave,createWorld:Boolean);
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,delete,running,leave,createWorld:Boolean);
-procedure handleInputMenu(keyPressed: String;var fileName:String; var running:Boolean);
-
 // acts procedure for the in game
 procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
 procedure handleInput(keyPressed: String;var key:TKey; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
@@ -22,149 +17,9 @@ function isBlockBelow (pos: TPosition; box: TBoundingBox; chunk: TChunk): Boolea
 procedure inflictDamage (var targetHealth: Integer; damage: Integer);
 procedure playerAttack (var player: TPlayer; var vel: TVelocity; time: Integer);
 procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorld);
+procedure updatePlayer(var world: TWorld; var playerAction:TPlayerAction;var data:TAnimationData);
 
 Implementation
-
-
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,delete,running,leave,createWorld:Boolean);
-begin 
-    while SDL_PollEvent(@event) <> 0 do
-    begin 
-        case event.type_ of
-
-            SDL_QUITEV:
-            begin
-                Running := False;
-                leave := True
-            end;
-            
-            SDL_KEYDOWN:
-            begin
-              if createWorld then
-                    handleInputMenu(SDL_GetKeyName(Event.key.keysym.sym),fileName,running);
-            end;
-
-            SDL_MOUSEBUTTONDOWN:
-                begin
-                    if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,page,chooseWorld,delete,running,leave,createWorld);
-                end;
-                
-            SDL_WINDOWEVENT:
-                if Event.window.event = SDL_WINDOWEVENT_RESIZED then
-                begin
-                    windowParam.width := event.window.data1; // Nouvelle largeur
-                    windowParam.height := event.window.data2; // Nouvelle hauteur
-                end;
-            
-        end;
-    end;
-end;
-
-
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,delete,running,leave,createWorld:Boolean);
-var i:Integer; worlds:StringArray;
-begin
-    if not chooseWorld and not createWorld then
-    begin
-        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 - 125) and ( y < window.height div 2 - 25)) then
-            chooseWorld := True;
-        if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 + 25) and ( y < window.height div 2 + 125)) then
-        begin
-            running := False;
-            leave := True;
-        end;
-    end
-    else if chooseWorld then  
-    begin
-        // on regarde si le joueur veux retourner au menu d'avant
-        if ((x > 25) and ( x < 25 + 200 )) and ((y > 25) and ( y < 125)) then
-            chooseWorld := False;
-         // on viens regarder quel monde le joueur à t'il cliquer
-        worlds := getWorlds();
-        if not Delete then
-        begin
-            for i:= 0 to Length(worlds) - 1 do
-                if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > 250 + i*105) and (y < 250 + i*105 + 100)) then
-                begin
-                    if ((x > window.width div 2+90) and ( x < (window.width) div 2+140 )) and ((y > 270 + i*105) and (y < 320 + i*105 + 100)) then
-                    begin
-                        delete := True;
-                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105)-1)];
-                    end
-                    else 
-                    begin
-                        running := False;
-                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105)-1)];
-                    end;
-                end;
-        end
-        else if Delete then 
-        begin
-            if ((x > window.width div 2 - 125) and ( x < window.width div 2 -50)) and ((y > window.height div 2) and (y < window.height + 60)) then
-            begin
-                delete := False;
-                deleteWorld(fileName);
-            end;
-            if ((x > window.width div 2 + 50) and ( x < window.width div 2 + 125)) and ((y > window.height div 2) and (y < window.height + 60)) then
-            begin
-                delete := False;
-            end;
-        end;
-        // Nous venon verifier si il y a trop de monde pour la page, puis si le joueur à cliquer pour acceder à la page suivante ou précédente
-        if (Length(worlds) - 1) > (Trunc((window.height - 250)/105)-1) then 
-            if ((x > window.width div 2 + 170) and ( x < window.width div 2 + 270)) and ((y > (250 + (Trunc((window.height - 250)/105)-1)*105)) and (y < (350 + (Trunc((window.height - 250)/105)-1)*105))) then
-                    page := page + 1;
-        if page > 1 then 
-            if ((x > window.width div 2 -270) and ( x < window.width div 2 - 170)) and ((y > (250 + (Trunc((window.height - 250)/105)-1)*105)) and (y < (350 + (Trunc((window.height - 250)/105)-1)*105))) then
-                    page := page - 1;
-
-        if ((x > (window.width - 300) div 2) and (x < (window.width - 300) div 2 + 300)) and ((y > 100) and (y < 200)) then 
-        begin
-            createWorld := True;
-            chooseWorld := False;
-        end;
-
-    end
-    else if createWorld then
-      begin
-         // on regarde si le joueur veux retourner au menu d'avant
-        if ((x > 25) and ( x < 25 + 200 )) and ((y > 25) and ( y < 125)) then
-        begin
-            createWorld := False;
-            chooseWorld := True;
-        end;
-        if ((x > window.width div 2 - 90) and ( x < window.width div 2 + 90 )) and ((y > window.height div 2 + 75) and ( y < window.height div 2 + 175)) then
-            running := False
-      end;
-      
-end;
-
-procedure handleInputMenu(keyPressed: String;var fileName:String; var running:Boolean);
-begin
-    if keyPressed = 'Space' then
-        fileName := fileName + ' '
-    else if keyPressed = 'Backspace' then
-    begin
-        if Length(fileName) > 0 then
-            Dec(fileName[0])
-    end
-    else if keyPressed = 'Return' then
-       running := False
-    else if (Length(fileName) = 0) and (LowerCase(keyPressed)  >= 'a') and (LowerCase(keyPressed)  <= 'z') and (Length(keyPressed) = 1)then 
-        fileName := fileName + keyPressed
-    else if (keyPressed  >= 'A') and (keyPressed  <= 'Z') and (Length(keyPressed) = 1)then
-        fileName := fileName + LowerCase(keyPressed)
-    else if (keyPressed  >= '0') and (keyPressed  <= '9') and (Length(keyPressed) = 1) then
-        fileName := fileName + keyPressed
-    else fileName := fileName;
-    
-end;
-
-
-
-
-
 
 procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
 begin 
@@ -553,5 +408,89 @@ begin
             end;
         end;
 end;
+
+
+procedure updatePlayer(var world: TWorld; var playerAction:TPlayerAction;var data:TAnimationData);
+var playerPos: TPosition;
+    playerVel: TVelocity;
+    blockBelow: Boolean;
+    playerHealth: Integer;
+    currentChunk: TChunk;
+begin
+    // Getting the current chunk
+    currentChunk := getChunkByIndex(world, getChunkIndex(world.player.pos.x));
+    // Getting the player's current position, velocity and health
+    playerPos := world.player.pos;
+    playerVel := world.player.vel;
+    playerHealth := world.player.health;
+    // Checking if there is a block below the player
+    blockBelow := isBlockBelow(playerPos, world.player.boundingBox, currentChunk);
+    // Enacting layer input
+    playerMove(world.player, playerVel, blockBelow, playerAction, world.time);
+    blockAct(playerAction, world);
+    // Max running speed, depending on if the player is attacking or not
+    if not world.player.attacking then
+        if (playerVel.x > 0.15) then
+            playerVel.x := 0.15;
+        if (playerVel.x < -0.15) and (not world.player.attacking) then
+            playerVel.x := -0.15
+    else
+    begin
+        if (playerVel.x > 0.20) then
+            playerVel.x := 0.20;
+        if (playerVel.x < -0.20) then
+            playerVel.x := -0.20;
+    end;
+    
+    // Terminal Velocity limit
+    if playerVel.y > 0.4 then
+        playerVel.y := 0.4;
+    if playerVel.y < -0.8 then
+        playerVel.y := -0.8;
+
+    // Checking for collisions
+    handleCollision(playerVel, playerPos, world.player.boundingBox, currentChunk);
+    
+    // Updating player position
+    playerPos.x := playerPos.x + playerVel.x;
+    playerPos.y := playerPos.y + playerVel.y;
+
+    // we update which animation the player will have depending on its velocity and the player input
+    if world.player.attacking then
+      data.playerAction := 4
+    else if (abs(world.time - world.player.lastDamaged) <= 18)then
+        data.playerAction := 5
+    else if not (playerVel.x = 0) and (playerVel.y = 0) then
+        data.playerAction := 2
+    else if not(playerVel.y = 0) then
+        data.playerAction := 3
+     else 
+        data.playerAction := 1;
+
+    // Friction
+    if playerVel.x > 0 then
+        playerVel.x := playerVel.x - 0.074;
+    if playerVel.x < 0 then
+        playerVel.x := playerVel.x + 0.074;
+
+    // we add a tolerance just in case 
+    if (playerVel.x > 0) and (playerVel.x < 0.075) then
+        playerVel.x := 0;
+    if (playerVel.x < 0) and (playerVel.x > -0.075)then
+        playerVel.x := 0;
+
+    // Gravity
+    playerVel.y := playerVel.y - 0.04;
+
+    // Player healing
+    if playerHealth < 100 then
+        playerHealth := playerHealth + 1;
+    
+    // Updating player values
+    world.player.pos := playerPos;
+    world.player.vel := playerVel;
+    world.player.health := playerHealth;
+end;
+
 
 end.

@@ -123,7 +123,7 @@ begin
     begin
         if chunk.layout[xRelatif][i] = 0 then 
         begin
-            findTop := i+1;
+            findTop := i;
             Exit
         end;
         i := i + 1;

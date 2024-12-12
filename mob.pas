@@ -140,7 +140,7 @@ begin
         updateDirection(mob);
         mobAttack(world.player, mob, world.player.health, world.time, 10);
 
-        writeln('Mob ', i, ' health: ', mob.health);
+        // writeln('Mob ', i, ' health: ', mob.health);
 
         if mob.health <= 0 then
         begin

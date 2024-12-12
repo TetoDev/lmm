@@ -25,6 +25,10 @@ procedure displaySky(var renderer: PSDL_Renderer; world: TWorld; textures:TTextu
 
 procedure displayDeath(window:TWindow; var renderer: PSDL_Renderer; Font: PTTF_Font);
 
+procedure updateFrame(var data:TAnimationData);
+
+procedure DisplayGame(window:TWindow; var renderer:PSDL_Renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData; world:TWorld);
+
 
 Implementation
 
@@ -364,5 +368,65 @@ begin
     for i := 1 to 2 do
         SDL_DestroyTexture(textures.player[i]);
 end;
+
+procedure updateFrame(var data:TAnimationData);
+begin
+    data.Fram := data.Fram + 1;
+    if data.Fram >= data.PlayerNbFram[data.playerAction]*5 then
+    begin
+        data.Fram := 1;
+        data.playerStep := 1;
+    end;
+    if data.playerStep < Trunc(data.Fram/5) then
+    begin
+        data.playerStep := Trunc(data.Fram/5);
+    end;
+end;
+
+procedure DisplayGame(window:TWindow; var renderer:PSDL_Renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData; world:TWorld);
+var  currentChunk,leftChunk, rightChunk, sideChunk: TChunk;
+begin
+    currentChunk := getChunkByIndex(world, getChunkIndex(world.player.pos.x));
+    leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
+    rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
+    // on determine le chunk a afficher en fonction de la position du joueur
+    if world.player.pos.x > 0.0 then
+    begin
+        if abs(trunc(world.player.pos.x)) - abs(trunc(world.player.pos.x/100)*100) > 50 then
+            sideChunk := rightChunk // Si positif et 50% a droite
+        else
+            sideChunk := leftChunk // Si positif et 50% a gauche
+    end
+    else
+    begin
+        if abs(trunc(world.player.pos.x)) - abs(trunc(world.player.pos.x/100)*100) > 50 then
+            sideChunk := leftChunk // Si negatif et 50% a droite
+        else
+            sideChunk := rightChunk; // Si negatif et 50% a gauche
+    end;
+
+    // On affiche le ciel
+    displaySky(renderer, world, textures);
+    
+    // On affiche le monde avec les textures charges dans TTextures, on passe comme argument le chunk dans lequel le player se trouve et aussi celui qui est a cote.
+    displayBlocksTextured(window,currentChunk, sideChunk, world.player.pos, textures, renderer);
+    //affichage du joueur
+    displayPlayer(world, window, textures, data, renderer);
+    //affichage des mobs
+    displayMobs(world,window,textures, data,renderer); 
+
+    //affichage d'information supplémentaire
+    displayHpBar(world,window,renderer);
+    displayInventory(world,window, renderer, textures);
+    // affichage du nombre de PV
+    DisplayText(PChar(IntToStr(world.player.health) +' HP'), window.window,renderer, Font, window.width div 2 - 180,window.height - 145);
+    // affichage des coordonnées du joueur
+    DisplayText(PChar('X :' + IntToStr(Trunc(world.player.pos.x)) + ' | Y : ' + IntToStr(Trunc(world.player.pos.y))), window.window,renderer, Font, trunc(SIZE/2),trunc(SIZE/2));
+
+    if (world.player.health <= 0) then
+      displayDeath(window,renderer, Font);
+
+end;
+
 
 end.
