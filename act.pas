@@ -217,12 +217,18 @@ begin
         case playerAction.acts[i] of
             PLACE_BLOCK: 
             begin
-                currentChunk.layout[abs(x)][y]:= world.player.heldItem;
+                if world.player.pos.x >= 0 then
+                    currentChunk.layout[abs(x)][y]:= world.player.heldItem
+                else 
+                    currentChunk.layout[abs(x)+1][y]:= world.player.heldItem;
                 AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
             end;
             REMOVE_BLOCK: 
             begin
-                currentChunk.layout[abs(x)][y] := 0;
+                if world.player.pos.x >= 0 then
+                    currentChunk.layout[abs(x)][y]:= 0
+                else
+                    currentChunk.layout[abs(x)+1][y]:= 0;
                 AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
             end;
         end;
@@ -319,27 +325,27 @@ begin
     br.x := pos.x + box.width + i*velocity.x;
     br.y := pos.y - box.height + i*velocity.y;
 
-    writeln('Player Position: (', pos.x, ', ', pos.y, ')');
-    writeln('Top Left: (', tl.x, ', ', tl.y, ')');
-    writeln('Top Right: (', tr.x, ', ', tr.y, ')');
-    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    //writeln('Player Position: (', pos.x, ', ', pos.y, ')');
+    //writeln('Top Left: (', tl.x, ', ', tl.y, ')');
+    //writeln('Top Right: (', tr.x, ', ', tr.y, ')');
+    //writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
     // For right corner horizontal collisions
-    if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
-    begin
-        writeln('block right');
-        if velocity.x >= 0 then
-        begin
-            velocity.x := 0;
-            pos.x := floor(tr.x) - box.width;
-        end;
-    end;
+    // if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
+    // begin
+    //     writeln('block right');
+    //     if velocity.x >= 0 then
+    //     begin
+    //         velocity.x := 0;
+    //         pos.x := floor(tr.x) - box.width;
+    //     end;
+    // end;
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
-        writeln('block above');
+        //writeln('block above');
         if velocity.y > 0 then
         begin
             velocity.y := 0;
@@ -348,7 +354,7 @@ begin
     end;
     if checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true) then
     begin
-        writeln('block below');
+        //writeln('block below');
         if velocity.y < 0 then
         begin
             velocity.y := 0;
@@ -356,15 +362,15 @@ begin
         end;
     end;
     // For left corner horizontal collisions
-    if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
-    begin
-        writeln('block left');
-        if velocity.x <= 0 then
-        begin
-            velocity.x := 0;
-            pos.x := floor(tl.x+0.2);
-        end;
-    end;
+    // if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
+    // begin
+    //     //writeln('block left');
+    //     if velocity.x <= 0 then
+    //     begin
+    //         velocity.x := 0;
+    //         pos.x := floor(tl.x+0.2);
+    //     end;
+    // end;
     end;
 end;
 
@@ -483,7 +489,7 @@ begin
     playerVel.y := playerVel.y - 0.04;
 
     // Player healing
-    if playerHealth < 100 then
+    if (playerHealth < 100) and (playerHealth >0) then
         playerHealth := playerHealth + 1;
     
     // Updating player values

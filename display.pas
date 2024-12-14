@@ -2,7 +2,7 @@ unit display;
 
 Interface
 
-uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils,menu;
+uses LMMTypes, util, sdl2,sdl2_image,sdl2_ttf, SysUtils,menu,math;
 
 
 procedure InitDisplay(var windowParam:TWindow; var renderer:PSDL_renderer; var Font:PTTF_Font; var textures:TTextures; var data:TAnimationData);
@@ -237,7 +237,7 @@ begin
     SDL_RenderFillRect(Renderer, @Rect);
 
     SDL_SetRenderDrawColor(renderer, 240, 0, 0, 255);
-    Rect.w := Trunc(370*world.player.health/100);
+    Rect.w := max(0,Trunc(370*world.player.health/100));
     Rect.h := 40;
     Rect.x := window.width div 2 - 185;
     Rect.y := window.height - 150;
@@ -249,7 +249,7 @@ procedure displayBlocksTextured(window:TWindow;chunk,nextChunk:TChunk; pos:TPosi
 var i,j,xAdjustement,yAdjustement:Integer; Rect: TSDL_Rect; x,y:Real;delta:Boolean;
 begin
     // position relative du joueur par rapport au chunk
-    x:= pos.x - 100*(trunc(pos.x/100)); 
+    x:= abs(pos.x - 100*(trunc(pos.x/100))); 
     y:= 99 - pos.y;
 
     Rect.w := SIZE;
@@ -277,7 +277,7 @@ begin
         begin
             if chunk.layout[99-j][99-i] > 0 then 
             begin 
-                Rect.x := Trunc((j - (99+x) + xAdjustement)*SIZE);
+                Rect.x := Trunc((j - (99-x) + xAdjustement)*SIZE);
                 Rect.y := Trunc((i - y  + yAdjustement)*SIZE);
 	            SDL_RenderCopy(renderer, textures.blocks[chunk.layout[99-j][99-i]], nil, @Rect)
             end;  
@@ -287,15 +287,17 @@ begin
         delta:= True
     else 
         delta:= False;
-    
+        
     //We render the next chunk
     if nextChunk.chunkIndex >=0 then 
     for i := 0 to 99 do
         for j := 0 to 99 do
         begin
             if nextChunk.layout[j][99-i] > 0 then 
-            begin      
-                if delta then
+            begin
+                if delta and (nextChunk.chunkIndex = 0) then
+                    Rect.x := Trunc((j + x + xAdjustement)*SIZE)
+                else if delta then
                     Rect.x := Trunc((j - x + xAdjustement)*SIZE) + 100*SIZE
                 else
                     Rect.x := Trunc((j - x + xAdjustement)*SIZE) - 100*SIZE;
@@ -303,17 +305,19 @@ begin
 	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[j][99-i]], nil, @Rect)
             end;
         end
-    // But if the chunk is negative we render it in the opposite direction
+    // But if the next chunk is negative we render it in the opposite direction
     else
     for i := 0 to 99 do
         for j := 0 to 99 do
         begin
             if nextChunk.layout[99-j][99-i] > 0 then 
             begin
-                if delta then
-                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) + 100*SIZE  
+                if not(delta) and (nextChunk.chunkIndex = -1) then
+                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) - 100*SIZE
+                else if delta then
+                    Rect.x := Trunc((j + x + xAdjustement)*SIZE)
                 else 
-                    Rect.x := Trunc((j - x + xAdjustement)*SIZE) - 100*SIZE;
+                    Rect.x := Trunc((j + x + xAdjustement)*SIZE) - 199*SIZE;
                 Rect.y := Trunc((i - y  + yAdjustement)*SIZE);
 	            SDL_RenderCopy(renderer, textures.blocks[nextChunk.layout[99-j][99-i]], nil, @Rect)
             end;  
@@ -390,19 +394,19 @@ begin
     leftChunk := getChunkByIndex(world, currentChunk.chunkIndex - 1);
     rightChunk := getChunkByIndex(world, currentChunk.chunkIndex + 1);
     // on determine le chunk a afficher en fonction de la position du joueur
-    if world.player.pos.x > 0.0 then
+    if world.player.pos.x >= 0 then
     begin
-        if abs(trunc(world.player.pos.x)) - abs(trunc(world.player.pos.x/100)*100) > 50 then
+        if abs(trunc(world.player.pos.x) - trunc(world.player.pos.x/100)*100) > 50 then
             sideChunk := rightChunk // Si positif et 50% a droite
         else
             sideChunk := leftChunk // Si positif et 50% a gauche
     end
     else
     begin
-        if abs(trunc(world.player.pos.x)) - abs(trunc(world.player.pos.x/100)*100) > 50 then
-            sideChunk := leftChunk // Si negatif et 50% a droite
+        if trunc(world.player.pos.x) - trunc(world.player.pos.x/100)*100 > -50 then
+            sideChunk := rightChunk // Si positif et 50% a droite
         else
-            sideChunk := rightChunk; // Si negatif et 50% a gauche
+            sideChunk := leftChunk // Si positif et 50% a gauche
     end;
 
     // On affiche le ciel
