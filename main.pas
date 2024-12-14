@@ -1,12 +1,13 @@
 program main;
 
 
-uses fileHandler,sdl2, sdl2_ttf,SDL2_image, LMMTypes, display, mob, menu,game;
+uses fileHandler,sdl2, sdl2_ttf,SDL2_image, LMMTypes, display, mob, menu, game, audioPlayer;
 
 var
     world: TWorld;
     textures: TTextures;
     data:TAnimationData;
+    audio: TAudio;
     renderer: PSDL_Renderer;
     windowParam:TWindow;
     Font: PTTF_Font;
@@ -15,6 +16,7 @@ var
 begin
     leave := False;
     InitDisplay(windowParam,renderer,Font,textures,data);
+    InitAudio(audio);
     // Depends on world menu
 
     // Initialisation of window parameter
@@ -30,7 +32,7 @@ begin
             // ajout de mob;
             generateMob(world,data); // rendu pas très beau, a modifier
             //Boucle principale
-            playGame(world,windowParam,renderer,Font,textures,data);
+            playGame(world,windowParam,renderer,Font,textures,data,audio);
         end;
       
     until leave;

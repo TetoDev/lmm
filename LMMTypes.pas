@@ -2,7 +2,7 @@ unit LMMTypes;
 
 interface
 
-uses sdl2,sdl2_image;
+uses sdl2,sdl2_image, sdl2_mixer;
 
 type
     IntArray = array of Integer; // Dynamic array of integers
@@ -67,6 +67,8 @@ type
     mobArray = array of TMob;
     mobTextureArray = array of TMobTexture;
 
+    EffectsArray = array of PMix_Chunk;
+
     TTextures = record
         blocks: Array[1..6] of PSDL_TEXTURE;
         mobs: Array [1..3] of PSDL_TEXTURE;
@@ -96,6 +98,11 @@ type
         worldFile: Text;
         time: Integer;
         mobsGenerated: LongInt;
+    end;
+
+    TAudio = record
+        playerEffects: array[1..6] of PMix_Chunk;
+        mobEffects: array[1..3] of PMix_Chunk;
     end;
 
     TActs = (JUMP, CROUCH, WALK_RIGHT, WALK_LEFT, PLACE_BLOCK, REMOVE_BLOCK, ATTACK);

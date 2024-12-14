@@ -232,7 +232,7 @@ begin
     line := worldStringList.strings[1].Split(';');
 
     world.player.pos.x := StrToFloat(line[0]);
-    world.player.pos.y := StrToFloat(line[1]);
+    world.player.pos.y := StrToFloat(line[1])+1;
     world.player.vel.x := StrToFloat(line[2]);
     world.player.vel.y := StrToFloat(line[3]);
     world.player.health := StrToInt(line[4]);
@@ -265,7 +265,7 @@ begin
     getWorlds := worldArray;
 end;
 
-procedure deleteWorldFromindex(const worldName: String); // TO TEST
+procedure deleteWorldFromindex(const worldName: String);
 var index, newIndex: TStringList;i:Integer;
 begin
     index := TStringList.Create();

@@ -4,11 +4,11 @@ interface
 
 uses LMMTypes, fileHandler, act, SysUtils, display, sdl2, sdl2_ttf, util, worldGeneration, mob, menu;
 
-procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; var textures: TTextures; var data:TAnimationData; Font: PTTF_Font;key:TKey);
+procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; var textures: TTextures; var data:TAnimationData; Font: PTTF_Font;key:TKey; audio: TAudio);
 
 implementation
 
-procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; var textures: TTextures; var data:TAnimationData; Font: PTTF_Font;key:TKey);
+procedure tick(var world: TWorld; window:TWindow; playerAction: TPlayerAction; var renderer:  PSDL_Renderer; var textures: TTextures; var data:TAnimationData; Font: PTTF_Font;key:TKey; audio: TAudio);
 var 
     time: Integer;
     currentChunk: TChunk;
@@ -25,9 +25,9 @@ begin
         loadPlayerChunks(world);
 
     // Update player
-    updatePlayer(world,playerAction,data);
+    updatePlayer(world,playerAction,data, audio);
     // Update mobs
-    updateMob(world, data);
+    updateMob(world, data, audio);
     spawnMobs(world, data);
     resetPlayerAttack(world.player, world.time, world);
 

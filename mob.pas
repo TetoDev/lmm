@@ -2,11 +2,11 @@ unit mob;
 
 interface
 
-uses LMMTypes, util, act, sysutils;
+uses LMMTypes, util, act, sysutils, audioPlayer;
 
 procedure generateMob(var world:TWorld; var data:TAnimationData);
 
-procedure updateMob(var world:TWorld; var data:TAnimationData);
+procedure updateMob(var world:TWorld; var data:TAnimationData; audio: TAudio);
 
 procedure spawnMobs(var world:TWorld; var data:TAnimationData);
 
@@ -17,7 +17,7 @@ var mob:TMob; mobData:TMobTexture;
 begin
     mob.health := 100;
     mob.pos.x := world.player.pos.x + (Random(100) - 50);
-    mob.pos.y := findTop(getChunkByIndex(world, getChunkIndex(mob.pos.x)), Trunc(mob.pos.x));
+    mob.pos.y := findTop(getChunkByIndex(world, getChunkIndex(mob.pos.x)), Trunc(mob.pos.x)) +1;
     mob.vel.x := 0;
     mob.vel.y := 0; 
     mob.boundingBox.width := 0.6;
@@ -126,7 +126,7 @@ begin
 end;
 
 
-procedure updateMob(var world:TWorld; var data:TAnimationData);
+procedure updateMob(var world:TWorld; var data:TAnimationData; audio: TAudio);
 var i, j, limit: Integer; mob: TMob; chunk: TChunk; playerPos: TPosition;
 begin
     playerPos := world.player.pos;
@@ -147,6 +147,7 @@ begin
         // if mob is dead we remove it from the world and data
         if mob.health <= 0 then
         begin
+            playRandomMobEffect(audio);
             destroyMob(world, data, i-j);
             j := j + 1;
         end

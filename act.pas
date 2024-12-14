@@ -1,15 +1,15 @@
 unit act;
 
 Interface
-uses LMMTypes, SDL2, util, display, math, fileHandler; 
+uses LMMTypes, SDL2, util, display, math, fileHandler, audioPlayer; 
 
 // acts procedure for the in game
 procedure eventGameListener(var event:TSDL_Event;var world:TWorld; var windowParam:TWindow; var key:TKey ;var playerAction:TPlayerAction; var running,pause:Boolean);
 procedure handleInput(keyPressed: String;var key:TKey; var direction: Boolean; french,state: Boolean; var running:Boolean; var pause:Boolean);
 procedure handleMouse(x:Integer ; y:Integer; world:TWorld; window:TWindow; action:TActs; var playerAction: TPlayerAction; var pause,running:Boolean);
 procedure addAction(var playerAction: TPlayerAction; key:TKey);
-procedure playerMove(var player: TPlayer; var vel: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction; time: Integer);
-procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
+procedure playerMove(var player: TPlayer; var vel: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction; time: Integer; audio: TAudio);
+procedure blockAct(playerAction: TPlayerAction; var world: TWorld; audio: TAudio); 
 procedure handleCollision(var velocity: TVelocity; var pos: TPosition; box: TBoundingBox; chunk: TChunk);
 function checkVerticalCollision(corner: TPosition; chunk: TChunk; isRight, isDown: Boolean): Boolean;
 function checkHorizontalCollision(corner: TPosition; chunk: TChunk; isRight, isDown: Boolean): Boolean;
@@ -17,7 +17,7 @@ function isBlockBelow (pos: TPosition; box: TBoundingBox; chunk: TChunk): Boolea
 procedure inflictDamage (var targetHealth: Integer; damage: Integer);
 procedure playerAttack (var player: TPlayer; var vel: TVelocity; time: Integer);
 procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorld);
-procedure updatePlayer(var world: TWorld; var playerAction:TPlayerAction;var data:TAnimationData);
+procedure updatePlayer(var world: TWorld; var playerAction:TPlayerAction;var data:TAnimationData; audio: TAudio);
 
 Implementation
 
@@ -172,7 +172,7 @@ begin
     end;
 end;
 
-procedure playerMove(var player: TPlayer; var vel: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction; time: Integer);
+procedure playerMove(var player: TPlayer; var vel: TVelocity; blockBelow: Boolean; playerAction: TPlayerAction; time: Integer; audio: TAudio);
 var i: Integer;
     action: TActs;
 begin
@@ -191,7 +191,10 @@ begin
             JUMP: 
             begin
                 if blockBelow then
+                begin
                     vel.y := vel.y + 0.65;
+                    playPlayerEffect(audio, 2);
+                end;
             end;
             CROUCH: 
             begin
@@ -200,12 +203,14 @@ begin
             ATTACK:
             begin
                 playerAttack(player, vel, time);
+                playPlayerEffect(audio, 3);
             end;
         end;
     end;
+
 end;
 
-procedure blockAct(playerAction: TPlayerAction; var world: TWorld); 
+procedure blockAct(playerAction: TPlayerAction; var world: TWorld; audio: TAudio); 
 var i,x,y:Integer;currentChunk:TChunk;
 begin
     // Calculate current chunk
@@ -222,6 +227,7 @@ begin
                 else 
                     currentChunk.layout[abs(x)+1][y]:= world.player.heldItem;
                 AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
+                playPlayerEffect(audio, 5);
             end;
             REMOVE_BLOCK: 
             begin
@@ -230,6 +236,7 @@ begin
                 else
                     currentChunk.layout[abs(x)+1][y]:= 0;
                 AddIntIfNotOnArray(world.unsavedChunks, currentChunk.chunkIndex);
+                playPlayerEffect(audio, 6);
             end;
         end;
     end;
@@ -302,6 +309,8 @@ begin
     br.x := pos.x + box.width;
     br.y := pos.y - box.height;
     
+    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     isBlockBelow := checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true);
 end;
@@ -332,16 +341,16 @@ begin
     //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     // Checking for collision
-    // For right corner horizontal collisions
-    // if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
-    // begin
-    //     writeln('block right');
-    //     if velocity.x >= 0 then
-    //     begin
-    //         velocity.x := 0;
-    //         pos.x := floor(tr.x) - box.width;
-    //     end;
-    // end;
+    For right corner horizontal collisions
+    if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
+    begin
+        writeln('block right');
+        if velocity.x >= 0 then
+        begin
+            velocity.x := 0;
+            pos.x := floor(tr.x) - box.width;
+        end;
+    end;
     // For vertical corner colllisions
     if checkVerticalCollision(tr, chunk, true, false) or checkVerticalCollision(tl, chunk, false, false) then
     begin
@@ -362,15 +371,15 @@ begin
         end;
     end;
     // For left corner horizontal collisions
-    // if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
-    // begin
-    //     //writeln('block left');
-    //     if velocity.x <= 0 then
-    //     begin
-    //         velocity.x := 0;
-    //         pos.x := floor(tl.x+0.2);
-    //     end;
-    // end;
+    if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
+    begin
+        //writeln('block left');
+        if velocity.x <= 0 then
+        begin
+            velocity.x := 0;
+            pos.x := floor(tl.x+0.2);
+        end;
+    end;
     end;
 end;
 
@@ -416,7 +425,7 @@ begin
 end;
 
 
-procedure updatePlayer(var world: TWorld; var playerAction:TPlayerAction;var data:TAnimationData);
+procedure updatePlayer(var world: TWorld; var playerAction:TPlayerAction;var data:TAnimationData; audio: TAudio);
 var playerPos: TPosition;
     playerVel: TVelocity;
     blockBelow: Boolean;
@@ -432,8 +441,8 @@ begin
     // Checking if there is a block below the player
     blockBelow := isBlockBelow(playerPos, world.player.boundingBox, currentChunk);
     // Enacting layer input
-    playerMove(world.player, playerVel, blockBelow, playerAction, world.time);
-    blockAct(playerAction, world);
+    playerMove(world.player, playerVel, blockBelow, playerAction, world.time, audio);
+    blockAct(playerAction, world, audio);
     // Max running speed, depending on if the player is attacking or not
     if not world.player.attacking then
         if (playerVel.x > 0.15) then
