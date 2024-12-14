@@ -178,9 +178,9 @@ begin
 
   worlds := getWorlds();
 
-  for i:=0 to min(Length(worlds) - 1 - (page-1)*(Trunc((window.height - 250)/105)-1), Trunc((window.height - 250)/105)-1) do 
+  for i:=0 to min(Length(worlds) - 1 - (page-1)*(Trunc((window.height - 250)/105)), Trunc((window.height - 250)/105)-1) do 
   begin
-    n := i + (page-1)*(Trunc((window.height - 250)/105)-1);
+    n := i + (page-1)*(Trunc((window.height - 250)/105));
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
     button(Renderer,window,Font,StrPCopy(Buffer,worlds[n]),(window.width - 300) div 2, (250 + i*105),300,100);
     buttonDelete(Renderer,window,Font,PChar('X'),(window.width) div 2+90, (270 + i*105),50,50)
@@ -188,7 +188,7 @@ begin
   
   SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
 
-  if (Length(worlds) - 1) > (page)*(Trunc((window.height - 250)/105)-1) then 
+  if ((Length(worlds) - 1) > (page)*(Trunc((window.height - 250)/105)-1)) and (page <= Length(worlds)-1) then 
     button(Renderer,window,Font,PChar('   >'),(window.width div 2 +170), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);
   if page > 1 then 
     button(Renderer,window,Font,PChar('   <'),(window.width div 2 -270), (250 + (Trunc((window.height - 250)/105)-1)*105),100,100);

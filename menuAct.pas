@@ -81,13 +81,13 @@ begin
                     if ((x > window.width div 2+90) and ( x < (window.width) div 2+140 )) and ((y > 270 + i*105) and (y < 320 + i*105 + 100)) then
                     begin
                         delete := True;
-                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105)-1)];
+                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105))];
                     end
                     // Sinon on regarde si le joueur à cliquer sur un monde pour le charger
                     else 
                     begin
                         running := False;
-                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105)-1)];
+                        fileName := worlds[i + (page-1)*(Trunc((window.height - 250)/105))];
                     end;
                 end;
         end
@@ -108,7 +108,7 @@ begin
         end;
 
         // Nous venon verifier si il y a trop de monde pour la page, puis si le joueur à cliquer pour acceder à la page suivante ou précédente
-        if (Length(worlds) - 1) > (Trunc((window.height - 250)/105)-1) then 
+        if ((Length(worlds)) > (Trunc((window.height - 250)/105)-1)) and (page <= Length(worlds)-1) then 
             if ((x > window.width div 2 + 170) and ( x < window.width div 2 + 270)) and ((y > (250 + (Trunc((window.height - 250)/105)-1)*105)) and (y < (350 + (Trunc((window.height - 250)/105)-1)*105))) then
                     page := page + 1;
         if page > 1 then 
@@ -134,7 +134,7 @@ begin
             chooseWorld := True;
         end;
         // on regarde si le joueur veux créer un monde
-        if ((x > window.width div 2 - 90) and ( x < window.width div 2 + 90 )) and ((y > window.height div 2 + 75) and ( y < window.height div 2 + 175)) then
+        if ((x > window.width div 2 - 90) and ( x < window.width div 2 + 90 )) and ((y > window.height div 2 + 75) and ( y < window.height div 2 + 175)) and (Length(fileName) > 0)then
             running := False
       end;
       

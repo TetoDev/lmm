@@ -20,7 +20,6 @@ begin
     chooseWorld:=False;
     createWorld:=False;
     delete:=False;
-    worlds := getWorlds();
     page := 1;
     while running do
     begin
@@ -32,6 +31,7 @@ begin
         SDL_delay(1000 div 60); // pour caper le nombre de fps 60 
     end;  
     exist := False;
+    worlds := getWorlds();
     if not createWorld and (fileName = '') then fileName := '';
     if createWorld and (fileName <> '')then
     begin
