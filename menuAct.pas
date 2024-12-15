@@ -66,6 +66,8 @@ begin
             running := False;
             leave := True;
         end;
+        if ((x > window.width - 190 ) and ( x < window.width - 20)) and ((y > 25) and ( y < 125)) then
+            credits := True;
     end
     // On regarde si le joueur à cliquer sur le bouton pour créer un monde ou pour retourner au menu précédent ou pour supprimer un monde ou encore pour accéder au monde voulu
     else if chooseWorld then  
