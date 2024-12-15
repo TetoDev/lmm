@@ -287,23 +287,25 @@ begin
 end;
 
 function newWorld (name: String): TWorld;
-var world: TWorld; chunk: TChunk; i: Integer;
+var world: TWorld; chunk: TChunk; i, chunkIndex: Integer;
 begin
 
     world.name := name;
     world.seed := NewSeed();
     
+    chunkIndex := getChunkIndex(500);
+
     // Generating the new chunks for the new world
     for i := -1 to 1 do
     begin
-        chunk.chunkIndex := i;
+        chunk.chunkIndex := chunkIndex + i;
         chunkShapeGeneration(chunk,world.seed);
         AddChunkToArray(world.chunks, chunk);
         AddIntToArray(world.unsavedChunks, chunk.chunkIndex);
     end;
 
     // Init the rest of the variables
-    world.player.pos.x := 50;
+    world.player.pos.x := 500;
     world.player.pos.y := findTop(world.chunks[1], trunc(world.player.pos.x));
     world.player.health := 100;
     world.player.boundingBox.width := 0.6;
