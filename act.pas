@@ -373,7 +373,7 @@ begin
     // For left corner horizontal collisions
     if checkHorizontalCollision(tl, chunk, false, false) or checkHorizontalCollision(bl, chunk, false, true) then
     begin
-        /:writeln('block left');
+        writeln('block left');
         if velocity.x <= 0 then
         begin
             velocity.x := 0;

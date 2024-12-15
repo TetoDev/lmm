@@ -315,7 +315,7 @@ begin
                 if not(delta) and (nextChunk.chunkIndex = -1) then
                     Rect.x := Trunc((j - x + xAdjustement)*SIZE) - 100*SIZE
                 else if delta then
-                    Rect.x := Trunc((j + x + xAdjustement)*SIZE)
+                    Rect.x := Trunc((j + x + xAdjustement + 1)*SIZE)
                 else 
                     Rect.x := Trunc((j + x + xAdjustement)*SIZE) - 199*SIZE;
                 Rect.y := Trunc((i - y  + yAdjustement)*SIZE);
