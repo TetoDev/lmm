@@ -169,7 +169,7 @@ begin
             for j := 0 to 99 do
             begin
                 row[j] := row[j].Remove(0, 1);
-                row[j] := row[j].Remove(row[j].Length-1, 1); // THIS IS WRONG
+                row[j] := row[j].Remove(row[j].Length-1, 1);
                 // writeln('row[j]: ', row[j]);
 
                 column := row[j].Split('-');
@@ -201,7 +201,7 @@ begin
     begin
         if not IsIntOnArray(existingChunkIndexes, rootChunkIndex + i) then
         begin
-            writeln('chunk generated: ', rootChunkIndex + i);
+            // writeln('chunk generated: ', rootChunkIndex + i);
             chunk.chunkIndex := rootChunkIndex + i;
             chunkShapeGeneration(chunk, world.seed);
             AddChunkToArray(world.chunks, chunk);

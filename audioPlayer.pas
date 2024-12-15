@@ -18,6 +18,7 @@ implementation
 
 procedure loadEffects (var audio: TAudio);
 begin
+    // Loading all the sound effects
     audio.playerEffects[1] := Mix_LoadWAV('assets/audio/running.ogg');
     audio.playerEffects[2] := Mix_LoadWAV('assets/audio/jump.ogg');
     audio.playerEffects[3] := Mix_LoadWAV('assets/audio/attack.ogg');
@@ -30,6 +31,7 @@ begin
     audio.mobEffects[3] := Mix_LoadWAV('assets/audio/rat3.ogg');
 end;
 
+// Initialize the SDL Mxier library and load all the sound effects
 procedure InitAudio (var audio: TAudio);
 begin
     if Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 then
@@ -43,17 +45,11 @@ begin
     loadEffects(audio);
 end;
 
+// Play a sound effect for the player
 procedure playPlayerEffect (audio: TAudio; effect: Integer);
 begin
-    stopEffects();
-    if not isPlaying(audio, effect) then
-        if effect = 1 then
-            begin
-            stopChannelEffects(1);
-            Mix_PlayChannel(1, audio.playerEffects[effect], 0)
-            end
-        else
-            Mix_PlayChannel(-1, audio.playerEffects[effect], 0);
+    stopChannelEffects(1);
+    Mix_PlayChannel(1, audio.playerEffects[effect], 0);
 end;
 
 procedure stopEffects ();
@@ -68,8 +64,9 @@ end;
 
 procedure playMobEffect (audio: TAudio; effect: Integer);
 begin
+    stopChannelEffects(2);
     if not isPlaying(audio, effect) then
-        Mix_PlayChannel(-1, audio.mobEffects[effect], 0);
+        Mix_PlayChannel(2, audio.mobEffects[effect], 0);
 end;
 
 procedure stopMobEffect (audio: TAudio; effect: Integer);

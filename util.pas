@@ -3,7 +3,7 @@ unit Util;
 {$mode objfpc}{$H+}
 
 interface
-uses LMMTypes;
+uses LMMTypes, worldGeneration;
 
 
 procedure AddIntToArray(var Arr: IntArray; const Element: Integer);
@@ -97,17 +97,26 @@ end;
 
 function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
 var
-    i: Integer;
+    i, j: Integer;
+    chunk: TChunk;
+    found: Boolean;
 begin
-    Result := Default(TChunk);
+    found := False;
+    
     for i := 0 to Length(world.chunks) - 1 do
     begin
         if world.chunks[i].chunkIndex = chunkIndex then
         begin
-            Result := world.chunks[i];
-            Exit;
-        end;
+            chunk := world.chunks[i];
+            found := True;
+            break;
+        end
     end;
+
+    if not found then
+        chunkShapeGeneration(chunk, chunkIndex);
+
+    getChunkByIndex := chunk;
 end;
 
 function findTop(chunk:TChunk; x:Integer):Integer;
