@@ -11,7 +11,7 @@ implementation
 
 
 procedure homeScreen(var world:TWorld;var windowParam:TWindow; var renderer:PSDL_renderer; var Font:PTTF_Font;textures:TTextures ;var leave:Boolean; var fileName:String);
-var running,chooseWorld,createWorld,exist, delete:Boolean;
+var running,chooseWorld,createWorld,exist,credits, delete:Boolean;
     event: TSDL_Event;
     page,i:Integer; 
     worlds:StringArray;
@@ -20,11 +20,12 @@ begin
     chooseWorld:=False;
     createWorld:=False;
     delete:=False;
+    credits := False;
     page := 1;
     while running do
     begin
-        eventMenuListener(event,world,windowParam, fileName, page ,chooseWorld, delete,running,leave,createWorld);
-        MenuHomescreen(renderer,windowParam, Font, textures,page,chooseWorld,delete,createWorld, fileName);
+        eventMenuListener(event,world,windowParam, fileName, page,credits ,chooseWorld, delete,running,leave,createWorld);
+        MenuHomescreen(renderer,windowParam, Font, textures,page,credits,chooseWorld,delete,createWorld, fileName);
         
         //Affichage du monde
         SDL_RenderPresent(renderer);

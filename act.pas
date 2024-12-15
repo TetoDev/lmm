@@ -259,7 +259,7 @@ begin
     else
         correctionY := corner.y + toleranceY;
 
-    // checkVerticalCollision := false; 
+    checkVerticalCollision := false; 
 
     // Checking vertical collisions
     BlockX := abs(Floor(correctionX)) - abs(trunc(correctionX/100)*100);
@@ -288,7 +288,7 @@ begin
     else
         correctionY := corner.y - toleranceY;
 
-    // checkHorizontalCollision := false;
+    checkHorizontalCollision := false;
 
     // Checking horizontal collisions
     BlockX := abs(floor(correctionX)) - abs(trunc(correctionX/100)*100);
@@ -309,8 +309,8 @@ begin
     br.x := pos.x + box.width;
     br.y := pos.y - box.height;
     
-    writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
-    writeln('Bottom Right: (', br.x, ', ', br.y, ')');
+    //writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
+    //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
     isBlockBelow := checkVerticalCollision(br, chunk, true, true) or checkVerticalCollision(bl, chunk, false, true);
 end;
@@ -340,11 +340,10 @@ begin
     //writeln('Bottom Left: (', bl.x, ', ', bl.y, ')');
     //writeln('Bottom Right: (', br.x, ', ', br.y, ')');
 
-    // Checking for collision
-    For right corner horizontal collisions
+    // Checking for collisions
     if checkHorizontalCollision(tr, chunk, true, false) or checkHorizontalCollision(br, chunk, true, true) then
     begin
-        writeln('block right');
+        //writeln('block right');
         if velocity.x >= 0 then
         begin
             velocity.x := 0;
@@ -403,7 +402,7 @@ begin
 end;
 
 procedure resetPlayerAttack(var player: TPlayer; time: Integer; var world: TWorld);
-var i: Integer;
+var i: Integer;distance: Real;
 begin
     if abs(time - player.lastAttack) > 30 then
     begin
@@ -415,8 +414,9 @@ begin
         else
             player.vel.x := -0.20;
         for i := 0 to length(world.mobs) -1 do
-        begin
-            if (floor(world.mobs[i].pos.x) = floor(player.pos.x)) and (floor(world.mobs[i].pos.y) = floor(player.pos.y)) and player.attacking then
+        begin   
+            distance := world.mobs[i].pos.x - player.pos.x;
+            if (abs(distance) < 2) and (((distance < 0) and player.direction) or ((distance > 0) and not(player.direction))) and (floor(world.mobs[i].pos.y) = floor(player.pos.y)) and player.attacking then
             begin
                 inflictDamage(world.mobs[i].health, 20);
                 world.mobs[i].lastDamaged := world.time;
@@ -452,9 +452,9 @@ begin
     else
     begin
         if (playerVel.x > 0.20) then
-            playerVel.x := 0.20;
+            playerVel.x := 0.1;
         if (playerVel.x < -0.20) then
-            playerVel.x := -0.20;
+            playerVel.x := -0.1;
     end;
     
     // Terminal Velocity limit

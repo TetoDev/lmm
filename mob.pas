@@ -88,10 +88,10 @@ end;
 procedure mobAttack(var player: TPlayer; var mob: TMob; var playerHealth: Integer; time, damage: Integer);
 begin
     // Attack if close enough and if its last attack has been more than 15 ticks ago
-    if (abs(player.pos.x - mob.pos.x) < 0.1) and (abs(player.pos.y - mob.pos.y) < 0.8) then
+    if (abs(player.pos.x - mob.pos.x) < 0.1) and (abs(player.pos.y - mob.pos.y) < 0.8) and not(player.attacking) then
         if abs(time - mob.lastAttack) > 15 then
         begin
-            inflictDamage(playerHealth, 100);
+            inflictDamage(playerHealth, 10);
             player.lastDamaged := time;
             mob.lastAttack := time;
         end;

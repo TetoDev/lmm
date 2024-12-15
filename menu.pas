@@ -12,7 +12,7 @@ procedure DisplayText(Text:PChar;Window: PSDL_Window; var Renderer: PSDL_Rendere
 
 procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, delete, createWorld:Boolean; worldName:String);
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; credits,chooseWorld, delete, createWorld:Boolean; worldName:String);
 
 implementation
 
@@ -64,7 +64,6 @@ begin
   SDL_RenderCopy(Renderer, Texture, nil, @TextRect); // Affiche le texte
   SDL_DestroyTexture(Texture);
 end;
-
 
 procedure MenuQuitter(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
 var Rect: TSDL_Rect;
@@ -149,6 +148,25 @@ begin
     //affichage du text 
     DisplayText(text, window.window,renderer, Font, x + 20, y + 38);
   
+end;
+
+procedure MenuCredits(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font);
+begin
+    
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 200); 
+    SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_BLEND); // Mode de fusion
+    SDL_RenderFillRect(Renderer, nil);
+    button(Renderer,window,Font,PChar('Back'),25, 25,150,100);
+    DisplayText(PChar('This game was developped by The LMM Team'), window.window,renderer, Font,window.width div 2 - 390, window.height div 2 - 100);
+    DisplayText(PChar('Composed of:'), window.window,renderer, Font, window.width div 2 - 390, window.height div 2 - 70);
+    DisplayText(PChar('Ylann Malherbe and Octavio Massa Perez'), window.window,renderer, Font, window.width div 2 - 390, window.height div 2 - 40);
+
+    DisplayText(PChar('Particular thanks to Sophie (Xinyu) Duan'), window.window,renderer, Font, window.width div 2 - 390, window.height div 2 + 30);
+    DisplayText(PChar('who helped us with rat sound'), window.window,renderer, Font, window.width div 2 - 390, window.height div 2 +60);
+
+    DisplayText(PChar('Sounds are all home made'), window.window,renderer, Font, 10, window.height - 100);
+    DisplayText(PChar('Sprites provided by CraftPix.net'), window.window,renderer, Font, 10, window.height - 70);
+    DisplayText(PChar('Textures from Mazarinex32'), window.window,renderer, Font, 10, window.height - 40);
 end;
 
 procedure buttonDelete(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font; text:PChar;x,y, width,height:Integer);
@@ -264,16 +282,21 @@ begin
     DisplayText(PChar('No'), window.window,renderer, Font, window.width div 2 + 65 ,window.height div 2 + 20);
 end;
 
-procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; chooseWorld, delete, createWorld:Boolean; worldName:String);
+procedure MenuHomescreen(var Renderer: PSDL_Renderer; window:TWindow; Font: PTTF_Font;textures:TTextures;page:Integer; credits,chooseWorld, delete, createWorld:Boolean; worldName:String);
 begin
     background(textures,Renderer, window, chooseWorld, createWorld);
 
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 220);
 
+
     if not chooseWorld and not createWorld then
     begin
+        if not credits then
+          button(Renderer,window,Font,PChar('Credits'),window.width - 190 , 25,170,100);
         button(Renderer,window,Font,PChar('Play'),(window.width - 300) div 2, (window.height div 2 -125),300,100);
         button(Renderer,window,Font,PChar('Leave'),(window.width - 300) div 2, (window.height div 2 +25),300,100);
+        if credits then
+          MenuCredits(Renderer,window,Font);
     end;
     if chooseWorld then
     begin
