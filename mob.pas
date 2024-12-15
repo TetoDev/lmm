@@ -142,7 +142,8 @@ begin
         mobMove(playerPos, mob, chunk);
         data.mobsData[i].mobAction := 1;
         updateDirection(mob);
-        mobAttack(world.player, mob, world.player.health, world.time, 10);
+        if world.player.health > 0 then
+            mobAttack(world.player, mob, world.player.health, world.time, 10);
 
         // if mob is dead we remove it from the world and data
         if mob.health <= 0 then
