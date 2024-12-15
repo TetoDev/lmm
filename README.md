@@ -7,7 +7,6 @@
 
 
 Le programme dépend des bibliothèques SDL2, SDL2_image et SDL2_ttf ainsi avant de commencer, verifiez bien que ces dernières soient bien installé.
-! Attention, dû à une différence dans la compilation entre windows et linux il ce peux que le programme ai quelque bogues non résolvable à notre niveau ! (notemment pour le système de collision)
 
 ------------
 
