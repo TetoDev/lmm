@@ -97,7 +97,7 @@ end;
 
 function getChunkByIndex(world: TWorld; chunkIndex: Integer): TChunk;
 var
-    i, j: Integer;
+    i: Integer;
     chunk: TChunk;
     found: Boolean;
 begin

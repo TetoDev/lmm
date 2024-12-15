@@ -1,7 +1,7 @@
 unit worldGeneration;
 
 Interface 
-uses LMMTypes, util;
+uses LMMTypes;
 
 
 function NewSeed():LongInt;
@@ -9,6 +9,26 @@ function NewSeed():LongInt;
 procedure chunkShapeGeneration(var chunk: TChunk; seed: LongInt);
 
 Implementation
+
+function findTop(chunk:TChunk; x:Integer):Integer;
+var i:Integer;xRelatif:Integer;
+begin
+    findTop := 0;
+    i := 0;
+    if x > 0 then
+        xRelatif:= x  - 100 * Trunc(x / 100)
+    else 
+        xRelatif:= 99 - (abs(x)  - 100 * Trunc(abs(x) / 100));
+    while (i < 99) and (findTop = 0) do 
+    begin
+        if chunk.layout[xRelatif][i] = 0 then 
+        begin
+            findTop := i;
+            Exit
+        end;
+        i := i + 1;
+    end;
+end;
 
 function NewSeed():LongInt;
 begin
