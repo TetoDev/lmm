@@ -3,16 +3,16 @@ unit menuAct;
 interface
 uses LMMTypes, SDL2, display, fileHandler; 
 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,delete,running,leave,createWorld:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var credits,chooseWorld,delete,running,leave,createWorld:Boolean);
 
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,delete,running,leave,createWorld:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var credits, chooseWorld,delete,running,leave,createWorld:Boolean);
 
 procedure handleInputMenu(keyPressed: String;var fileName:String; var running:Boolean);
 
 implementation
 
 
-procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var chooseWorld,delete,running,leave,createWorld:Boolean);
+procedure eventMenuListener(var event:TSDL_Event; var world:TWorld ;var windowParam:TWindow; var fileName:String;var page:Integer;var credits, chooseWorld,delete,running,leave,createWorld:Boolean);
 begin 
     while SDL_PollEvent(@event) <> 0 do
     begin 
@@ -33,7 +33,7 @@ begin
             SDL_MOUSEBUTTONDOWN:
                 begin
                     if event.button.button = SDL_BUTTON_LEFT then
-                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,page,chooseWorld,delete,running,leave,createWorld);
+                        handleMouseMenu(event.button.x, event.button.y, windowParam, fileName,page, credits,chooseWorld,delete,running,leave,createWorld);
                 end;
                 
             SDL_WINDOWEVENT:
@@ -48,11 +48,16 @@ begin
 end;
 
 
-procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var chooseWorld,delete,running,leave,createWorld:Boolean);
+procedure handleMouseMenu(x:Integer ; y:Integer; window:TWindow; var fileName:String;var page:Integer; var credits, chooseWorld,delete,running,leave,createWorld:Boolean);
 var i:Integer; worlds:StringArray;
 begin
+    if credits then
+    begin
+        if ((x > 25) and ( x < 25 + 175 )) and ((y > 25) and ( y < 125)) then
+            credits := False;
+    end
     // On regarde si le joueur à cliquer sur le bouton pour choisir un monde ou pour quitter le jeu
-    if not chooseWorld and not createWorld then
+    else if not chooseWorld and not createWorld then
     begin
         if ((x > window.width div 2 - 150) and ( x < window.width div 2 + 150)) and ((y > window.height div 2 - 125) and ( y < window.height div 2 - 25)) then
             chooseWorld := True;
